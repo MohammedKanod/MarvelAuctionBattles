@@ -218,7 +218,71 @@ class SoundManagerClass {
     });
   }
 
-  /** Battle Clash / Attack Impact */
+  /** Cinematic Pre-Impact Sonic Riser / Fighter Charge Whoosh */
+  public playSonicWhoosh() {
+    if (this.muted) return;
+    this.initCtx();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const dur = 0.35;
+
+    // Buffer noise source
+    const bufferSize = Math.floor(this.ctx.sampleRate * dur);
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.7));
+    }
+
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    // Sweeping bandpass filter
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(200, now);
+    filter.frequency.exponentialRampToValueAtTime(3200, now + dur);
+    filter.Q.setValueAtTime(3.0, now);
+
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.01, now);
+    gain.gain.exponentialRampToValueAtTime(0.28, now + dur * 0.85);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    noise.start(now);
+    noise.stop(now + dur);
+  }
+
+  /** Cinematic Theatrical Sub-Bass Boom */
+  public playCinematicBoom() {
+    if (this.muted) return;
+    this.initCtx();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(110, now);
+    osc.frequency.exponentialRampToValueAtTime(24, now + 0.6);
+
+    gain.gain.setValueAtTime(0.6, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.65);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.65);
+  }
+
+  /** Kinetic Metal & Energy Impact Shockwave (Marvel Movie Style) */
   public playBattleClash() {
     if (this.muted) return;
     this.initCtx();
@@ -226,53 +290,147 @@ class SoundManagerClass {
 
     const now = this.ctx.currentTime;
 
-    // Deep punch
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(200, now);
-    osc.frequency.exponentialRampToValueAtTime(40, now + 0.3);
+    // Layer 1: Theatrical Sub-Bass Rumble (24Hz-90Hz)
+    const subOsc = this.ctx.createOscillator();
+    const subGain = this.ctx.createGain();
+    subOsc.type = 'sine';
+    subOsc.frequency.setValueAtTime(95, now);
+    subOsc.frequency.exponentialRampToValueAtTime(26, now + 0.5);
+    subGain.gain.setValueAtTime(0.55, now);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+    subOsc.connect(subGain);
+    subGain.connect(this.ctx.destination);
+    subOsc.start(now);
+    subOsc.stop(now + 0.55);
 
-    gain.gain.setValueAtTime(0.35, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+    // Layer 2: Mid-range kinetic punch (sawtooth punch down to 50Hz)
+    const punchOsc = this.ctx.createOscillator();
+    const punchGain = this.ctx.createGain();
+    punchOsc.type = 'sawtooth';
+    punchOsc.frequency.setValueAtTime(280, now);
+    punchOsc.frequency.exponentialRampToValueAtTime(45, now + 0.22);
+    punchGain.gain.setValueAtTime(0.4, now);
+    punchGain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+    punchOsc.connect(punchGain);
+    punchGain.connect(this.ctx.destination);
+    punchOsc.start(now);
+    punchOsc.stop(now + 0.25);
 
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
+    // Layer 3: Metallic / Shield Kinetic Resonant Ring
+    const metalOsc1 = this.ctx.createOscillator();
+    const metalOsc2 = this.ctx.createOscillator();
+    const metalGain = this.ctx.createGain();
 
-    osc.start(now);
-    osc.stop(now + 0.35);
+    metalOsc1.type = 'triangle';
+    metalOsc1.frequency.setValueAtTime(1240, now);
+    metalOsc1.frequency.exponentialRampToValueAtTime(620, now + 0.3);
+
+    metalOsc2.type = 'sine';
+    metalOsc2.frequency.setValueAtTime(2480, now);
+    metalOsc2.frequency.exponentialRampToValueAtTime(1100, now + 0.25);
+
+    metalGain.gain.setValueAtTime(0.25, now);
+    metalGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+    metalOsc1.connect(metalGain);
+    metalOsc2.connect(metalGain);
+    metalGain.connect(this.ctx.destination);
+
+    metalOsc1.start(now);
+    metalOsc2.start(now);
+    metalOsc1.stop(now + 0.35);
+    metalOsc2.stop(now + 0.35);
+
+    // Layer 4: Explosive transient noise crunch
+    const bufferSize = Math.floor(this.ctx.sampleRate * 0.12);
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.25));
+    }
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+    const noiseGain = this.ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.4, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    noise.connect(noiseGain);
+    noiseGain.connect(this.ctx.destination);
+    noise.start(now);
+    noise.stop(now + 0.12);
   }
 
-  /** Victory Fanfare */
+  /** Cinematic Standoff Heartbeat / Sub Pulse */
+  public playCinematicHeartbeat() {
+    if (this.muted) return;
+    this.initCtx();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    [0, 0.14].forEach((delay) => {
+      const osc = this.ctx!.createOscillator();
+      const gain = this.ctx!.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(58, now + delay);
+      osc.frequency.exponentialRampToValueAtTime(30, now + delay + 0.1);
+      gain.gain.setValueAtTime(0.35, now + delay);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.12);
+      osc.connect(gain);
+      gain.connect(this.ctx!.destination);
+      osc.start(now + delay);
+      osc.stop(now + delay + 0.12);
+    });
+  }
+
+  /** Epic Cinematic Victory Fanfare (Orchestral Brass Swell) */
   public playVictory() {
     if (this.muted) return;
     this.initCtx();
     if (!this.ctx) return;
 
     const now = this.ctx.currentTime;
-    // Energetic brass sequence: G4 -> C5 -> E5 -> G5
-    const sequence = [
-      { f: 392.00, time: 0.00, dur: 0.12 },
-      { f: 523.25, time: 0.14, dur: 0.12 },
-      { f: 659.25, time: 0.28, dur: 0.14 },
-      { f: 783.99, time: 0.44, dur: 0.50 }
+
+    // Sub-bass foundation
+    const subOsc = this.ctx.createOscillator();
+    const subGain = this.ctx.createGain();
+    subOsc.type = 'sine';
+    subOsc.frequency.setValueAtTime(130.81, now); // C3
+    subGain.gain.setValueAtTime(0.3, now);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+    subOsc.connect(subGain);
+    subGain.connect(this.ctx.destination);
+    subOsc.start(now);
+    subOsc.stop(now + 1.2);
+
+    // Powerful brass harmony chords (C minor / major heroic ascension)
+    const chord = [
+      { f: 261.63, delay: 0.0, dur: 0.8 },  // C4
+      { f: 329.63, delay: 0.08, dur: 0.8 }, // E4
+      { f: 392.00, delay: 0.16, dur: 0.9 }, // G4
+      { f: 523.25, delay: 0.26, dur: 1.1 }, // C5
+      { f: 659.25, delay: 0.36, dur: 1.2 }  // E5
     ];
 
-    sequence.forEach(({ f, time, dur }) => {
+    chord.forEach(({ f, delay, dur }) => {
       const osc = this.ctx!.createOscillator();
       const gain = this.ctx!.createGain();
 
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(f, now + time);
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(f, now + delay);
 
-      gain.gain.setValueAtTime(0.2, now + time);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + time + dur);
+      // Lowpass filter to give rich warm brass tone instead of buzzing
+      const filter = this.ctx!.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(1800, now + delay);
 
-      osc.connect(gain);
+      gain.gain.setValueAtTime(0.14, now + delay);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + delay + dur);
+
+      osc.connect(filter);
+      filter.connect(gain);
       gain.connect(this.ctx!.destination);
 
-      osc.start(now + time);
-      osc.stop(now + time + dur);
+      osc.start(now + delay);
+      osc.stop(now + delay + dur);
     });
   }
 }

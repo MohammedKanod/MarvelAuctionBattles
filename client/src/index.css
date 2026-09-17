@@ -137,3 +137,52 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #ffd100;
 }
+
+/* Reference UI: Dot Matrix Carbon Grid */
+.bg-dot-matrix {
+  background-color: #0b0c10;
+  background-image: radial-gradient(#2e1212 1.5px, transparent 1.5px),
+                    radial-gradient(#181920 1.5px, transparent 1.5px);
+  background-size: 16px 16px, 32px 32px;
+  background-position: 0 0, 8px 8px;
+}
+
+/* Reference UI: Skewed Parallelogram Buttons & Badges */
+.skew-parallelogram {
+  transform: skewX(-14deg);
+}
+
+.unskew-content {
+  transform: skewX(14deg);
+}
+
+/* Cinematic Movie Battle: Camera Rumble & Screen Shake */
+@keyframes screenRumble {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  15% { transform: translate(-4px, 2px) rotate(-0.6deg); }
+  30% { transform: translate(4px, -3px) rotate(0.6deg); }
+  45% { transform: translate(-3px, -2px) rotate(-0.4deg); }
+  60% { transform: translate(3px, 2px) rotate(0.4deg); }
+  75% { transform: translate(-2px, 1px) rotate(-0.2deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+.animate-screen-shake {
+  animation: screenRumble 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* Cinematic Kinetic Energy Shockwave */
+@keyframes shockwaveExpand {
+  0% { transform: scale(0.15); opacity: 1; border-width: 6px; }
+  50% { opacity: 0.9; }
+  100% { transform: scale(2.8); opacity: 0; border-width: 1px; }
+}
+
+.animate-shockwave {
+  animation: shockwaveExpand 0.65s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
+}
+
+/* Movie Anamorphic Lens Flare Glow */
+.lens-flare-glow {
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.9) 0%, rgba(220, 38, 38, 0.4) 40%, transparent 70%);
+}
