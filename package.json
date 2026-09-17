@@ -2,11 +2,15 @@
   "name": "marvel-battle-auction",
   "version": "1.0.0",
   "description": "MARVEL BATTLE AUCTION — Real-time multiplayer superhero auction & tournament battle game",
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "scripts": {
     "dev:server": "npm --prefix server run dev",
     "dev:client": "npm --prefix client run dev",
-    "build:server": "npm --prefix server run build",
-    "build:client": "npm --prefix client run build",
+    "build:server": "npm --prefix server install && npm --prefix server run build",
+    "build:client": "npm --prefix client install && npm --prefix client run build",
     "build": "npm run build:server && npm run build:client",
     "start": "npm --prefix server start"
   },
