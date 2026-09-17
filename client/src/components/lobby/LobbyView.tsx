@@ -86,10 +86,10 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
             <button
               onClick={onOpenRoster}
               className="comic-btn bg-black hover:bg-zinc-800 text-comic-yellow border-2 border-comic-yellow px-3 py-2 flex items-center gap-2 shadow-comic-sm"
-              title="Browse all 52 Marvel heroes"
+              title="Browse all 102 Marvel heroes"
             >
               <BookOpen className="w-4 h-4 text-comic-yellow" />
-              <span className="text-xs font-black uppercase">HERO ROSTER (52)</span>
+              <span className="text-xs font-black uppercase">HERO ROSTER (102)</span>
             </button>
           )}
         </div>

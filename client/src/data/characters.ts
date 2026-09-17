@@ -373,7 +373,7 @@ export const MARVEL_CHARACTERS: Character[] = [
     matchupStrengths: ['Terrestrial Monsters', 'Melee Brutes', 'Snipers'],
     matchupWeaknesses: ['Celestial Transmutation', 'High Magic Hexes'],
     imageUrl: '/characters/ikaris.jpg',
-    artwork: 'https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/321-hela.jpg'
+    artwork: '/characters/ikaris.jpg'
   },
   {
     id: 'vision',
@@ -417,7 +417,7 @@ export const MARVEL_CHARACTERS: Character[] = [
     matchupStrengths: ['Emotional Combatants', 'Physical Brawlers'],
     matchupWeaknesses: ['Philosophical Paradigms', 'Chaos Hexes'],
     imageUrl: '/characters/white-vision.jpg',
-    artwork: 'https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/697-vision.jpg'
+    artwork: '/characters/white-vision.jpg'
   },
   {
     id: 'moon-knight',
@@ -615,7 +615,7 @@ export const MARVEL_CHARACTERS: Character[] = [
     matchupStrengths: ['Energy Casters', 'Unskilled Mages'],
     matchupWeaknesses: ['Pure Non-Magical Brute Force', 'Cold Steel Weapons'],
     imageUrl: '/characters/agatha-harkness.jpg',
-    artwork: 'https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/579-scarlet-witch.jpg'
+    artwork: '/characters/agatha-harkness.jpg'
   },
   {
     id: 'ultron',
@@ -681,7 +681,7 @@ export const MARVEL_CHARACTERS: Character[] = [
     matchupStrengths: ['Melee Bruisers', 'Traditional Firearms'],
     matchupWeaknesses: ['Sudden Physical Ambush', 'Vacuum of Outer Space'],
     imageUrl: '/characters/ebony-maw.jpg',
-    artwork: 'https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/655-thanos.jpg'
+    artwork: '/characters/ebony-maw.jpg'
   },
   {
     id: 'red-guardian',
@@ -703,7 +703,7 @@ export const MARVEL_CHARACTERS: Character[] = [
     matchupStrengths: ['Street Fighters', 'Light Assassins'],
     matchupWeaknesses: ['High-tech Blasters', 'Mystic Energy Attacks'],
     imageUrl: '/characters/red-guardian.jpg',
-    artwork: 'https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/149-captain-america.jpg'
+    artwork: '/characters/red-guardian.jpg'
   },
   {
     id: 'magneto',
@@ -1145,6 +1145,2105 @@ export const MARVEL_CHARACTERS: Character[] = [
     matchupWeaknesses: ['Cosmic Beings', 'Energy Cannons'],
     imageUrl: '/characters/blade.jpg',
     artwork: 'https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/112-blade.jpg'
+  }
+,
+  {
+    "id": "mister-fantastic",
+    "name": "Mister Fantastic",
+    "alterEgo": "Reed Richards",
+    "universe": "Earth-616",
+    "role": "Tactician",
+    "rarity": "Legendary",
+    "stats": {
+      "power": 85,
+      "strength": 72,
+      "speed": 70,
+      "durability": 88,
+      "combat": 84,
+      "range": 88,
+      "intelligence": 100
+    },
+    "specialAbilities": [
+      "Elastic Physiology",
+      "Hyper-Genius Intellect",
+      "Ultimate Nullifier Blueprint",
+      "Molecular Compression"
+    ],
+    "description": "Leader of the Fantastic Four whose unmatched scientific intellect and malleable molecular body allow him to contort, stretch, and outthink any threat.",
+    "visuals": {
+      "primaryColor": "#1d4ed8",
+      "accentColor": "#38bdf8",
+      "badgeText": "🧪 STRETCH & SCIENCE",
+      "comicQuote": "There is no problem that cannot be solved."
+    },
+    "tacticalNotes": "Unsurpassed tactical intelligence with extreme physical malleability that absorbs blunt impacts and traps opponents.",
+    "matchupStrengths": [
+      "Pure Brawlers",
+      "Trap Planners",
+      "Robots"
+    ],
+    "matchupWeaknesses": [
+      "Extreme Cold",
+      "High Magic"
+    ],
+    "imageUrl": "/characters/mister-fantastic.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/456-mister-fantastic.jpg"
+  },
+  {
+    "id": "invisible-woman",
+    "name": "Invisible Woman",
+    "alterEgo": "Susan Storm-Richards",
+    "universe": "Earth-616",
+    "role": "Tactician",
+    "rarity": "Legendary",
+    "stats": {
+      "power": 92,
+      "strength": 55,
+      "speed": 75,
+      "durability": 94,
+      "combat": 78,
+      "range": 90,
+      "intelligence": 88
+    },
+    "specialAbilities": [
+      "Force Field Projection",
+      "Total Invisibility",
+      "Internal Psionic Bubble",
+      "Telekinetic Wave"
+    ],
+    "description": "Arguably the most powerful of the Fantastic Four, Sue Storm projects near-indestructible psionic force fields and turns herself and allies totally unseen.",
+    "visuals": {
+      "primaryColor": "#0284c7",
+      "accentColor": "#e0f2fe",
+      "badgeText": "🛡️ IMPENETRABLE AURA",
+      "comicQuote": "You dont know what I can do."
+    },
+    "tacticalNotes": "Highest defensive shielding in the game capable of withstanding nuclear and cosmic blasts while manipulating invisible pressure fields.",
+    "matchupStrengths": [
+      "Blasters",
+      "Explosives",
+      "Assassins"
+    ],
+    "matchupWeaknesses": [
+      "Sensory Tracking",
+      "Matter Disintegration"
+    ],
+    "imageUrl": "/characters/invisible-woman.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/344-invisible-woman.jpg"
+  },
+  {
+    "id": "human-torch",
+    "name": "Human Torch",
+    "alterEgo": "Johnny Storm",
+    "universe": "Earth-616",
+    "role": "Blaster",
+    "rarity": "Epic",
+    "stats": {
+      "power": 90,
+      "strength": 65,
+      "speed": 92,
+      "durability": 75,
+      "combat": 75,
+      "range": 92,
+      "intelligence": 70
+    },
+    "specialAbilities": [
+      "Flame On!",
+      "Supernova Blast",
+      "Plasma Flight",
+      "Thermal Absorption"
+    ],
+    "description": "Hot-headed adventurer who cloaks himself in superheated plasma, flies at supersonic speeds, and unleashes supernova heat waves.",
+    "visuals": {
+      "primaryColor": "#ea580c",
+      "accentColor": "#facc15",
+      "badgeText": "🔥 FLAME ON!",
+      "comicQuote": "FLAME ON!"
+    },
+    "tacticalNotes": "High aerial speed and fiery burst DPS capable of melting heavy armor and engulfing the battlefield in heat.",
+    "matchupStrengths": [
+      "Ice Users",
+      "Armored Tanks",
+      "Slow Foes"
+    ],
+    "matchupWeaknesses": [
+      "Water Manipulation",
+      "Sub-Zero Freezes"
+    ],
+    "imageUrl": "/characters/human-torch.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/333-human-torch.jpg"
+  },
+  {
+    "id": "thing",
+    "name": "The Thing",
+    "alterEgo": "Benjamin Grimm",
+    "universe": "Earth-616",
+    "role": "Tank",
+    "rarity": "Epic",
+    "stats": {
+      "power": 88,
+      "strength": 95,
+      "speed": 65,
+      "durability": 96,
+      "combat": 85,
+      "range": 60,
+      "intelligence": 74
+    },
+    "specialAbilities": [
+      "Clobberin Time!",
+      "Rocky Exoskeleton",
+      "Unstoppable Charge",
+      "Seismic Ground Slam"
+    ],
+    "description": "The idol of millions coated in orange rocky hide, Ben Grimm boasts legendary brawling stamina and world-shattering punch strength.",
+    "visuals": {
+      "primaryColor": "#c2410c",
+      "accentColor": "#fdba74",
+      "badgeText": "🧱 IT'S CLOBBERIN TIME",
+      "comicQuote": "It's clobberin' time!"
+    },
+    "tacticalNotes": "Unyielding granite armor and heavyweight knockout power. Can absorb direct hits from cosmic entities.",
+    "matchupStrengths": [
+      "Brawlers",
+      "Swarm Units",
+      "Energy Shockwaves"
+    ],
+    "matchupWeaknesses": [
+      "Telepaths",
+      "Matter Transmutation"
+    ],
+    "imageUrl": "/characters/thing.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/658-thing.jpg"
+  },
+  {
+    "id": "professor-x",
+    "name": "Professor X",
+    "alterEgo": "Charles Xavier",
+    "universe": "Earth-616",
+    "role": "Tactician",
+    "rarity": "Cosmic",
+    "stats": {
+      "power": 98,
+      "strength": 30,
+      "speed": 50,
+      "durability": 60,
+      "combat": 60,
+      "range": 100,
+      "intelligence": 100
+    },
+    "specialAbilities": [
+      "Omega Telepathy",
+      "Mind Control",
+      "Cerebro Amplification",
+      "Psychic Paralysis"
+    ],
+    "description": "The world's foremost mutant telepath whose supreme mind can freeze armies in their tracks, alter memories, and shut down nervous systems globally.",
+    "visuals": {
+      "primaryColor": "#1e1b4b",
+      "accentColor": "#38bdf8",
+      "badgeText": "🧠 OMEGA TELEPATH",
+      "comicQuote": "To me, my X-Men."
+    },
+    "tacticalNotes": "Unrivaled psionic shutdown. Can incapacitate opponents instantly through neural paralysis if protected from physical rushdown.",
+    "matchupStrengths": [
+      "Bruisers",
+      "Low Willpower",
+      "Giant Brutes"
+    ],
+    "matchupWeaknesses": [
+      "Telepathic Helmets",
+      "Synthetic AI"
+    ],
+    "imageUrl": "/characters/professor-x.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/527-professor-x.jpg"
+  },
+  {
+    "id": "rogue",
+    "name": "Rogue",
+    "alterEgo": "Anna Marie",
+    "universe": "Earth-616",
+    "role": "Striker",
+    "rarity": "Legendary",
+    "stats": {
+      "power": 92,
+      "strength": 90,
+      "speed": 85,
+      "durability": 92,
+      "combat": 86,
+      "range": 70,
+      "intelligence": 75
+    },
+    "specialAbilities": [
+      "Power Absorption",
+      "Life Drain Touch",
+      "Superhuman Flight",
+      "Stolen Invulnerability"
+    ],
+    "description": "Southern powerhouse mutant endowed with Ms. Marvel's flight and strength, plus the devastating ability to siphon the powers, memories, and lifeforce of anyone she touches.",
+    "visuals": {
+      "primaryColor": "#15803d",
+      "accentColor": "#facc15",
+      "badgeText": "🧤 POWER SIPHON",
+      "comicQuote": "You touched the wrong girl, sugar."
+    },
+    "tacticalNotes": "Dangerous hybrid of frontline brute durability and game-changing ability theft against power-reliant enemies.",
+    "matchupStrengths": [
+      "Gods",
+      "Meta-Humans",
+      "Energy Conduit Foes"
+    ],
+    "matchupWeaknesses": [
+      "Inorganic Robots",
+      "Ranged Snipers"
+    ],
+    "imageUrl": "/characters/rogue.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/567-rogue.jpg"
+  },
+  {
+    "id": "gambit",
+    "name": "Gambit",
+    "alterEgo": "Remy LeBeau",
+    "universe": "Earth-616",
+    "role": "Striker",
+    "rarity": "Epic",
+    "stats": {
+      "power": 86,
+      "strength": 72,
+      "speed": 88,
+      "durability": 76,
+      "combat": 92,
+      "range": 85,
+      "intelligence": 80
+    },
+    "specialAbilities": [
+      "Kinetic Card Charging",
+      "Bo Staff Mastery",
+      "Explosive Deck Flurry",
+      "Cajun Agility"
+    ],
+    "description": "Smooth-talking Cajun master thief who converts inanimate matter into charged kinetic explosives, wielding an adamantium bo staff and a deadly deck of cards.",
+    "visuals": {
+      "primaryColor": "#831843",
+      "accentColor": "#f43f5e",
+      "badgeText": "🃏 KINETIC ACE",
+      "comicQuote": "Remember it, mon ami."
+    },
+    "tacticalNotes": "High burst kinetic DPS with exceptional evasion, mid-range explosive poke, and stylish bo staff martial arts.",
+    "matchupStrengths": [
+      "Slow Tanks",
+      "Group Clusters",
+      "Melee Fighters"
+    ],
+    "matchupWeaknesses": [
+      "Energy Absorbers",
+      "Heavy Armor"
+    ],
+    "imageUrl": "/characters/gambit.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/274-gambit.jpg"
+  },
+  {
+    "id": "beast",
+    "name": "Beast",
+    "alterEgo": "Dr. Henry McCoy",
+    "universe": "Earth-616",
+    "role": "Tank",
+    "rarity": "Epic",
+    "stats": {
+      "power": 82,
+      "strength": 86,
+      "speed": 84,
+      "durability": 85,
+      "combat": 88,
+      "range": 60,
+      "intelligence": 96
+    },
+    "specialAbilities": [
+      "Feral Acrobatics",
+      "Biochemical Mastery",
+      "Superhuman Agility",
+      "Prehensile Prowess"
+    ],
+    "description": "Brilliant geneticist and founding X-Man possessing blue fur, razor claws, superhuman ape-like athleticism, and polymath genius.",
+    "visuals": {
+      "primaryColor": "#1e3a8a",
+      "accentColor": "#60a5fa",
+      "badgeText": "🔬 BOUNCING BLUE BEAST",
+      "comicQuote": "Oh, my stars and garters!"
+    },
+    "tacticalNotes": "Combines agile wall-crawling brawling with deep scientific analytical counters against exotic tech and biology.",
+    "matchupStrengths": [
+      "Infiltrators",
+      "Ground Brawlers",
+      "Mutant Tech"
+    ],
+    "matchupWeaknesses": [
+      "Heavy Armor",
+      "Cosmic Beams"
+    ],
+    "imageUrl": "/characters/beast.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/75-beast.jpg"
+  },
+  {
+    "id": "psylocke",
+    "name": "Psylocke",
+    "alterEgo": "Betsy Braddock",
+    "universe": "Earth-616",
+    "role": "Striker",
+    "rarity": "Epic",
+    "stats": {
+      "power": 88,
+      "strength": 65,
+      "speed": 88,
+      "durability": 75,
+      "combat": 96,
+      "range": 82,
+      "intelligence": 82
+    },
+    "specialAbilities": [
+      "Psionic Katana",
+      "Telepathic Illusion",
+      "Shadow Teleportation",
+      "Psychic Butterfly Blast"
+    ],
+    "description": "Lethal ninja assassin wielding the focused totality of her psychic powers into incandescent energy blades that disrupt minds and sever flesh.",
+    "visuals": {
+      "primaryColor": "#581c87",
+      "accentColor": "#c084fc",
+      "badgeText": "🗡️ PSIONIC BLADE",
+      "comicQuote": "The focused totality of my psychic powers."
+    },
+    "tacticalNotes": "Melee telepath who bypasses physical armor by stabbing directly into the psychic consciousness of adversaries.",
+    "matchupStrengths": [
+      "Armored Brutes",
+      "Robots",
+      "Brawlers"
+    ],
+    "matchupWeaknesses": [
+      "Omega Telepaths",
+      "Anti-Magic Forcefields"
+    ],
+    "imageUrl": "/characters/psylocke.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/529-psylocke.jpg"
+  },
+  {
+    "id": "iceman",
+    "name": "Iceman",
+    "alterEgo": "Bobby Drake",
+    "universe": "Earth-616",
+    "role": "Blaster",
+    "rarity": "Legendary",
+    "stats": {
+      "power": 95,
+      "strength": 70,
+      "speed": 84,
+      "durability": 92,
+      "combat": 78,
+      "range": 94,
+      "intelligence": 76
+    },
+    "specialAbilities": [
+      "Absolute Zero Freeze",
+      "Ice Golem Form",
+      "Sub-Zero Vaporize",
+      "Thermal Depletion"
+    ],
+    "description": "Omega-level mutant capable of lowering thermal energy to absolute zero, transforming his body into organic moisture, and creating sprawling ice structures.",
+    "visuals": {
+      "primaryColor": "#0369a1",
+      "accentColor": "#bae6fd",
+      "badgeText": "❄️ ABSOLUTE ZERO",
+      "comicQuote": "Chill out, folks."
+    },
+    "tacticalNotes": "Unstoppable battlefield freeze control. Can reform his entire body from ambient moisture if shattered.",
+    "matchupStrengths": [
+      "Fire Users",
+      "Speedsters",
+      "Brutes"
+    ],
+    "matchupWeaknesses": [
+      "Cosmic Plasma",
+      "Extreme Heat Inundation"
+    ],
+    "imageUrl": "/characters/iceman.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/339-iceman.jpg"
+  },
+  {
+    "id": "emma-frost",
+    "name": "Emma Frost",
+    "alterEgo": "White Queen",
+    "universe": "Earth-616",
+    "role": "Tank",
+    "rarity": "Legendary",
+    "stats": {
+      "power": 93,
+      "strength": 88,
+      "speed": 72,
+      "durability": 95,
+      "combat": 82,
+      "range": 90,
+      "intelligence": 94
+    },
+    "specialAbilities": [
+      "Diamond Form Invulnerability",
+      "Omega Telepathy",
+      "Psychic Scalpel",
+      "Mind Wipe"
+    ],
+    "description": "The aristocratic White Queen possessing two lethal mutations: world-class telepathic manipulation and an impervious organic diamond secondary form.",
+    "visuals": {
+      "primaryColor": "#334155",
+      "accentColor": "#f8fafc",
+      "badgeText": "💎 WHITE QUEEN",
+      "comicQuote": "I am a diamond, darling."
+    },
+    "tacticalNotes": "Can switch seamlessly between mental domination at range and unbreakable physical diamond durability in melee.",
+    "matchupStrengths": [
+      "Physical Brawlers",
+      "Psychic Beginners",
+      "Tech Guns"
+    ],
+    "matchupWeaknesses": [
+      "Cosmic Reality Warpers",
+      "Extreme Diamond Flaws"
+    ],
+    "imageUrl": "/characters/emma-frost.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/241-emma-frost.jpg"
+  },
+  {
+    "id": "mystique",
+    "name": "Mystique",
+    "alterEgo": "Raven Darkhölme",
+    "universe": "Earth-616",
+    "role": "Striker",
+    "rarity": "Epic",
+    "stats": {
+      "power": 80,
+      "strength": 68,
+      "speed": 86,
+      "durability": 78,
+      "combat": 95,
+      "range": 75,
+      "intelligence": 92
+    },
+    "specialAbilities": [
+      "Cellular Metamorphosis",
+      "Martial Arts Mastery",
+      "Infiltration Decoy",
+      "Deadly Aim"
+    ],
+    "description": "Blue-skinned mutant shapeshifter capable of duplicating any human form, voice, and biometric signature with flawless tactical lethality.",
+    "visuals": {
+      "primaryColor": "#1e3a8a",
+      "accentColor": "#ef4444",
+      "badgeText": "🎭 SHAPESHIFTER",
+      "comicQuote": "Mutant and proud."
+    },
+    "tacticalNotes": "Deceptive assassin that sows confusion, bypasses security, and strikes lethal nerve clusters when guards drop.",
+    "matchupStrengths": [
+      "Commanders",
+      "Standard Soldiers",
+      "Rely on Sight"
+    ],
+    "matchupWeaknesses": [
+      "Scent Trackers",
+      "Omega Telepaths"
+    ],
+    "imageUrl": "/characters/mystique.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/480-mystique.jpg"
+  },
+  {
+    "id": "juggernaut",
+    "name": "Juggernaut",
+    "alterEgo": "Cain Marko",
+    "universe": "Earth-616",
+    "role": "Tank",
+    "rarity": "Legendary",
+    "stats": {
+      "power": 94,
+      "strength": 98,
+      "speed": 78,
+      "durability": 99,
+      "combat": 84,
+      "range": 55,
+      "intelligence": 65
+    },
+    "specialAbilities": [
+      "Unstoppable Momentum",
+      "Crimson Cyttorak Shield",
+      "Avalanche Slam",
+      "Immunity to Telepathy"
+    ],
+    "description": "Empowered by the mystical Crimson Gem of Cyttorak, the Juggernaut is an unstoppable kinetic juggernaut whose forward march cannot be halted by any physical force.",
+    "visuals": {
+      "primaryColor": "#7c2d12",
+      "accentColor": "#ea580c",
+      "badgeText": "🛑 UNSTOPPABLE FORCE",
+      "comicQuote": "I'm the Juggernaut, b***h!"
+    },
+    "tacticalNotes": "Absolute peak physical durability with momentum that breaks mountains and shields that ignore telepathy while wearing his helm.",
+    "matchupStrengths": [
+      "Physical Tanks",
+      "Energy Walls",
+      "Melee Teams"
+    ],
+    "matchupWeaknesses": [
+      "Removing Helmet",
+      "Dimensional Banishment"
+    ],
+    "imageUrl": "/characters/juggernaut.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/374-juggernaut.jpg"
+  },
+  {
+    "id": "sabretooth",
+    "name": "Sabretooth",
+    "alterEgo": "Victor Creed",
+    "universe": "Earth-616",
+    "role": "Tank",
+    "rarity": "Epic",
+    "stats": {
+      "power": 86,
+      "strength": 88,
+      "speed": 86,
+      "durability": 92,
+      "combat": 92,
+      "range": 50,
+      "intelligence": 72
+    },
+    "specialAbilities": [
+      "Apex Predator Senses",
+      "Regenerative Healing Factor",
+      "Adamantium Claws",
+      "Primal Savagery"
+    ],
+    "description": "Brutal predatory mutant warrior and eternal arch-nemesis of Wolverine, gifted with vicious animalistic fury, healing factor, and razor fangs.",
+    "visuals": {
+      "primaryColor": "#78350f",
+      "accentColor": "#f59e0b",
+      "badgeText": "🐯 APEX PREDATOR",
+      "comicQuote": "Nobody hurts you except me, runt."
+    },
+    "tacticalNotes": "Relentless feral brawler with accelerated healing that grinds opponents down through sheer bleeding brutality.",
+    "matchupStrengths": [
+      "Humanoid Fighters",
+      "Infiltrators",
+      "Close Combatants"
+    ],
+    "matchupWeaknesses": [
+      "Flying Blasters",
+      "Heavy Energy Cannons"
+    ],
+    "imageUrl": "/characters/sabretooth.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/570-sabretooth.jpg"
+  },
+  {
+    "id": "apocalypse",
+    "name": "Apocalypse",
+    "alterEgo": "En Sabah Nur",
+    "universe": "Earth-616",
+    "role": "Tank",
+    "rarity": "Cosmic",
+    "stats": {
+      "power": 98,
+      "strength": 96,
+      "speed": 82,
+      "durability": 98,
+      "combat": 94,
+      "range": 95,
+      "intelligence": 98
+    },
+    "specialAbilities": [
+      "Celestial Techno-Morphing",
+      "Matter Telekinesis",
+      "Survival of the Fittest",
+      "Apocalyptic Energy Beam"
+    ],
+    "description": "The ancient Egyptian mutant conqueror enhanced by Celestial technology, ruling with the immortal doctrine of the survival of the fittest.",
+    "visuals": {
+      "primaryColor": "#1e1b4b",
+      "accentColor": "#38bdf8",
+      "badgeText": "👑 FIRST MUTANT",
+      "comicQuote": "I am the rocks of the eternal shore."
+    },
+    "tacticalNotes": "Near-immortal celestial biology paired with molecular self-reshaping and devastating apocalyptic energy discharge.",
+    "matchupStrengths": [
+      "Standard Mutants",
+      "Tech Armor",
+      "Street Level"
+    ],
+    "matchupWeaknesses": [
+      "Celestial Weapons",
+      "Phoenix Force"
+    ],
+    "imageUrl": "/characters/apocalypse.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/35-apocalypse.jpg"
+  },
+  {
+    "id": "bishop",
+    "name": "Bishop",
+    "alterEgo": "Lucas Bishop",
+    "universe": "Earth-616",
+    "role": "Blaster",
+    "rarity": "Epic",
+    "stats": {
+      "power": 88,
+      "strength": 80,
+      "speed": 78,
+      "durability": 86,
+      "combat": 90,
+      "range": 90,
+      "intelligence": 82
+    },
+    "specialAbilities": [
+      "Energy Absorption & Redirection",
+      "Concussive Discharge",
+      "Futuristic Firearms",
+      "Temporal Tracker"
+    ],
+    "description": "Time-displaced mutant police officer from a dystopian future who absorbs all forms of kinetic and radiant energy and blasts it back twofold.",
+    "visuals": {
+      "primaryColor": "#831843",
+      "accentColor": "#dc2626",
+      "badgeText": "⚡ ENERGY REDIRECT",
+      "comicQuote": "Hit me with your best shot!"
+    },
+    "tacticalNotes": "Punishes energy blasters hard by drinking their lasers, plasma, and lightning to supercharge his own concussive counter-bursts.",
+    "matchupStrengths": [
+      "Energy Blasters",
+      "Lightning Casters",
+      "Plasma Guns"
+    ],
+    "matchupWeaknesses": [
+      "Physical Chokeholds",
+      "Poison Gas"
+    ],
+    "imageUrl": "/characters/bishop.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/92-bishop.jpg"
+  },
+  {
+    "id": "x-23",
+    "name": "X-23",
+    "alterEgo": "Laura Kinney",
+    "universe": "Earth-616",
+    "role": "Striker",
+    "rarity": "Legendary",
+    "stats": {
+      "power": 89,
+      "strength": 80,
+      "speed": 92,
+      "durability": 90,
+      "combat": 97,
+      "range": 50,
+      "intelligence": 82
+    },
+    "specialAbilities": [
+      "Adamantium Foot & Hand Claws",
+      "Hyper-Accelerated Healing",
+      "Trigger Scent Frenzy",
+      "Stealth Execution"
+    ],
+    "description": "The genetic daughter of Logan possessing adamantium foot and hand claws, supersonic acrobatic speed, and Wolverine's lethal combat pedigree.",
+    "visuals": {
+      "primaryColor": "#0f172a",
+      "accentColor": "#fbbf24",
+      "badgeText": "🐾 TALONED SHADOW",
+      "comicQuote": "I'm not a weapon. I'm Laura."
+    },
+    "tacticalNotes": "Faster and more agile than Wolverine, utilizing unexpected foot claw kicks to puncture heavy armor in close combat.",
+    "matchupStrengths": [
+      "Humanoid Brutes",
+      "Shield Users",
+      "Assassins"
+    ],
+    "matchupWeaknesses": [
+      "Telekinesis",
+      "Flying Snipers"
+    ],
+    "imageUrl": "/characters/x-23.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/723-x-23.jpg"
+  },
+  {
+    "id": "jubilee",
+    "name": "Jubilee",
+    "alterEgo": "Jubilation Lee",
+    "universe": "Earth-616",
+    "role": "Blaster",
+    "rarity": "Rare",
+    "stats": {
+      "power": 80,
+      "strength": 52,
+      "speed": 78,
+      "durability": 68,
+      "combat": 76,
+      "range": 84,
+      "intelligence": 74
+    },
+    "specialAbilities": [
+      "Pyrotechnic Plasma Plasmoids",
+      "Sub-Atomic Fireworks",
+      "Energy Detonation",
+      "Acrobatic Evasion"
+    ],
+    "description": "Mall-rat turned mutant heroine who generates multi-colored globules of explosive plasma energy resembling dazzling destructive fireworks.",
+    "visuals": {
+      "primaryColor": "#eab308",
+      "accentColor": "#ec4899",
+      "badgeText": "🎆 FIREWORK FRENZY",
+      "comicQuote": "Does a mall babe eat chili fries?"
+    },
+    "tacticalNotes": "High blinding crowd control with plasma detonation that disorients and disrupts enemy precision aim.",
+    "matchupStrengths": [
+      "Swarm Units",
+      "Stealth Fighters",
+      "Sight-Reliant Foes"
+    ],
+    "matchupWeaknesses": [
+      "Heavy Armor",
+      "Vacuum Entities"
+    ],
+    "imageUrl": "/characters/jubilee.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/372-jubilee.jpg"
+  },
+  {
+    "id": "banshee",
+    "name": "Banshee",
+    "alterEgo": "Sean Cassidy",
+    "universe": "Earth-616",
+    "role": "Blaster",
+    "rarity": "Epic",
+    "stats": {
+      "power": 85,
+      "strength": 62,
+      "speed": 82,
+      "durability": 74,
+      "combat": 80,
+      "range": 92,
+      "intelligence": 80
+    },
+    "specialAbilities": [
+      "Sonic Scream",
+      "Flight Propulsion",
+      "Echolocation Pulse",
+      "Auditory Liquefaction"
+    ],
+    "description": "Former Interpol inspector and veteran X-Man endowed with a mutant acoustic scream capable of shattering reinforced steel and propelling him through the air.",
+    "visuals": {
+      "primaryColor": "#15803d",
+      "accentColor": "#facc15",
+      "badgeText": "📢 SONIC SCREAM",
+      "comicQuote": "Top of the morning to ye!"
+    },
+    "tacticalNotes": "Devastating sonic shockwaves that bypass physical shielding to cause concussive brain shock and liquefy defenses.",
+    "matchupStrengths": [
+      "Glass/Crystal Users",
+      "Symbiotes",
+      "Sensory Trackers"
+    ],
+    "matchupWeaknesses": [
+      "Sound Dampeners",
+      "Vacuum Battles"
+    ],
+    "imageUrl": "/characters/banshee.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/61-banshee.jpg"
+  },
+  {
+    "id": "shadowcat",
+    "name": "Shadowcat",
+    "alterEgo": "Kitty Pryde",
+    "universe": "Earth-616",
+    "role": "Striker",
+    "rarity": "Epic",
+    "stats": {
+      "power": 84,
+      "strength": 55,
+      "speed": 82,
+      "durability": 88,
+      "combat": 90,
+      "range": 55,
+      "intelligence": 88
+    },
+    "specialAbilities": [
+      "Quantum Phasing",
+      "Electronics Disruption",
+      "Lockheed Dragon Companion",
+      "Intangible Riposte"
+    ],
+    "description": "Beloved mutant prodigy who can phase her atoms through solid matter, short-circuit high tech, and avoid every physical attack effortlessly.",
+    "visuals": {
+      "primaryColor": "#475569",
+      "accentColor": "#f59e0b",
+      "badgeText": "👻 QUANTUM PHASE",
+      "comicQuote": "Professor Xavier is a jerk!"
+    },
+    "tacticalNotes": "Impervious to physical and energy strikes while phasing. Can slip inside enemy power armor to disable circuits instantly.",
+    "matchupStrengths": [
+      "Heavy Armor",
+      "Robots",
+      "Melee Tanks"
+    ],
+    "matchupWeaknesses": [
+      "Energy Disrupters",
+      "Mystic Magic"
+    ],
+    "imageUrl": "/characters/shadowcat.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/586-shadowcat.jpg"
+  },
+  {
+    "id": "spider-gwen",
+    "name": "Spider-Gwen",
+    "alterEgo": "Gwen Stacy",
+    "universe": "Earth-65",
+    "role": "Striker",
+    "rarity": "Legendary",
+    "stats": {
+      "power": 87,
+      "strength": 82,
+      "speed": 96,
+      "durability": 80,
+      "combat": 90,
+      "range": 82,
+      "intelligence": 84
+    },
+    "specialAbilities": [
+      "Spider-Sense Instincts",
+      "Venom Symbiote Reflexes",
+      "Web Slinging Flurry",
+      "Dimensional Web-Watch"
+    ],
+    "description": "Drummer, hero, and multiverse icon from Earth-65 who spins radioactive spider silk and outmaneuvers danger with flawless rhythm.",
+    "visuals": {
+      "primaryColor": "#0f172a",
+      "accentColor": "#f43f5e",
+      "badgeText": "🕷️ GHOST-SPIDER",
+      "comicQuote": "Where I come from, the mask is about freedom."
+    },
+    "tacticalNotes": "Phenomenal evasive speed and aerial web traps that allow her to dance circles around sluggish bruisers.",
+    "matchupStrengths": [
+      "Sluggish Brawlers",
+      "Snipers",
+      "Trap Planners"
+    ],
+    "matchupWeaknesses": [
+      "Area Sonic Blasts",
+      "Wide Energy Webs"
+    ],
+    "imageUrl": "/characters/spider-gwen.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/619-spider-gwen.jpg"
+  },
+  {
+    "id": "carnage",
+    "name": "Carnage",
+    "alterEgo": "Cletus Kasady",
+    "universe": "Earth-616",
+    "role": "Tank",
+    "rarity": "Legendary",
+    "stats": {
+      "power": 94,
+      "strength": 93,
+      "speed": 90,
+      "durability": 92,
+      "combat": 90,
+      "range": 85,
+      "intelligence": 72
+    },
+    "specialAbilities": [
+      "Symbiotic Tendril Web",
+      "Lethal Weapon Morphing",
+      "Bloodlust Frenzy",
+      "Wall Crawling Slash"
+    ],
+    "description": "Psychopathic serial killer bonded with the spawn of the Venom symbiote, forming a crimson killing machine capable of morphing bladed weapons at will.",
+    "visuals": {
+      "primaryColor": "#991b1b",
+      "accentColor": "#ef4444",
+      "badgeText": "🩸 PURE CHAOS",
+      "comicQuote": "Let there be Carnage!"
+    },
+    "tacticalNotes": "Unrestrained bloodthirsty aggression with regenerative symbiote armor and weapon-morphing tentacles.",
+    "matchupStrengths": [
+      "Street Level",
+      "Swarm Units",
+      "Standard Soldiers"
+    ],
+    "matchupWeaknesses": [
+      "High Heat",
+      "Sonic Disruptors"
+    ],
+    "imageUrl": "/characters/carnage.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/162-carnage.jpg"
+  },
+  {
+    "id": "doctor-octopus",
+    "name": "Doctor Octopus",
+    "alterEgo": "Otto Octavius",
+    "universe": "Earth-616",
+    "role": "Tactician",
+    "rarity": "Epic",
+    "stats": {
+      "power": 88,
+      "strength": 88,
+      "speed": 78,
+      "durability": 86,
+      "combat": 88,
+      "range": 88,
+      "intelligence": 98
+    },
+    "specialAbilities": [
+      "Adamantium Tentacle Array",
+      "Multitasking Combat AI",
+      "Seismic Wall Climb",
+      "Nuclear Physics Genius"
+    ],
+    "description": "Master scientist controlling four telepathically coordinated titanium-steel mechanical tentacles that move with blinding speed and crush steel.",
+    "visuals": {
+      "primaryColor": "#14532d",
+      "accentColor": "#f97316",
+      "badgeText": "🐙 MASTER PLANNER",
+      "comicQuote": "The power of the sun, in the palm of my hand."
+    },
+    "tacticalNotes": "Controls the distance with four hyper-strong mechanical limbs capable of parrying strikes and tossing heavy vehicles.",
+    "matchupStrengths": [
+      "Spider Heroes",
+      "Brawlers",
+      "Single Target Foes"
+    ],
+    "matchupWeaknesses": [
+      "EMP Bursts",
+      "Speedsters"
+    ],
+    "imageUrl": "/characters/doctor-octopus.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/225-doctor-octopus.jpg"
+  },
+  {
+    "id": "mysterio",
+    "name": "Mysterio",
+    "alterEgo": "Quentin Beck",
+    "universe": "Earth-616",
+    "role": "Tactician",
+    "rarity": "Epic",
+    "stats": {
+      "power": 84,
+      "strength": 55,
+      "speed": 70,
+      "durability": 72,
+      "combat": 78,
+      "range": 92,
+      "intelligence": 92
+    },
+    "specialAbilities": [
+      "Holographic Hypnosis",
+      "Neurotoxin Smoke Screen",
+      "Drone Swarm Illusions",
+      "Mirror Reality Deception"
+    ],
+    "description": "Special effects illusionist extraordinaire who weaponizes hallucinogenic smoke, robotic drones, and holographic mirages to drive foes mad.",
+    "visuals": {
+      "primaryColor": "#064e3b",
+      "accentColor": "#a855f7",
+      "badgeText": "🔮 MASTER ILLUSIONIST",
+      "comicQuote": "Now that's an illusion!"
+    },
+    "tacticalNotes": "Feeds false sensory data to opponents, forcing them to attack ghosts while hidden drones strike vital weak points.",
+    "matchupStrengths": [
+      "Pure Brawlers",
+      "Visual Combatants",
+      "Unwary Heroes"
+    ],
+    "matchupWeaknesses": [
+      "Spider-Sense",
+      "Blind Daredevil Instincts"
+    ],
+    "imageUrl": "/characters/mysterio.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/479-mysterio.jpg"
+  },
+  {
+    "id": "sandman",
+    "name": "Sandman",
+    "alterEgo": "Flint Marko",
+    "universe": "Earth-616",
+    "role": "Tank",
+    "rarity": "Epic",
+    "stats": {
+      "power": 88,
+      "strength": 90,
+      "speed": 70,
+      "durability": 95,
+      "combat": 80,
+      "range": 86,
+      "intelligence": 68
+    },
+    "specialAbilities": [
+      "Density Shifting Sandform",
+      "Giant Sand Hammer",
+      "Sandstorm Suffocation",
+      "Elemental Reformation"
+    ],
+    "description": "Criminal whose body was transformed into living granular sand, granting him complete molecular shape-shifting, size expansion, and density control.",
+    "visuals": {
+      "primaryColor": "#78350f",
+      "accentColor": "#fde047",
+      "badgeText": "⏳ LIVING QUICKSAND",
+      "comicQuote": "I'm not a bad person. Just had bad luck."
+    },
+    "tacticalNotes": "Conventional punches pass harmlessly through his sandform. Can grow into a towering sand titan to crush battlegrounds.",
+    "matchupStrengths": [
+      "Physical Strikers",
+      "Bullets",
+      "Piercing Weapons"
+    ],
+    "matchupWeaknesses": [
+      "Water Floods",
+      "Extreme Superheat Glassing"
+    ],
+    "imageUrl": "/characters/sandman.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/572-sandman.jpg"
+  },
+  {
+    "id": "kraven-the-hunter",
+    "name": "Kraven the Hunter",
+    "alterEgo": "Sergei Kravinoff",
+    "universe": "Earth-616",
+    "role": "Striker",
+    "rarity": "Epic",
+    "stats": {
+      "power": 85,
+      "strength": 82,
+      "speed": 86,
+      "durability": 84,
+      "combat": 95,
+      "range": 75,
+      "intelligence": 86
+    },
+    "specialAbilities": [
+      "Calypso Elixir Vitality",
+      "Master Tracker Traps",
+      "Spear & Knife CQC",
+      "Nerve Strike Takedown"
+    ],
+    "description": "The world's greatest big-game hunter enhanced by mystical jungle potions that bestow superhuman strength, feline agility, and predatory instinct.",
+    "visuals": {
+      "primaryColor": "#7c2d12",
+      "accentColor": "#eab308",
+      "badgeText": "🏹 APEX HUNTER",
+      "comicQuote": "Kraven does not hunt. Kraven claims."
+    },
+    "tacticalNotes": "Patient tracker who analyzes prey weaknesses, lays paralyzing traps, and strikes with fatal nerve precision.",
+    "matchupStrengths": [
+      "Beasts",
+      "Feral Mutants",
+      "Spider Heroes"
+    ],
+    "matchupWeaknesses": [
+      "Cosmic Beings",
+      "Heavy Armor Titans"
+    ],
+    "imageUrl": "/characters/kraven-the-hunter.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/395-kraven-the-hunter.jpg"
+  },
+  {
+    "id": "kingpin",
+    "name": "Kingpin",
+    "alterEgo": "Wilson Fisk",
+    "universe": "Earth-616",
+    "role": "Tank",
+    "rarity": "Epic",
+    "stats": {
+      "power": 82,
+      "strength": 88,
+      "speed": 68,
+      "durability": 90,
+      "combat": 94,
+      "range": 50,
+      "intelligence": 94
+    },
+    "specialAbilities": [
+      "Brutal Underworld Brawling",
+      "Solid Muscle Mass",
+      "Obliterator Cane Laser",
+      "Criminal Syndicate Ambush"
+    ],
+    "description": "Ruthless undisputed crimelord of New York City disguised beneath heavy suits as pure solid muscle with savage bare-knuckle wrestling dominance.",
+    "visuals": {
+      "primaryColor": "#1e293b",
+      "accentColor": "#cbd5e1",
+      "badgeText": "🕶️ CRIME OVERLORD",
+      "comicQuote": "I am the city."
+    },
+    "tacticalNotes": "Massive crushing grip and bone-shattering bear hugs that overpower street vigilantes in tight quarters.",
+    "matchupStrengths": [
+      "Street Vigilantes",
+      "Assassins",
+      "Melee Scrappers"
+    ],
+    "matchupWeaknesses": [
+      "Superhuman Speed",
+      "Cosmic Firepower"
+    ],
+    "imageUrl": "/characters/kingpin.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/391-kingpin.jpg"
+  },
+  {
+    "id": "bullseye",
+    "name": "Bullseye",
+    "alterEgo": "Lester",
+    "universe": "Earth-616",
+    "role": "Striker",
+    "rarity": "Epic",
+    "stats": {
+      "power": 83,
+      "strength": 70,
+      "speed": 84,
+      "durability": 78,
+      "combat": 96,
+      "range": 98,
+      "intelligence": 82
+    },
+    "specialAbilities": [
+      "Flawless Lethal Accuracy",
+      "Adamantium-Laced Skeleton",
+      "Improvised Shuriken Throw",
+      "Mercenary Lethality"
+    ],
+    "description": "Psychopathic contract assassin who never misses, turning toothpicks, cards, paperclips, and shurikens into lethal armor-piercing projectiles.",
+    "visuals": {
+      "primaryColor": "#0f172a",
+      "accentColor": "#38bdf8",
+      "badgeText": "🎯 NEVER MISSES",
+      "comicQuote": "I never miss."
+    },
+    "tacticalNotes": "Unmatched ranged pinpoint accuracy. Can ricochet lethal projectiles around corners to strike vital targets.",
+    "matchupStrengths": [
+      "Glass Cannons",
+      "Unarmored Heroes",
+      "Long Distance"
+    ],
+    "matchupWeaknesses": [
+      "Force Fields",
+      "Regenerative Tanks"
+    ],
+    "imageUrl": "/characters/bullseye.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/141-bullseye.jpg"
+  },
+  {
+    "id": "lizard",
+    "name": "The Lizard",
+    "alterEgo": "Dr. Curtis Connors",
+    "universe": "Earth-616",
+    "role": "Tank",
+    "rarity": "Epic",
+    "stats": {
+      "power": 86,
+      "strength": 90,
+      "speed": 84,
+      "durability": 90,
+      "combat": 84,
+      "range": 60,
+      "intelligence": 88
+    },
+    "specialAbilities": [
+      "Reptilian Regeneration",
+      "Prehensile Tail Strike",
+      "Predator Claws",
+      "Cold-Blooded Ferocity"
+    ],
+    "description": "Tragic biologist mutated by reptilian DNA serum into a ferocious, scaly apex carnivore with regenerative limbs and primal strength.",
+    "visuals": {
+      "primaryColor": "#14532d",
+      "accentColor": "#22c55e",
+      "badgeText": "🦎 COLD-BLOODED TERROR",
+      "comicQuote": "The mammal era is over!"
+    },
+    "tacticalNotes": "Savage close-range brawler with rapid limb regrowth and a whip-like tail that knocks foes off balance.",
+    "matchupStrengths": [
+      "Standard Humans",
+      "Infiltrators",
+      "Bruisers"
+    ],
+    "matchupWeaknesses": [
+      "Extreme Cold",
+      "Sonic Disruptors"
+    ],
+    "imageUrl": "/characters/lizard.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/412-lizard.jpg"
+  },
+  {
+    "id": "rhino",
+    "name": "Rhino",
+    "alterEgo": "Aleksei Sytsevich",
+    "universe": "Earth-616",
+    "role": "Tank",
+    "rarity": "Epic",
+    "stats": {
+      "power": 87,
+      "strength": 94,
+      "speed": 76,
+      "durability": 95,
+      "combat": 78,
+      "range": 50,
+      "intelligence": 60
+    },
+    "specialAbilities": [
+      "Polymer Rhino Armor",
+      "Gore Horn Charge",
+      "Earthquake Stomp",
+      "Unstoppable Momentum"
+    ],
+    "description": "Soviet mob enforcer permanently grafted into a thick, nearly impenetrable polymer rhino suit, bulldozing through banks and concrete skyscrapers.",
+    "visuals": {
+      "primaryColor": "#475569",
+      "accentColor": "#94a3b8",
+      "badgeText": "🦏 BULLETPROOF JUGGERNAUT",
+      "comicQuote": "Nothing stops the Rhino!"
+    },
+    "tacticalNotes": "Devastating linear ramming speed that demolishes barriers and crushes combatants into paste.",
+    "matchupStrengths": [
+      "Unarmored Fighters",
+      "Light Tanks",
+      "Brawlers"
+    ],
+    "matchupWeaknesses": [
+      "Acrobatic Trappers",
+      "Mind Controllers"
+    ],
+    "imageUrl": "/characters/rhino.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/556-rhino.jpg"
+  },
+  {
+    "id": "vulture",
+    "name": "Vulture",
+    "alterEgo": "Adrian Toomes",
+    "universe": "Earth-616",
+    "role": "Striker",
+    "rarity": "Rare",
+    "stats": {
+      "power": 80,
+      "strength": 68,
+      "speed": 90,
+      "durability": 76,
+      "combat": 78,
+      "range": 85,
+      "intelligence": 88
+    },
+    "specialAbilities": [
+      "Electromagnetic Flight Harness",
+      "Razor-Sharp Wing Blades",
+      "Divebomb Talons",
+      "Scavenger Aerial Ambush"
+    ],
+    "description": "Ingenious electronic engineer who built an electromagnetic flight suit with razor-sharp wings, terrorizing skies with predatory aerial ambushes.",
+    "visuals": {
+      "primaryColor": "#14532d",
+      "accentColor": "#84cc16",
+      "badgeText": "🦅 AERIAL SCAVENGER",
+      "comicQuote": "The world's changing, boy. Time we change too."
+    },
+    "tacticalNotes": "Uses verticality and high-speed divebombs to hit and run before grounded combatants can react.",
+    "matchupStrengths": [
+      "Grounded Tanks",
+      "Slow Brawlers"
+    ],
+    "matchupWeaknesses": [
+      "Web Trappers",
+      "Homing Missiles"
+    ],
+    "imageUrl": "/characters/vulture.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/701-vulture.jpg"
+  },
+  {
+    "id": "black-cat",
+    "name": "Black Cat",
+    "alterEgo": "Felicia Hardy",
+    "universe": "Earth-616",
+    "role": "Striker",
+    "rarity": "Rare",
+    "stats": {
+      "power": 78,
+      "strength": 65,
+      "speed": 88,
+      "durability": 72,
+      "combat": 88,
+      "range": 70,
+      "intelligence": 84
+    },
+    "specialAbilities": [
+      "Bad Luck Probability Hex",
+      "Cat Burglar Agility",
+      "Grappling Claw Mastery",
+      "Acrobatic Counter"
+    ],
+    "description": "Glamorous master cat burglar blessed with the subconscious ability to project bad luck onto her adversaries during high-stakes heists.",
+    "visuals": {
+      "primaryColor": "#0f172a",
+      "accentColor": "#f1f5f9",
+      "badgeText": "🐾 BAD LUCK JINX",
+      "comicQuote": "You know you're unlucky when I cross your path."
+    },
+    "tacticalNotes": "Forces enemy weapons to misfire, gadgets to jam, and footing to slip while she maneuvers for a decisive coup de grace.",
+    "matchupStrengths": [
+      "Precision Shooters",
+      "Complex Tech",
+      "Single Duelists"
+    ],
+    "matchupWeaknesses": [
+      "Giant Monsters",
+      "Area AoE Blasters"
+    ],
+    "imageUrl": "/characters/black-cat.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/99-black-cat.jpg"
+  },
+  {
+    "id": "silk",
+    "name": "Silk",
+    "alterEgo": "Cindy Moon",
+    "universe": "Earth-616",
+    "role": "Striker",
+    "rarity": "Epic",
+    "stats": {
+      "power": 86,
+      "strength": 80,
+      "speed": 96,
+      "durability": 78,
+      "combat": 88,
+      "range": 84,
+      "intelligence": 82
+    },
+    "specialAbilities": [
+      "Hyper-Attuned Silk-Sense",
+      "Organic Spinneret Weaving",
+      "Barbed Web Claws",
+      "Supersonic Reflexes"
+    ],
+    "description": "Bitten by the very same radioactive spider as Peter Parker, Cindy Moon possesses an even faster spider-sense and organic silk spinning from her fingertips.",
+    "visuals": {
+      "primaryColor": "#1e1b4b",
+      "accentColor": "#38bdf8",
+      "badgeText": "🕸️ SILK SPINNER",
+      "comicQuote": "My spider-sense feels everything."
+    },
+    "tacticalNotes": "Unrivaled early-warning threat detection and instant organic cocoon traps that paralyze speedsters.",
+    "matchupStrengths": [
+      "Sneak Attacks",
+      "Speedsters",
+      "Trap Makers"
+    ],
+    "matchupWeaknesses": [
+      "Sonic Explosions",
+      "Heavy Armor Brawlers"
+    ],
+    "imageUrl": "/characters/silk.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/595-silk.jpg"
+  },
+  {
+    "id": "galactus",
+    "name": "Galactus",
+    "alterEgo": "Galan of Taa",
+    "universe": "Earth-616",
+    "role": "Blaster",
+    "rarity": "Cosmic",
+    "stats": {
+      "power": 100,
+      "strength": 100,
+      "speed": 95,
+      "durability": 100,
+      "combat": 95,
+      "range": 100,
+      "intelligence": 100
+    },
+    "specialAbilities": [
+      "Power Cosmic Incarnate",
+      "Planetary Energy Consumption",
+      "Herald Bestowal",
+      "Dimensional Obliteration"
+    ],
+    "description": "The ancient Devourer of Worlds, a cosmic force of nature standing between creation and oblivion whose hunger consumes entire civilizations.",
+    "visuals": {
+      "primaryColor": "#581c87",
+      "accentColor": "#ec4899",
+      "badgeText": "🌌 DEVOURER OF WORLDS",
+      "comicQuote": "I hunger!"
+    },
+    "tacticalNotes": "Absolute ultimate endgame titan with universe-rending Power Cosmic blasts and unassailable durability.",
+    "matchupStrengths": [
+      "Planetary Beings",
+      "Mortal Heroes",
+      "Armies"
+    ],
+    "matchupWeaknesses": [
+      "Ultimate Nullifier",
+      "Starvation"
+    ],
+    "imageUrl": "/characters/galactus.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/273-galactus.jpg"
+  },
+  {
+    "id": "warlock",
+    "name": "Adam Warlock",
+    "alterEgo": "Him",
+    "universe": "Earth-616",
+    "role": "Sorcerer",
+    "rarity": "Cosmic",
+    "stats": {
+      "power": 96,
+      "strength": 92,
+      "speed": 94,
+      "durability": 95,
+      "combat": 92,
+      "range": 95,
+      "intelligence": 94
+    },
+    "specialAbilities": [
+      "Quantum Magic Channeling",
+      "Karmic Blast",
+      "Cocoon Rebirth Regeneration",
+      "Soul Gem Synchronization"
+    ],
+    "description": "The genetically engineered pinnacle of human evolution, champion of cosmic balance, and master of quantum magic and soul sovereignty.",
+    "visuals": {
+      "primaryColor": "#b45309",
+      "accentColor": "#fde047",
+      "badgeText": "✨ COSMIC AVATAR",
+      "comicQuote": "I am the avatar of life."
+    },
+    "tacticalNotes": "Balances heavy quantum energy strikes with miraculous cocoon resurrection if mortally wounded.",
+    "matchupStrengths": [
+      "Cosmic Conquerors",
+      "Soul Manipulators",
+      "Dark Magic"
+    ],
+    "matchupWeaknesses": [
+      "Emotional Instability",
+      "Magus Persona"
+    ],
+    "imageUrl": "/characters/warlock.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/705-warlock.jpg"
+  },
+  {
+    "id": "dormammu",
+    "name": "Dormammu",
+    "alterEgo": "Lord of the Dark Dimension",
+    "universe": "Earth-616",
+    "role": "Sorcerer",
+    "rarity": "Cosmic",
+    "stats": {
+      "power": 99,
+      "strength": 95,
+      "speed": 88,
+      "durability": 99,
+      "combat": 92,
+      "range": 100,
+      "intelligence": 98
+    },
+    "specialAbilities": [
+      "Fumes of the Dark Dimension",
+      "Hellfire Pyrokinesis",
+      "Reality Distortion Field",
+      "Astral Annihilation"
+    ],
+    "description": "Supreme primordial conqueror and eternal ruler of the Dark Dimension, burning with pure apocalyptic mystic hellfire.",
+    "visuals": {
+      "primaryColor": "#7f1d1d",
+      "accentColor": "#f97316",
+      "badgeText": "🔥 DARK DIMENSION TYRANT",
+      "comicQuote": "Your world is now my world!"
+    },
+    "tacticalNotes": "Crushes mortal sorcery through boundless dimensional fire and reality-swallowing cosmic malice.",
+    "matchupStrengths": [
+      "Sorcerers",
+      "Physical Brutes",
+      "Mortal Armies"
+    ],
+    "matchupWeaknesses": [
+      "Time Loops",
+      "Eternity Wards"
+    ],
+    "imageUrl": "/characters/dormammu.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/232-dormammu.jpg"
+  },
+  {
+    "id": "mephisto",
+    "name": "Mephisto",
+    "alterEgo": "Lord of Hell",
+    "universe": "Earth-616",
+    "role": "Sorcerer",
+    "rarity": "Cosmic",
+    "stats": {
+      "power": 97,
+      "strength": 88,
+      "speed": 82,
+      "durability": 96,
+      "combat": 88,
+      "range": 98,
+      "intelligence": 99
+    },
+    "specialAbilities": [
+      "Infernal Soul Manipulation",
+      "Hellfire Incineration",
+      "Faustian Reality Pact",
+      "Shape-Shifting Sorcery"
+    ],
+    "description": "Ancient extra-dimensional demon lord presiding over a fiery nether-realm, trafficking in mortal souls and weaving unbreakable cosmic contracts.",
+    "visuals": {
+      "primaryColor": "#450a0a",
+      "accentColor": "#dc2626",
+      "badgeText": "😈 INFERNAL DECEIVER",
+      "comicQuote": "Every bargain has its price."
+    },
+    "tacticalNotes": "Manipulates luck, twists opponent perceptions, and unleashes suffocating brimstone hellfire.",
+    "matchupStrengths": [
+      "Vulnerable Souls",
+      "Brawlers",
+      "Prideful Foes"
+    ],
+    "matchupWeaknesses": [
+      "Pure Divine Light",
+      "Holy Artifacts"
+    ],
+    "imageUrl": "/characters/mephisto.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/443-mephisto.jpg"
+  },
+  {
+    "id": "sentry",
+    "name": "The Sentry",
+    "alterEgo": "Robert Reynolds",
+    "universe": "Earth-616",
+    "role": "Tank",
+    "rarity": "Cosmic",
+    "stats": {
+      "power": 100,
+      "strength": 100,
+      "speed": 98,
+      "durability": 100,
+      "combat": 90,
+      "range": 96,
+      "intelligence": 85
+    },
+    "specialAbilities": [
+      "Power of a Million Exploding Suns",
+      "Molecular Disintegration",
+      "Invulnerable Flesh",
+      "Void Manifestation"
+    ],
+    "description": "Golden Guardian of Good blessed with the power of a million exploding suns, shadowed by the cosmic terror of his dark alter-ego, The Void.",
+    "visuals": {
+      "primaryColor": "#ca8a04",
+      "accentColor": "#fde047",
+      "badgeText": "☀️ MILLION EXPLODING SUNS",
+      "comicQuote": "It's time to play God."
+    },
+    "tacticalNotes": "Unsurpassed god-tier brute strength and molecular manipulation that can tear gods in half effortlessly.",
+    "matchupStrengths": [
+      "Tanks",
+      "Cosmic Gods",
+      "Heavy Fleets"
+    ],
+    "matchupWeaknesses": [
+      "Psychological Trauma",
+      "Void Takeover"
+    ],
+    "imageUrl": "/characters/sentry.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/583-sentry.jpg"
+  },
+  {
+    "id": "nova",
+    "name": "Nova",
+    "alterEgo": "Richard Rider",
+    "universe": "Earth-616",
+    "role": "Blaster",
+    "rarity": "Legendary",
+    "stats": {
+      "power": 93,
+      "strength": 90,
+      "speed": 96,
+      "durability": 92,
+      "combat": 88,
+      "range": 94,
+      "intelligence": 84
+    },
+    "specialAbilities": [
+      "Nova Force Gravimetric Blast",
+      "FTL Hyperspace Flight",
+      "Centurion Force Field",
+      "Worldmind Strategic Link"
+    ],
+    "description": "Nova Prime channeling the entire Xandarian Worldmind and Nova Force into devastating gravimetric beams and faster-than-light combat flight.",
+    "visuals": {
+      "primaryColor": "#1e3a8a",
+      "accentColor": "#facc15",
+      "badgeText": "🚀 THE HUMAN ROCKET",
+      "comicQuote": "Blue blazes!"
+    },
+    "tacticalNotes": "High-speed kinetic torpedo strikes paired with tactical computer calculations from the Xandarian Worldmind.",
+    "matchupStrengths": [
+      "Armored Ships",
+      "Alien Invaders",
+      "Energy Users"
+    ],
+    "matchupWeaknesses": [
+      "Gravimetric Disruptors",
+      "Mental Overload"
+    ],
+    "imageUrl": "/characters/nova.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/496-nova.jpg"
+  },
+  {
+    "id": "kang",
+    "name": "Kang the Conqueror",
+    "alterEgo": "Nathaniel Richards",
+    "universe": "Earth-616",
+    "role": "Tactician",
+    "rarity": "Cosmic",
+    "stats": {
+      "power": 95,
+      "strength": 80,
+      "speed": 85,
+      "durability": 92,
+      "combat": 92,
+      "range": 96,
+      "intelligence": 100
+    },
+    "specialAbilities": [
+      "Chrono-Displacement Arsenal",
+      "40th Century Force Field",
+      "Temporal Variant Summoning",
+      "Timeline Erasure Weapon"
+    ],
+    "description": "Master of time and conqueror of countless eras, equipped with 40th-century future tech, battle armor, and chrono-kinetic weaponry.",
+    "visuals": {
+      "primaryColor": "#065f46",
+      "accentColor": "#a855f7",
+      "badgeText": "⌛ CONQUEROR OF TIME",
+      "comicQuote": "I have won. I have always won."
+    },
+    "tacticalNotes": "Summons temporal paradoxes and weaponry from any era in history to counter whatever strategy the opponent brings.",
+    "matchupStrengths": [
+      "Linear Heroes",
+      "Ground Brawlers",
+      "Predictable Foes"
+    ],
+    "matchupWeaknesses": [
+      "Temporal Anomalies",
+      "Chaos Magic"
+    ],
+    "imageUrl": "/characters/kang.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/379-kang.jpg"
+  },
+  {
+    "id": "beta-ray-bill",
+    "name": "Beta Ray Bill",
+    "alterEgo": "Bill of Korbin",
+    "universe": "Earth-616",
+    "role": "Tank",
+    "rarity": "Legendary",
+    "stats": {
+      "power": 94,
+      "strength": 96,
+      "speed": 82,
+      "durability": 95,
+      "combat": 90,
+      "range": 90,
+      "intelligence": 76
+    },
+    "specialAbilities": [
+      "Stormbreaker Godhammer",
+      "Korbinite Cyber-Enhancement",
+      "Divine Lightning Cascade",
+      "Warrior Honor Ferocity"
+    ],
+    "description": "Equine-featured cybernetic champion of the Korbinites deemed worthy to lift Mjolnir, granted his own mystical warhammer, Stormbreaker, by Odin himself.",
+    "visuals": {
+      "primaryColor": "#b45309",
+      "accentColor": "#38bdf8",
+      "badgeText": "⚡ KORBINITE CHAMPION",
+      "comicQuote": "If there is one thing I have, it is honor."
+    },
+    "tacticalNotes": "Matches Thor in raw divine lightning, storm-cleaving hammer swings, and cybernetic alien resilience.",
+    "matchupStrengths": [
+      "Demon Hordes",
+      "Heavy Tanks",
+      "Alien Fleets"
+    ],
+    "matchupWeaknesses": [
+      "Reality Warpers",
+      "Mind Manipulation"
+    ],
+    "imageUrl": "/characters/beta-ray-bill.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/79-beta-ray-bill.jpg"
+  },
+  {
+    "id": "odin",
+    "name": "Odin",
+    "alterEgo": "Odin Borson",
+    "universe": "Earth-616",
+    "role": "Sorcerer",
+    "rarity": "Cosmic",
+    "stats": {
+      "power": 99,
+      "strength": 95,
+      "speed": 80,
+      "durability": 98,
+      "combat": 96,
+      "range": 98,
+      "intelligence": 100
+    },
+    "specialAbilities": [
+      "The Odinforce",
+      "Gungnir Spear of Destiny",
+      "Asgardian Galaxy Blast",
+      "Universal Magic Weaving"
+    ],
+    "description": "The ancient All-Father of Asgard, lord of divine wisdom and wielder of the boundless Odinforce capable of restructuring galaxies.",
+    "visuals": {
+      "primaryColor": "#854d0e",
+      "accentColor": "#eab308",
+      "badgeText": "👑 ASGARDIAN ALL-FATHER",
+      "comicQuote": "I am the All-Father. I know all!"
+    },
+    "tacticalNotes": "Commands reality-bending divine power that dwarfs standard godhood, shattering stellar threats with Gungnir.",
+    "matchupStrengths": [
+      "Demons",
+      "Armies",
+      "Cosmic Invaders"
+    ],
+    "matchupWeaknesses": [
+      "The Odinsleep",
+      "Celestials"
+    ],
+    "imageUrl": "/characters/odin.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/498-odin.jpg"
+  },
+  {
+    "id": "annihilus",
+    "name": "Annihilus",
+    "alterEgo": "Lord of the Negative Zone",
+    "universe": "Earth-616",
+    "role": "Tank",
+    "rarity": "Legendary",
+    "stats": {
+      "power": 94,
+      "strength": 92,
+      "speed": 88,
+      "durability": 94,
+      "combat": 90,
+      "range": 92,
+      "intelligence": 90
+    },
+    "specialAbilities": [
+      "Cosmic Control Rod",
+      "Annihilation Wave Command",
+      "Sub-Atomic Exoskeleton",
+      "Negative Zone Energy Lance"
+    ],
+    "description": "The paranoid, insectoid tyrant of the Negative Zone who wields the Cosmic Control Rod to command endless swarms of ravenous starships.",
+    "visuals": {
+      "primaryColor": "#14532d",
+      "accentColor": "#a855f7",
+      "badgeText": "🦗 ANNIHILATION LORD",
+      "comicQuote": "Nothing shall live!"
+    },
+    "tacticalNotes": "Wields the Cosmic Control Rod for near-limitless energy projection and cellular immortality.",
+    "matchupStrengths": [
+      "Biological Armies",
+      "Positronic Shields"
+    ],
+    "matchupWeaknesses": [
+      "Disarming Control Rod",
+      "Sub-Zero Freeze"
+    ],
+    "imageUrl": "/characters/annihilus.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/29-annihilus.jpg"
+  },
+  {
+    "id": "drax",
+    "name": "Drax the Destroyer",
+    "alterEgo": "Arthur Douglas",
+    "universe": "MCU / Earth-616",
+    "role": "Tank",
+    "rarity": "Legendary",
+    "stats": {
+      "power": 90,
+      "strength": 94,
+      "speed": 78,
+      "durability": 96,
+      "combat": 94,
+      "range": 55,
+      "intelligence": 70
+    },
+    "specialAbilities": [
+      "Dual Dagger Berserker Slashing",
+      "Titan Slayer Resilience",
+      "Invisibility Camouflage",
+      "Unrelenting Rage"
+    ],
+    "description": "Genetically engineered warrior forged with a singular driving purpose: hunt down, dismember, and destroy Thanos and his cosmic forces.",
+    "visuals": {
+      "primaryColor": "#1e3a8a",
+      "accentColor": "#ef4444",
+      "badgeText": "🗡️ THE DESTROYER",
+      "comicQuote": "I have mastered the ability of standing so incredibly still..."
+    },
+    "tacticalNotes": "Unstoppable brawling constitution that grows more dangerous as the battle grinds on against heavyweight titans.",
+    "matchupStrengths": [
+      "Cosmic Titans",
+      "Brawlers",
+      "Melee Bosses"
+    ],
+    "matchupWeaknesses": [
+      "Metaphors",
+      "Psionic Illusions"
+    ],
+    "imageUrl": "/characters/drax.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/234-drax-the-destroyer.jpg"
+  },
+  {
+    "id": "nebula",
+    "name": "Nebula",
+    "alterEgo": "Luphomoid Assassin",
+    "universe": "MCU / Earth-616",
+    "role": "Striker",
+    "rarity": "Epic",
+    "stats": {
+      "power": 85,
+      "strength": 82,
+      "speed": 88,
+      "durability": 88,
+      "combat": 92,
+      "range": 80,
+      "intelligence": 86
+    },
+    "specialAbilities": [
+      "Cybernetic Nanite Reconstruction",
+      "Electro-Shock Batons",
+      "Cyber-Arm Blaster Cannon",
+      "Ruthless Assassin Drive"
+    ],
+    "description": "Fierce cybernetically augmented Luphomoid assassin whose shattered body has been rebuilt with military cyberware, making her nearly impossible to kill.",
+    "visuals": {
+      "primaryColor": "#0f766e",
+      "accentColor": "#38bdf8",
+      "badgeText": "🤖 CYBERNETIC ASSASSIN",
+      "comicQuote": "I am a woman of many talents."
+    },
+    "tacticalNotes": "Nanite self-repair allows her to snap dislocated limbs and shattered plating back into place mid-fight.",
+    "matchupStrengths": [
+      "Assassins",
+      "Melee Duelists",
+      "Foot Soldiers"
+    ],
+    "matchupWeaknesses": [
+      "EMP Overload",
+      "Cosmic Energy Cleaves"
+    ],
+    "imageUrl": "/characters/nebula.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/487-nebula.jpg"
+  },
+  {
+    "id": "wasp",
+    "name": "Wasp",
+    "alterEgo": "Hope van Dyne",
+    "universe": "MCU / Earth-616",
+    "role": "Striker",
+    "rarity": "Epic",
+    "stats": {
+      "power": 84,
+      "strength": 65,
+      "speed": 94,
+      "durability": 74,
+      "combat": 88,
+      "range": 88,
+      "intelligence": 88
+    },
+    "specialAbilities": [
+      "Sub-Atomic Flight",
+      "Bio-Electric Stinger Blasts",
+      "Quantum Disruption Blades",
+      "Pym Particle Shrink-Punch"
+    ],
+    "description": "Expert martial artist and physicist armed with winged Pym particle technology, shrinking to microscopic size and blasting foes with high-voltage stingers.",
+    "visuals": {
+      "primaryColor": "#78350f",
+      "accentColor": "#facc15",
+      "badgeText": "🐝 WINGED STINGER",
+      "comicQuote": "It's about damn time."
+    },
+    "tacticalNotes": "Supersonic hit-and-run evasion that weaves between gunfire before expanding to deliver full-mass kinetic strikes.",
+    "matchupStrengths": [
+      "Heavy Tanks",
+      "Slow Brawlers",
+      "Snipers"
+    ],
+    "matchupWeaknesses": [
+      "AoE Energy Waves",
+      "Insecticide Toxins"
+    ],
+    "imageUrl": "/characters/wasp.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/708-wasp.jpg"
+  },
+  {
+    "id": "kate-bishop",
+    "name": "Kate Bishop",
+    "alterEgo": "Hawkeye",
+    "universe": "MCU / Earth-616",
+    "role": "Striker",
+    "rarity": "Epic",
+    "stats": {
+      "power": 82,
+      "strength": 64,
+      "speed": 82,
+      "durability": 74,
+      "combat": 90,
+      "range": 96,
+      "intelligence": 86
+    },
+    "specialAbilities": [
+      "Trick Arrow Trickshot Arsenal",
+      "Acrobatic Precision Evasion",
+      "Close-Quarters Bow Fu",
+      "Rapid EMP Disabler"
+    ],
+    "description": "Young champion archer and protégé of Clint Barton, wielding world-class archery trickshots, rapid-fire EMPs, and fencing agility.",
+    "visuals": {
+      "primaryColor": "#581c87",
+      "accentColor": "#c084fc",
+      "badgeText": "🏹 TRICKSHOT ARCHER",
+      "comicQuote": "I'm Kate Bishop. And I don't miss either."
+    },
+    "tacticalNotes": "Versatile quiver packed with specialized trick arrows (acid, putty, EMP, flashbang) to neutralize any opposing advantage.",
+    "matchupStrengths": [
+      "Robots",
+      "Unarmored Brawlers",
+      "Flying Foes"
+    ],
+    "matchupWeaknesses": [
+      "Heavy Armor Titans",
+      "Speed Blitzers"
+    ],
+    "imageUrl": "/characters/kate-bishop.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/314-hawkeye-ii.jpg"
+  },
+  {
+    "id": "taskmaster",
+    "name": "Taskmaster",
+    "alterEgo": "Tony Masters",
+    "universe": "Earth-616",
+    "role": "Striker",
+    "rarity": "Epic",
+    "stats": {
+      "power": 86,
+      "strength": 78,
+      "speed": 86,
+      "durability": 82,
+      "combat": 99,
+      "range": 85,
+      "intelligence": 92
+    },
+    "specialAbilities": [
+      "Photographic Reflexes Mimicry",
+      "Vibranium Shield Ricochet",
+      "Broadsword Blade Dance",
+      "Predictive Combat Counter"
+    ],
+    "description": "Skull-faced mercenary endowed with photographic reflexes, instantly duplicating the fighting styles of Captain America, Hawkeye, Black Panther, and Spider-Man upon sight.",
+    "visuals": {
+      "primaryColor": "#1e293b",
+      "accentColor": "#f97316",
+      "badgeText": "⚔️ MIMICRY MASTER",
+      "comicQuote": "I can do anything you can do."
+    },
+    "tacticalNotes": "Nearly impossible to hit with standard martial moves; predicts and parries attacks by using the opponent's own style against them.",
+    "matchupStrengths": [
+      "Martial Artists",
+      "Shield Users",
+      "Swordsmen"
+    ],
+    "matchupWeaknesses": [
+      "Deadpool (Unpredictable)",
+      "Raw Energy Overload"
+    ],
+    "imageUrl": "/characters/taskmaster.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/653-taskmaster.jpg"
+  },
+  {
+    "id": "abomination",
+    "name": "Abomination",
+    "alterEgo": "Emil Blonsky",
+    "universe": "MCU / Earth-616",
+    "role": "Tank",
+    "rarity": "Legendary",
+    "stats": {
+      "power": 93,
+      "strength": 97,
+      "speed": 72,
+      "durability": 98,
+      "combat": 86,
+      "range": 60,
+      "intelligence": 72
+    },
+    "specialAbilities": [
+      "Gamma Mutation Monstrosity",
+      "Sonic Thunderclap",
+      "Armor-Plated Bone Spikes",
+      "Devastating Ground Pound"
+    ],
+    "description": "Former special-ops commando injected with super-soldier serum and gamma radiation, mutating into a monstrous reptile-like behemoth as strong as the Hulk.",
+    "visuals": {
+      "primaryColor": "#365314",
+      "accentColor": "#84cc16",
+      "badgeText": "☣️ GAMMA MONSTER",
+      "comicQuote": "Give me a real fight!"
+    },
+    "tacticalNotes": "Permanent monstrous strength that does not rely on anger spikes; fortified with external bone plates and deafening sonic claps.",
+    "matchupStrengths": [
+      "Physical Tanks",
+      "Standard Heroes",
+      "Street Level"
+    ],
+    "matchupWeaknesses": [
+      "Telepaths",
+      "Matter Disintegration"
+    ],
+    "imageUrl": "/characters/abomination.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/4-abomination.jpg"
+  },
+  {
+    "id": "red-skull",
+    "name": "Red Skull",
+    "alterEgo": "Johann Schmidt",
+    "universe": "MCU / Earth-616",
+    "role": "Striker",
+    "rarity": "Epic",
+    "stats": {
+      "power": 84,
+      "strength": 80,
+      "speed": 76,
+      "durability": 84,
+      "combat": 92,
+      "range": 88,
+      "intelligence": 96
+    },
+    "specialAbilities": [
+      "Dust of Death Gas",
+      "Super Soldier Serum Body",
+      "Hydra Tactical Command",
+      "Tesseract Energy Gun"
+    ],
+    "description": "The monstrous founder of HYDRA and mortal arch-nemesis of Captain America, driven by fascist megalomania, super-soldier strength, and occult artifacts.",
+    "visuals": {
+      "primaryColor": "#450a0a",
+      "accentColor": "#ef4444",
+      "badgeText": "💀 HYDRA SUPREME",
+      "comicQuote": "Cut off one head, two more shall take its place!"
+    },
+    "tacticalNotes": "Cold calculated ruthlessness backed by advanced energy firearms and lethal respiratory Dust of Death poisons.",
+    "matchupStrengths": [
+      "Patriotic Soldiers",
+      "Standard Infantry",
+      "Infiltrators"
+    ],
+    "matchupWeaknesses": [
+      "Hulk-Tier Brutes",
+      "Cosmic Sorcerers"
+    ],
+    "imageUrl": "/characters/red-skull.jpg",
+    "artwork": "https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/lg/550-red-skull.jpg"
   }
 ];
 

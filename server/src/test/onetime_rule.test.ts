@@ -19,9 +19,47 @@ function runOnetimeDeploymentTests() {
 
   // 1. Character Database Image Verification
   console.log('[Test 1] Character Artwork & Image Links:');
-  assert(MARVEL_CHARACTERS.length === 52, `Total characters in roster: 52 (Actual: ${MARVEL_CHARACTERS.length})`);
+  assert(MARVEL_CHARACTERS.length === 102, `Total characters in roster: 102 (Actual: ${MARVEL_CHARACTERS.length})`);
+  
+  const uniqueIds = new Set(MARVEL_CHARACTERS.map(c => c.id));
+  assert(uniqueIds.size === 102, `All 102 characters have unique IDs (Unique: ${uniqueIds.size})`);
+
   const missingImages = MARVEL_CHARACTERS.filter(c => !c.imageUrl || !c.artwork);
   assert(missingImages.length === 0, `All characters have valid imageUrl and artwork (Missing: ${missingImages.length})`);
+
+  // Verify all 102 image files exist on disk
+  const fs = require('fs');
+  const path = require('path');
+  const clientDir = path.resolve(__dirname, '../../../client/public/characters');
+  let missingFiles = 0;
+  for (const c of MARVEL_CHARACTERS) {
+    const file = path.join(clientDir, `${c.id}.jpg`);
+    if (!fs.existsSync(file) || fs.statSync(file).size < 5000) {
+      missingFiles++;
+    }
+  }
+  assert(missingFiles === 0, `All 102 characters have verified JPG image files (>5KB) on disk`);
+
+  // Verify specific image accuracy (no duplicate copies)
+  const ikarisSize = fs.statSync(path.join(clientDir, 'ikaris.jpg')).size;
+  const helaSize = fs.statSync(path.join(clientDir, 'hela.jpg')).size;
+  assert(ikarisSize !== helaSize, `Ikaris has his own authentic photo, not Hela copy (${ikarisSize} vs ${helaSize} bytes)`);
+
+  const ebonySize = fs.statSync(path.join(clientDir, 'ebony-maw.jpg')).size;
+  const thanosSize = fs.statSync(path.join(clientDir, 'thanos.jpg')).size;
+  assert(ebonySize !== thanosSize, `Ebony Maw has his own authentic photo, not Thanos copy (${ebonySize} vs ${thanosSize} bytes)`);
+
+  const redGuardianSize = fs.statSync(path.join(clientDir, 'red-guardian.jpg')).size;
+  const capSize = fs.statSync(path.join(clientDir, 'captain-america.jpg')).size;
+  assert(redGuardianSize !== capSize, `Red Guardian has his own authentic photo, not Cap copy (${redGuardianSize} vs ${capSize} bytes)`);
+
+  const agathaSize = fs.statSync(path.join(clientDir, 'agatha-harkness.jpg')).size;
+  const wandaSize = fs.statSync(path.join(clientDir, 'wanda.jpg')).size;
+  assert(agathaSize !== wandaSize, `Agatha Harkness has her own authentic photo, not Wanda copy (${agathaSize} vs ${wandaSize} bytes)`);
+
+  const whiteVisionSize = fs.statSync(path.join(clientDir, 'white-vision.jpg')).size;
+  const visionSize = fs.statSync(path.join(clientDir, 'vision.jpg')).size;
+  assert(whiteVisionSize !== visionSize, `White Vision has his own authentic photo, not Vision copy (${whiteVisionSize} vs ${visionSize} bytes)`);
 
   // 2. RoomManager One-Time Battle Deployment Rule
   console.log('\n[Test 2] One-Time Battle Deployment Enforcement:');

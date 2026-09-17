@@ -40,10 +40,10 @@ export const Hero: React.FC<HeroProps> = ({
               onOpenRoster();
             }}
             className="comic-btn bg-black hover:bg-zinc-800 text-comic-yellow border-2 border-comic-yellow px-3 py-2 flex items-center gap-1.5 shadow-comic-sm"
-            title="Browse all 52 Marvel heroes"
+            title="Browse all 102 Marvel heroes"
           >
             <BookOpen className="w-4 h-4 text-comic-yellow" />
-            <span className="text-xs font-black uppercase hidden sm:inline">HERO ROSTER (52)</span>
+            <span className="text-xs font-black uppercase hidden sm:inline">HERO ROSTER (102)</span>
           </button>
 
           <button
@@ -117,7 +117,7 @@ export const Hero: React.FC<HeroProps> = ({
               onClick={onOpenRoster}
               className="w-full sm:w-auto border-2 border-comic-yellow text-comic-yellow"
             >
-              🦸 HERO ROSTER (52)
+              🦸 HERO ROSTER (102)
             </ComicButton>
           </div>
 
@@ -137,10 +137,10 @@ export const Hero: React.FC<HeroProps> = ({
                 onOpenRoster();
               }}
               className="bg-black/70 comic-border p-2.5 flex items-center gap-2 cursor-pointer hover:bg-zinc-800 transition-colors"
-              title="Click to view all 52 heroes"
+              title="Click to view all 102 heroes"
             >
               <span className="text-lg text-comic-blue">🦸</span>
-              <span className="text-xs font-black uppercase text-zinc-200">52 HEROES</span>
+              <span className="text-xs font-black uppercase text-zinc-200">102 HEROES</span>
             </div>
             <div className="bg-black/70 comic-border p-2.5 flex items-center gap-2">
               <span className="text-lg text-yellow-400">⚔️</span>

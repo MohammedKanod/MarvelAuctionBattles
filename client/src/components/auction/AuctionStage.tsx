@@ -401,7 +401,7 @@ export const AuctionStage: React.FC<AuctionStageProps> = ({
               onClick={onOpenRoster}
               className="text-[10px] font-black uppercase text-zinc-500 hover:text-red-400 transition-colors tracking-widest"
             >
-              INSPECT 52 CHARACTER DOSSIERS →
+              INSPECT 102 CHARACTER DOSSIERS →
             </button>
           </div>
         )}
