@@ -163,9 +163,8 @@ export class AuctionEngine {
   }
 
   private finalizeRound() {
-    this.state.status = 'SOLD';
-
     if (this.state.currentLeaderId && this.state.character) {
+      this.state.status = 'SOLD';
       this.state.winnerId = this.state.currentLeaderId;
       this.state.winnerName = this.state.currentLeaderName;
       this.state.winningBid = this.state.currentBid;
@@ -177,7 +176,11 @@ export class AuctionEngine {
         this.state.winningBid
       );
     } else if (this.state.character) {
-      // Unsold character
+      // Unsold character - neither player gets it
+      this.state.status = 'UNSOLD';
+      this.state.winnerId = null;
+      this.state.winnerName = null;
+      this.state.winningBid = 0;
       this.callbacks.onNoBids(this.state.character);
     }
   }

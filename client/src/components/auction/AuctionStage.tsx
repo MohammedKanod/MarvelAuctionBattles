@@ -9,6 +9,7 @@ interface AuctionStageProps {
   auction: AuctionState;
   selfPlayer: Player;
   onPlaceBid: (amount: number) => void;
+  onPassAuction: () => void;
   onOpenRoster?: () => void;
 }
 
@@ -17,25 +18,45 @@ export const AuctionStage: React.FC<AuctionStageProps> = ({
   auction,
   selfPlayer,
   onPlaceBid,
+  onPassAuction,
   onOpenRoster
 }) => {
   const character = auction.character;
   const isLeader = auction.currentLeaderId === selfPlayer.id;
   const isSold = auction.status === 'SOLD';
+  const isUnsold = auction.status === 'UNSOLD';
+  const hasPassed = auction.passedPlayerIds?.includes(selfPlayer.id) || false;
   const maxTimer = room.settings.auctionTimerSeconds || 10;
-  const [hasPassed, setHasPassed] = useState(false);
 
-  // Reset pass state when round or character changes
+  // Smooth 60 FPS stopwatch interpolation based on auction.endsAt to eliminate 1Hz tick stutter
+  const [smoothSecondsRemaining, setSmoothSecondsRemaining] = useState<number>(auction.timerSeconds);
+
   useEffect(() => {
-    setHasPassed(false);
-  }, [auction.currentRound, character?.id]);
+    if (auction.status !== 'ACTIVE' && auction.status !== 'EXTENDED') {
+      setSmoothSecondsRemaining(auction.timerSeconds);
+      return;
+    }
+
+    let animId: number;
+    const update = () => {
+      const now = Date.now();
+      const left = Math.max(0, (auction.endsAt - now) / 1000);
+      setSmoothSecondsRemaining(left);
+      if (left > 0 && (auction.status === 'ACTIVE' || auction.status === 'EXTENDED')) {
+        animId = requestAnimationFrame(update);
+      }
+    };
+
+    animId = requestAnimationFrame(update);
+    return () => cancelAnimationFrame(animId);
+  }, [auction.endsAt, auction.status, auction.timerSeconds]);
 
   const minNextBid = auction.currentBid === 0 
     ? auction.startingBid 
     : auction.currentBid + room.settings.bidIncrement;
 
   const isRosterFull = selfPlayer.characters.length >= room.settings.charactersPerPlayer;
-  const canAfford = selfPlayer.coins >= minNextBid && !isRosterFull;
+  const canAfford = selfPlayer.coins >= minNextBid && !isRosterFull && !hasPassed;
 
   // Sound and confetti on sold
   useEffect(() => {
@@ -67,8 +88,8 @@ export const AuctionStage: React.FC<AuctionStageProps> = ({
     ? leaderPlayer 
     : room.players.find(p => p.id !== selfPlayer.id) || selfPlayer;
 
-  // Math for dynamic SVG stopwatch pie slice
-  const timerRatio = Math.max(0, Math.min(1, (maxTimer - auction.timerSeconds) / maxTimer));
+  // Math for dynamic SVG stopwatch pie slice (smooth 60 FPS)
+  const timerRatio = Math.max(0, Math.min(1, (maxTimer - smoothSecondsRemaining) / maxTimer));
   const handAngle = timerRatio * 360;
 
   function getPiePath(ratio: number, cx = 28, cy = 28, r = 24) {
@@ -87,8 +108,9 @@ export const AuctionStage: React.FC<AuctionStageProps> = ({
   const speedStat = Math.min(100, Math.max(20, character.stats.speed));
 
   const handlePass = () => {
+    if (hasPassed || isSold || isUnsold || isLeader) return;
     SoundManager.playClick();
-    setHasPassed(true);
+    onPassAuction();
   };
 
   return (
@@ -292,6 +314,25 @@ export const AuctionStage: React.FC<AuctionStageProps> = ({
               </div>
             </div>
           )}
+
+          {/* UNSOLD / ALL PASSED OVERLAY */}
+          {isUnsold && (
+            <div className="absolute inset-0 z-40 bg-black/92 backdrop-blur-sm rounded-3xl flex flex-col items-center justify-center p-6 animate-pop-in">
+              <div className="bg-zinc-800 border-2 border-zinc-600 py-2.5 px-6 shadow-2xl mb-3 rotate-[-3deg]">
+                <span className="font-black text-2xl sm:text-3xl text-zinc-300 tracking-widest uppercase">
+                  UNSOLD // PASSED
+                </span>
+              </div>
+              <div className="bg-[#15161c] border border-zinc-800 px-6 py-3.5 rounded-xl text-center shadow-lg">
+                <p className="text-xs font-bold text-red-400 uppercase tracking-widest">
+                  ALL PLAYERS PASSED // NO CONTRACT
+                </p>
+                <p className="text-sm font-bold text-zinc-400 mt-1">
+                  Hero returned to multiverse pool
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -306,22 +347,19 @@ export const AuctionStage: React.FC<AuctionStageProps> = ({
             <Crown className="w-5 h-5 text-amber-400" /> YOU ARE CURRENTLY HOLDING THE HIGHEST BID!
           </div>
         ) : hasPassed ? (
-          <div className="flex gap-3 items-center">
-            <div className="flex-1 bg-zinc-900 border-2 border-zinc-700 py-3 text-center text-zinc-400 font-bold text-xs uppercase rounded-xl">
-              You passed this round
+          <div className="bg-[#121319] border-2 border-zinc-800 p-4 text-center rounded-2xl shadow-inner">
+            <div className="flex items-center justify-center gap-2 text-red-400 font-black text-sm uppercase tracking-wider">
+              <span>🚫</span> YOU PASSED ON {character.name}
             </div>
-            <button
-              onClick={() => setHasPassed(false)}
-              className="py-3 px-4 bg-red-600 hover:bg-red-500 text-white font-black text-xs uppercase rounded-xl transition-all"
-            >
-              Undo
-            </button>
+            <p className="text-[11px] font-bold text-zinc-500 mt-1 uppercase tracking-wide">
+              Waiting for other commanders or next hero...
+            </p>
           </div>
         ) : (
           <div className="flex items-center justify-between gap-4">
             {/* Left Button: Bid Parallelogram */}
             <button
-              disabled={isSold || !canAfford}
+              disabled={isSold || isUnsold || !canAfford}
               onClick={() => onPlaceBid(minNextBid)}
               className={`flex-1 relative group py-3 px-4 skew-parallelogram bg-gradient-to-b from-red-600 to-red-700 border-3 border-black shadow-[0_6px_22px_rgba(220,38,38,0.5)] transition-all duration-150 ${
                 !canAfford 
@@ -343,9 +381,9 @@ export const AuctionStage: React.FC<AuctionStageProps> = ({
 
             {/* Right Button: Pass Parallelogram */}
             <button
-              disabled={isSold}
+              disabled={isSold || isUnsold || isLeader || hasPassed}
               onClick={handlePass}
-              className="flex-1 relative group py-3 px-4 skew-parallelogram bg-[#13141a] border-3 border-red-600 shadow-lg hover:bg-red-950/40 active:scale-95 transition-all duration-150 cursor-pointer"
+              className="flex-1 relative group py-3 px-4 skew-parallelogram bg-[#13141a] border-3 border-red-600 shadow-lg hover:bg-red-950/40 active:scale-95 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <div className="unskew-content flex items-center justify-center">
                 <span className="text-2xl sm:text-3xl font-black text-white tracking-wider">

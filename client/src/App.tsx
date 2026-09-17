@@ -114,6 +114,9 @@ export const App: React.FC = () => {
     socket.on('AUCTION_TIMER_TICK', ({ timerSeconds, endsAt }) => {
       setRoom((prev) => {
         if (!prev || !prev.auction) return prev;
+        if (prev.auction.timerSeconds === timerSeconds && prev.auction.endsAt === endsAt) {
+          return prev;
+        }
         return {
           ...prev,
           auction: {
@@ -149,8 +152,23 @@ export const App: React.FC = () => {
       addToast('outbid', 'OUTBID!', `${newLeaderName} raised the bid to 🪙 ${newBid}!`);
     });
 
+    socket.on('PLAYER_PASSED_AUCTION', ({ playerId, playerName, room }) => {
+      setRoom(room);
+      if (playerId === selfPlayerId) {
+        addToast('info', 'PASSED', 'You passed this auction. Character will not be yours.');
+      } else {
+        addToast('info', 'PLAYER PASSED', `${playerName} passed on this character.`);
+      }
+    });
+
     socket.on('CHARACTER_SOLD', ({ room }) => {
       setRoom(room);
+    });
+
+    socket.on('CHARACTER_UNSOLD', ({ character, room }) => {
+      setRoom(room);
+      SoundManager.playGavel();
+      addToast('info', 'UNSOLD // DISCARDED', `${character.name} was passed / unsold and returned to the pool.`);
     });
 
     socket.on('AUCTION_TRANSITION_STARTED', ({ room }) => {
@@ -212,7 +230,9 @@ export const App: React.FC = () => {
       socket.off('AUCTION_TIMER_TICK');
       socket.off('BID_PLACED');
       socket.off('PLAYER_OUTBID');
+      socket.off('PLAYER_PASSED_AUCTION');
       socket.off('CHARACTER_SOLD');
+      socket.off('CHARACTER_UNSOLD');
       socket.off('AUCTION_TRANSITION_STARTED');
       socket.off('FIGHTER_SELECTION_STARTED');
       socket.off('PLAYER_LOCKED_FIGHTER');
@@ -244,6 +264,10 @@ export const App: React.FC = () => {
 
   const handlePlaceBid = (amount: number) => {
     socket.emit('PLACE_BID', { amount });
+  };
+
+  const handlePassAuction = () => {
+    socket.emit('PASS_AUCTION');
   };
 
   const handleLockFighter = (characterId: string) => {
@@ -297,6 +321,7 @@ export const App: React.FC = () => {
           auction={room.auction}
           selfPlayer={selfPlayer}
           onPlaceBid={handlePlaceBid}
+          onPassAuction={handlePassAuction}
           onOpenRoster={() => setIsRosterOpen(true)}
         />
       ) : room.phase === 'AUCTION_TRANSITION' ? (

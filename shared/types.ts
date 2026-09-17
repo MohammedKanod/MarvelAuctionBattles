@@ -87,12 +87,13 @@ export interface AuctionState {
   currentLeaderName: string | null;
   timerSeconds: number;
   endsAt: number;
-  status: 'WAITING' | 'ACTIVE' | 'EXTENDED' | 'SOLD';
+  status: 'WAITING' | 'ACTIVE' | 'EXTENDED' | 'SOLD' | 'UNSOLD';
   bidHistory: BidRecord[];
   winnerId: string | null;
   winnerName: string | null;
   winningBid: number | null;
   isFreeAssignment?: boolean;
+  passedPlayerIds?: string[];
 }
 
 export interface BattleMatchup {
@@ -224,7 +225,9 @@ export interface ServerToClientEvents {
   AUCTION_TIMER_TICK: (data: { timerSeconds: number; endsAt: number }) => void;
   BID_PLACED: (data: { bid: BidRecord; currentBid: number; currentLeaderId: string; currentLeaderName: string; endsAt: number; timerSeconds: number }) => void;
   PLAYER_OUTBID: (data: { outbidPlayerId: string; newBid: number; newLeaderName: string }) => void;
+  PLAYER_PASSED_AUCTION: (data: { playerId: string; playerName: string; passedPlayerIds: string[]; room: RoomState }) => void;
   CHARACTER_SOLD: (data: { winnerId: string; winnerName: string; character: Character; winningBid: number; isFreeAssignment?: boolean; room: RoomState }) => void;
+  CHARACTER_UNSOLD: (data: { character: Character; room: RoomState }) => void;
   AUCTION_TRANSITION_STARTED: (data: { room: RoomState }) => void;
   FIGHTER_SELECTION_STARTED: (data: { battleRound: BattleRoundState; room: RoomState }) => void;
   PLAYER_LOCKED_FIGHTER: (data: { playerId: string; room: RoomState }) => void;
@@ -244,6 +247,7 @@ export interface ClientToServerEvents {
   TOGGLE_READY: () => void;
   START_GAME: () => void;
   PLACE_BID: (data: { amount: number }) => void;
+  PASS_AUCTION: () => void;
   LOCK_FIGHTER: (data: { characterId: string }) => void;
   NEXT_BOUT: () => void;
   PLAY_AGAIN: () => void;

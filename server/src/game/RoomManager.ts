@@ -288,13 +288,14 @@ export class RoomManager {
         this.handleCharacterSold(room, winnerId, winnerName, character, winningBid);
       },
       onNoBids: (character) => {
-        this.handleNoBidsFairAssignment(room, character);
+        this.handleNoBidsUnsold(room, character);
       }
     });
 
     this.auctionEngines.set(room.roomCode, auctionEngine);
     auctionEngine.startRound(nextCharacter, currentRound, totalRounds, room.settings.auctionTimerSeconds);
     room.auction = auctionEngine.getState();
+    room.auction.passedPlayerIds = [];
     DatabaseService.saveRoom(room);
 
     this.callbacks.broadcastToRoom(room.roomCode, 'AUCTION_ROUND_STARTED', {
@@ -308,7 +309,7 @@ export class RoomManager {
     if (!info) return { success: false, error: 'Player session not found.' };
 
     const room = this.rooms.get(info.roomCode);
-    if (!room || room.phase !== 'AUCTION') {
+    if (!room || room.phase !== 'AUCTION' || !room.auction) {
       return { success: false, error: 'Auction is not currently active.' };
     }
 
@@ -320,6 +321,11 @@ export class RoomManager {
       return { success: false, error: 'Your roster is already full!' };
     }
 
+    // Rule: Cannot bid if player has passed this character
+    if (room.auction.passedPlayerIds?.includes(player.id)) {
+      return { success: false, error: 'You already passed on this character and cannot bid!' };
+    }
+
     const auctionEngine = this.auctionEngines.get(room.roomCode);
     if (!auctionEngine) {
       return { success: false, error: 'Auction engine is not running.' };
@@ -327,10 +333,108 @@ export class RoomManager {
 
     const result = auctionEngine.placeBid(player, amount, room.settings.bidIncrement);
     if (result.success) {
-      room.auction = auctionEngine.getState();
+      room.auction = {
+        ...auctionEngine.getState(),
+        passedPlayerIds: room.auction.passedPlayerIds || []
+      };
       DatabaseService.saveRoom(room);
     }
     return result;
+  }
+
+  public passAuction(socketId: string): { success: boolean; error?: string } {
+    const info = this.socketToPlayer.get(socketId);
+    if (!info) return { success: false, error: 'Player session not found.' };
+
+    const room = this.rooms.get(info.roomCode);
+    if (!room || room.phase !== 'AUCTION' || !room.auction) {
+      return { success: false, error: 'Auction is not currently active.' };
+    }
+
+    const player = room.players.find(p => p.id === info.playerId);
+    if (!player) return { success: false, error: 'Player not found in room.' };
+
+    if (room.auction.status !== 'ACTIVE' && room.auction.status !== 'EXTENDED') {
+      return { success: false, error: 'Auction is not accepting passes right now.' };
+    }
+
+    if (room.auction.currentLeaderId === player.id) {
+      return { success: false, error: 'You are currently holding the highest bid and cannot pass!' };
+    }
+
+    if (!room.auction.passedPlayerIds) {
+      room.auction.passedPlayerIds = [];
+    }
+
+    if (!room.auction.passedPlayerIds.includes(player.id)) {
+      room.auction.passedPlayerIds.push(player.id);
+    }
+
+    DatabaseService.saveRoom(room);
+
+    this.callbacks.broadcastToRoom(room.roomCode, 'PLAYER_PASSED_AUCTION', {
+      playerId: player.id,
+      playerName: player.name,
+      passedPlayerIds: room.auction.passedPlayerIds,
+      room
+    });
+
+    const eligiblePlayers = room.players.filter(
+      p => p.characters.length < room.settings.charactersPerPlayer
+    );
+
+    // Case 1: ALL eligible players have passed and NO ONE bid -> Character is UNSOLD!
+    const allPassed = eligiblePlayers.length > 0 && eligiblePlayers.every(p => room.auction!.passedPlayerIds!.includes(p.id));
+    if (allPassed && (room.auction.currentBid === 0 || !room.auction.currentLeaderId)) {
+      const engine = this.auctionEngines.get(room.roomCode);
+      if (engine) {
+        engine.destroy();
+      }
+
+      const character = room.auction.character;
+      room.auction.status = 'UNSOLD';
+      room.auction.winnerId = null;
+      room.auction.winnerName = null;
+      room.auction.winningBid = 0;
+
+      DatabaseService.saveRoom(room);
+
+      if (character) {
+        this.callbacks.broadcastToRoom(room.roomCode, 'CHARACTER_UNSOLD', {
+          character,
+          room
+        });
+      }
+
+      // Fast-forward to next auction round in 1.4s (no laggy wait)
+      setTimeout(() => {
+        this.launchNextAuctionRound(room);
+      }, 1400);
+
+      return { success: true };
+    }
+
+    // Case 2: One player has a winning bid and all other eligible players have passed -> Fast-forward win!
+    if (room.auction.currentLeaderId && room.auction.currentBid > 0) {
+      const remainingCompetitors = eligiblePlayers.filter(p => p.id !== room.auction!.currentLeaderId);
+      const allCompetitorsPassed = remainingCompetitors.length > 0 && remainingCompetitors.every(p => room.auction!.passedPlayerIds!.includes(p.id));
+      if (allCompetitorsPassed) {
+        const engine = this.auctionEngines.get(room.roomCode);
+        if (engine) {
+          engine.destroy();
+        }
+
+        this.handleCharacterSold(
+          room,
+          room.auction.currentLeaderId,
+          room.auction.currentLeaderName || 'Winner',
+          room.auction.character!,
+          room.auction.currentBid
+        );
+      }
+    }
+
+    return { success: true };
   }
 
   private handleCharacterSold(
@@ -364,61 +468,36 @@ export class RoomManager {
       room
     });
 
+    // Snappy transition (1.4s instead of 3.2s)
     setTimeout(() => {
       this.launchNextAuctionRound(room);
-    }, 3200);
+    }, 1400);
   }
 
   /**
-   * Fair rotating automatic assignment when a character receives NO bids.
-   * Finds eligible players who still need characters, prioritizes lowest character count,
-   * and rotates priority fairly across rounds.
+   * When an auction ends with NO bids or all players pass:
+   * Do NOT give the character for free to anyone!
+   * The character is simply UNSOLD and discarded back to the multiverse pool.
    */
-  private handleNoBidsFairAssignment(room: RoomState, character: Character) {
-    // 1. Eligible players who still have open slots
-    const eligiblePlayers = room.players.filter(
-      p => p.characters.length < room.settings.charactersPerPlayer
-    );
-
-    if (eligiblePlayers.length === 0) {
-      this.transitionAuctionToBattle(room);
-      return;
-    }
-
-    // 2. Find minimum character count among eligible players
-    const minCount = Math.min(...eligiblePlayers.map(p => p.characters.length));
-    const candidates = eligiblePlayers.filter(p => p.characters.length === minCount);
-
-    // 3. Rotating priority selection
-    const chosenIndex = room.unsoldRotationIndex % candidates.length;
-    const recipient = candidates[chosenIndex];
-    room.unsoldRotationIndex++;
-
-    // Assign character for 0 coins
-    recipient.characters.push(character);
-
+  private handleNoBidsUnsold(room: RoomState, character: Character) {
     if (room.auction) {
-      room.auction.status = 'SOLD';
-      room.auction.winnerId = recipient.id;
-      room.auction.winnerName = recipient.name;
+      room.auction.status = 'UNSOLD';
+      room.auction.winnerId = null;
+      room.auction.winnerName = null;
       room.auction.winningBid = 0;
-      room.auction.isFreeAssignment = true;
     }
 
     DatabaseService.saveRoom(room);
 
-    this.callbacks.broadcastToRoom(room.roomCode, 'CHARACTER_SOLD', {
-      winnerId: recipient.id,
-      winnerName: recipient.name,
+    this.callbacks.broadcastToRoom(room.roomCode, 'CHARACTER_UNSOLD', {
       character,
-      winningBid: 0,
-      isFreeAssignment: true,
       room
     });
 
+    // Snappy transition (1.4s)
     setTimeout(() => {
       this.launchNextAuctionRound(room);
-    }, 3200);
+    }, 1400);
   }
 
   /**

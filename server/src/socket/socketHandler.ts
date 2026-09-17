@@ -74,6 +74,13 @@ export function setupSocketHandlers(
       }
     });
 
+    socket.on('PASS_AUCTION', () => {
+      const result = roomManager.passAuction(socket.id);
+      if (!result.success && result.error) {
+        socket.emit('ERROR_NOTIFICATION', { message: result.error });
+      }
+    });
+
     socket.on('LOCK_FIGHTER', ({ characterId }) => {
       const result = roomManager.lockFighter(socket.id, characterId);
       if (!result.success && result.error) {
