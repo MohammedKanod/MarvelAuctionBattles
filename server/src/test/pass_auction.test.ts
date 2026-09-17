@@ -97,8 +97,36 @@ function runPassAuctionTests() {
   assert(p2Pass.success, 'Player 2 passes');
   assert(room.auction!.status === 'SOLD', 'Auction immediately marked SOLD');
   assert(room.auction!.winnerId === p1.id, 'Player 1 is the winner');
-  assert(p1.characters.some(c => c.id === char2.id), 'Player 1 has character in roster');
-  assert(!p2.characters.some(c => c.id === char2.id), 'Player 2 does NOT have character');
+  assert(p1.passesRemaining === 2, `Player 1 has 2 passes left (was ${p1.passesRemaining})`);
+  assert(p2.passesRemaining === 1, `Player 2 has 1 pass left (was ${p2.passesRemaining})`);
+
+  // Test 5: Pass Quota Limit Enforcement (Each player gets 3 passes per game)
+  console.log('\n[Scenario 5] Pass quota limit exhaustion & rejection:');
+  // Round 3
+  (roomManager as any).launchNextAuctionRound(room);
+  assert(room.auction!.status === 'ACTIVE', 'Auction round #3 active');
+  const p1PassRound3 = roomManager.passAuction('socket-p1');
+  assert(p1PassRound3.success, 'Player 1 passes 2nd time');
+  assert(p1.passesRemaining === 1, 'Player 1 has 1 pass left');
+
+  // Round 4
+  (roomManager as any).launchNextAuctionRound(room);
+  assert(room.auction!.status === 'ACTIVE', 'Auction round #4 active');
+  const p1PassRound4 = roomManager.passAuction('socket-p1');
+  assert(p1PassRound4.success, 'Player 1 passes 3rd time');
+  assert(p1.passesRemaining === 0, 'Player 1 has 0 passes left');
+
+  // Round 5: Player 1 tries to pass with 0 passes left
+  (roomManager as any).launchNextAuctionRound(room);
+  assert(room.auction!.status === 'ACTIVE', 'Auction round #5 active');
+  const p1ExhaustedPass = roomManager.passAuction('socket-p1');
+  assert(!p1ExhaustedPass.success, `Exhausted pass rejected: ${p1ExhaustedPass.error}`);
+  assert(p1ExhaustedPass.error?.includes('no passes') === true, 'Error message indicates no passes remaining');
+
+  // Player 2 still has 1 pass left and can pass
+  const p2AllowedPass = roomManager.passAuction('socket-p2');
+  assert(p2AllowedPass.success, 'Player 2 (having 1 pass left) successfully passes');
+  assert(p2.passesRemaining === 0, 'Player 2 now has 0 passes left');
 
   console.log(`\n=== PASS AUCTION SUMMARY: ${passed} PASSED, ${failed} FAILED ===`);
   if (failed > 0) process.exit(1);

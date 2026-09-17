@@ -37,40 +37,40 @@ export const CinematicCardClashArena: React.FC<CinematicCardClashArenaProps> = (
   useEffect(() => {
     if (skipped) return;
 
-    // Phase 1: Staredown & Audio Cue
+    // Phase 1: Staredown & Audio Cue (0 to 1600ms)
     setPhase('STAREDOWN');
     SoundManager.playCinematicHeartbeat();
 
-    // Phase 2: High-Speed Charge with Sonic Whoosh (at 1100ms)
+    // Phase 2: High-Speed Charge with Sonic Whoosh (at 1600ms)
     const tCharge = setTimeout(() => {
       setPhase('CHARGE');
       SoundManager.playSonicWhoosh();
-    }, 1100);
+    }, 1600);
 
-    // Phase 3: Collision 1 - Massive Sub-Bass & Shield Crack (at 1900ms)
+    // Phase 3: Collision 1 - Massive Sub-Bass & Shield Crack (at 2600ms)
     const tCol1 = setTimeout(() => {
       setPhase('COLLISION_1');
       setIsShaking(true);
       SoundManager.playBattleClash();
-      setTimeout(() => setIsShaking(false), 450);
-    }, 1900);
+      setTimeout(() => setIsShaking(false), 550);
+    }, 2600);
 
-    // Phase 4: Recoil & Collision 2 - Heavy Secondary Shockwave (at 2800ms)
+    // Phase 4: Recoil & Collision 2 - Heavy Secondary Shockwave (at 3800ms)
     const tCol2 = setTimeout(() => {
       setPhase('COLLISION_2');
       setIsShaking(true);
       SoundManager.playBattleClash();
-      setTimeout(() => setIsShaking(false), 450);
-    }, 2800);
+      setTimeout(() => setIsShaking(false), 550);
+    }, 3800);
 
-    // Phase 5: Power Moment - Sub-Bass Tension Pulse (at 3600ms)
+    // Phase 5: Power Moment - Sub-Bass Tension Pulse (at 5000ms)
     const tPower = setTimeout(() => {
       setPhase('POWER_MOMENT');
       SoundManager.playCinematicBoom();
       SoundManager.playCinematicHeartbeat();
-    }, 3600);
+    }, 5000);
 
-    // Phase 6: Theatrical Winner Reveal with Orchestral Fanfare (at 4400ms)
+    // Phase 6: Theatrical Winner Reveal with Orchestral Fanfare (at 6400ms - +2.0s longer)
     const tWinner = setTimeout(() => {
       setPhase('WINNER_REVEAL');
       SoundManager.playVictory();
@@ -81,7 +81,7 @@ export const CinematicCardClashArena: React.FC<CinematicCardClashArenaProps> = (
           origin: { y: 0.55 }
         });
       }
-    }, 4400);
+    }, 6400);
 
     return () => {
       clearTimeout(tCharge);

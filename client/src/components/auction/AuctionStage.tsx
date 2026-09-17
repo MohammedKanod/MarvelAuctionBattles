@@ -107,8 +107,18 @@ export const AuctionStage: React.FC<AuctionStageProps> = ({
   const defenseStat = Math.min(100, Math.max(20, character.stats.durability));
   const speedStat = Math.min(100, Math.max(20, character.stats.speed));
 
+  // Current passes tracking
+  const currentSelf = room.players.find(p => p.id === selfPlayer.id) || selfPlayer;
+  const currentOther = room.players.find(p => p.id === otherPlayer.id) || otherPlayer;
+  const selfPassesLeft = currentSelf.passesRemaining !== undefined ? currentSelf.passesRemaining : 3;
+  const otherPassesLeft = currentOther.passesRemaining !== undefined ? currentOther.passesRemaining : 3;
+
   const handlePass = () => {
     if (hasPassed || isSold || isUnsold || isLeader) return;
+    if (selfPassesLeft <= 0) {
+      SoundManager.playOutbid();
+      return;
+    }
     SoundManager.playClick();
     onPassAuction();
   };
@@ -128,16 +138,18 @@ export const AuctionStage: React.FC<AuctionStageProps> = ({
                   🪙
                 </span>
                 <span className="font-black text-white text-base tracking-wide">
-                  {selfPlayer.coins}
+                  {currentSelf.coins}
                 </span>
               </div>
 
-              {/* Divider */}
-              <span className="text-zinc-600 font-bold text-sm">|</span>
+              {/* Passes counter badge */}
+              <span className={`text-[10px] font-black uppercase px-1.5 py-0.5 rounded border ${selfPassesLeft > 0 ? 'bg-amber-950/80 text-amber-300 border-amber-500/50' : 'bg-zinc-800 text-zinc-400 border-zinc-700'}`}>
+                {selfPassesLeft}P LEFT
+              </span>
 
               {/* Roster slot count (Amber/Yellow) */}
               <span className="font-black text-amber-400 text-sm tracking-wider">
-                {selfPlayer.characters.length}/{room.settings.charactersPerPlayer}
+                {currentSelf.characters.length}/{room.settings.charactersPerPlayer}
               </span>
             </div>
           </div>
@@ -153,16 +165,18 @@ export const AuctionStage: React.FC<AuctionStageProps> = ({
                   🪙
                 </span>
                 <span className="font-black text-white text-base tracking-wide">
-                  {otherPlayer.coins}
+                  {currentOther.coins}
                 </span>
               </div>
 
-              {/* Divider */}
-              <span className="text-zinc-600 font-bold text-sm">|</span>
+              {/* Passes counter badge */}
+              <span className={`text-[10px] font-black uppercase px-1.5 py-0.5 rounded border ${otherPassesLeft > 0 ? 'bg-cyan-950/80 text-cyan-300 border-cyan-500/50' : 'bg-zinc-800 text-zinc-400 border-zinc-700'}`}>
+                {otherPassesLeft}P LEFT
+              </span>
 
               {/* Roster slot count (Red) */}
               <span className="font-black text-red-500 text-sm tracking-wider">
-                {otherPlayer.characters.length}/{room.settings.charactersPerPlayer}
+                {currentOther.characters.length}/{room.settings.charactersPerPlayer}
               </span>
             </div>
           </div>
@@ -381,13 +395,20 @@ export const AuctionStage: React.FC<AuctionStageProps> = ({
 
             {/* Right Button: Pass Parallelogram */}
             <button
-              disabled={isSold || isUnsold || isLeader || hasPassed}
+              disabled={isSold || isUnsold || isLeader || hasPassed || selfPassesLeft <= 0}
               onClick={handlePass}
-              className="flex-1 relative group py-3 px-4 skew-parallelogram bg-[#13141a] border-3 border-red-600 shadow-lg hover:bg-red-950/40 active:scale-95 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`flex-1 relative group py-2.5 px-3 skew-parallelogram border-3 transition-all duration-150 ${
+                selfPassesLeft <= 0 || isLeader || hasPassed
+                  ? 'bg-zinc-900/90 border-zinc-700 opacity-60 cursor-not-allowed'
+                  : 'bg-[#13141a] border-red-600 shadow-lg hover:bg-red-950/40 active:scale-95 cursor-pointer'
+              }`}
             >
-              <div className="unskew-content flex items-center justify-center">
-                <span className="text-2xl sm:text-3xl font-black text-white tracking-wider">
+              <div className="unskew-content flex flex-col items-center justify-center">
+                <span className="text-xl sm:text-2xl font-black text-white tracking-wider leading-none">
                   Pass
+                </span>
+                <span className={`text-[10px] font-bold uppercase tracking-wider mt-1 ${selfPassesLeft > 0 ? 'text-amber-400' : 'text-zinc-500'}`}>
+                  {selfPassesLeft > 0 ? `${selfPassesLeft} of 3 left` : 'No passes left (0/3)'}
                 </span>
               </div>
             </button>

@@ -135,19 +135,40 @@ export const FighterSelectionView: React.FC<FighterSelectionViewProps> = ({
             <div className="text-[11px] font-black uppercase text-comic-yellow tracking-wider mb-2 text-center">
               AVAILABLE HEROES ({availableCharacters.length})
             </div>
-            <div className="flex flex-wrap justify-center gap-3 w-full max-h-[42vh] overflow-y-auto p-1">
-              {availableCharacters.map((char) => (
-                <ComicCard
-                  key={char.id}
-                  character={char}
-                  size="md"
-                  isSelected={selectedCharId === char.id}
-                  isDefeated={defeatedIds.includes(char.id)}
-                  isUsed={usedIds.includes(char.id)}
-                  onClick={() => handleSelectCard(char)}
-                  className="cursor-pointer"
-                />
-              ))}
+            <div className="flex flex-wrap justify-center gap-3 w-full max-h-[44vh] overflow-y-auto p-1">
+              {availableCharacters.map((char) => {
+                const isSelected = selectedCharId === char.id;
+                return (
+                  <div key={char.id} className="relative group transition-all">
+                    <ComicCard
+                      character={char}
+                      size="md"
+                      isSelected={isSelected}
+                      isDefeated={defeatedIds.includes(char.id)}
+                      isUsed={usedIds.includes(char.id)}
+                      onClick={() => handleSelectCard(char)}
+                      className={`cursor-pointer ${isSelected ? 'ring-4 ring-comic-yellow scale-[1.02]' : ''}`}
+                    />
+
+                    {/* IN-CARD LOCK BUTTON OVERLAY ON THIS SPECIFIC CARD */}
+                    {isSelected && !isLocked && !isCountdown && (
+                      <div className="absolute inset-x-1.5 bottom-2 z-30 flex justify-center animate-pop-in">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleLockIn();
+                          }}
+                          className="w-full py-2.5 px-2 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 border-3 border-black text-black font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_4px_16px_rgba(250,204,21,0.95)] hover:brightness-115 active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer rounded"
+                        >
+                          <Lock className="w-4 h-4 fill-black" />
+                          <span>LOCK HERO</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
@@ -183,16 +204,19 @@ export const FighterSelectionView: React.FC<FighterSelectionViewProps> = ({
               FIGHTER LOCKED! WAITING FOR OPPONENTS...
             </span>
           </div>
-        ) : (
+        ) : selectedCharId ? (
           <ComicButton
             variant="yellow"
             size="xl"
-            disabled={!selectedCharId}
             onClick={handleLockIn}
-            className="w-full text-2xl py-4 shadow-comic-yellow"
+            className="w-full text-xl sm:text-2xl py-3.5 shadow-comic-yellow"
           >
-            <Zap className="w-6 h-6 fill-current text-black" /> LOCK IN FIGHTER
+            <Zap className="w-6 h-6 fill-current text-black" /> LOCK IN {availableCharacters.find(c => c.id === selectedCharId)?.name.toUpperCase() || 'HERO'}
           </ComicButton>
+        ) : (
+          <div className="bg-black/70 border-2 border-zinc-700 p-3 text-center text-zinc-400 text-xs font-bold uppercase tracking-wider">
+            👆 TAP ANY HERO CARD ABOVE TO SELECT & LOCK IN
+          </div>
         )}
       </div>
     </div>

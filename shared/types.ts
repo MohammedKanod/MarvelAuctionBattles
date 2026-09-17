@@ -64,6 +64,7 @@ export interface Player {
   wins: number;
   eliminated: boolean;
   avatarSeed: number;
+  passesRemaining?: number; // Each player gets 3 passes per game
   selectedFighterId?: string;
   fighterLocked?: boolean;
   defeatedCharacterIds?: string[];

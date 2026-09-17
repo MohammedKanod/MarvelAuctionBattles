@@ -1,5 +1,5 @@
 import { RoomState, RoomSettings, Player, Character, GamePhase, AuctionState, TournamentState, BattleRoundState, BattleBout } from '../../../shared/types';
-import { DEFAULT_ROOM_SETTINGS } from '../../../shared/constants';
+import { DEFAULT_ROOM_SETTINGS, DEFAULT_PASSES_PER_PLAYER } from '../../../shared/constants';
 import { getRandomCharacters, getCharacterById } from '../data/characters';
 import { AuctionEngine } from '../auction/AuctionEngine';
 import { BattleEngine } from '../battle/BattleEngine';
@@ -44,7 +44,8 @@ export class RoomManager {
 
     const mergedSettings: RoomSettings = {
       ...DEFAULT_ROOM_SETTINGS,
-      ...settings
+      ...settings,
+      maxPlayers: 2
     };
 
     const hostPlayer: Player = {
@@ -59,6 +60,7 @@ export class RoomManager {
       wins: 0,
       eliminated: false,
       avatarSeed: Math.floor(Math.random() * 8),
+      passesRemaining: DEFAULT_PASSES_PER_PLAYER,
       defeatedCharacterIds: []
     };
 
@@ -120,6 +122,7 @@ export class RoomManager {
       wins: 0,
       eliminated: false,
       avatarSeed: Math.floor(Math.random() * 8),
+      passesRemaining: DEFAULT_PASSES_PER_PLAYER,
       defeatedCharacterIds: []
     };
 
@@ -362,13 +365,21 @@ export class RoomManager {
       return { success: false, error: 'You are currently holding the highest bid and cannot pass!' };
     }
 
+    if (room.auction.passedPlayerIds?.includes(player.id)) {
+      return { success: false, error: 'You have already passed on this character!' };
+    }
+
+    const currentPasses = player.passesRemaining !== undefined ? player.passesRemaining : DEFAULT_PASSES_PER_PLAYER;
+    if (currentPasses <= 0) {
+      return { success: false, error: 'You have no passes remaining (0 left)!' };
+    }
+
     if (!room.auction.passedPlayerIds) {
       room.auction.passedPlayerIds = [];
     }
 
-    if (!room.auction.passedPlayerIds.includes(player.id)) {
-      room.auction.passedPlayerIds.push(player.id);
-    }
+    room.auction.passedPlayerIds.push(player.id);
+    player.passesRemaining = currentPasses - 1;
 
     DatabaseService.saveRoom(room);
 
