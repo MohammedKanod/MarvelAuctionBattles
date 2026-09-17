@@ -1,0 +1,16 @@
+{
+  "name": "marvel-battle-auction",
+  "version": "1.0.0",
+  "description": "MARVEL BATTLE AUCTION — Real-time multiplayer superhero auction & tournament battle game",
+  "scripts": {
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "build:server": "npm --prefix server run build",
+    "build:client": "npm --prefix client run build",
+    "build": "npm run build:server && npm run build:client",
+    "start": "npm --prefix server start"
+  },
+  "keywords": ["marvel", "auction", "multiplayer", "socket.io", "react", "game"],
+  "author": "Antigravity",
+  "license": "MIT"
+}

@@ -1,0 +1,223 @@
+import React from 'react';
+import { ComicButton } from '../ui/ComicButton';
+import { Volume2, VolumeX, Shield, Zap, Swords, Trophy, Hammer, BookOpen } from 'lucide-react';
+import { SoundManager } from '../../sound/SoundManager';
+
+interface HeroProps {
+  onCreateRoom: () => void;
+  onJoinRoom: () => void;
+  onOpenHowToPlay: () => void;
+  onOpenRoster: () => void;
+  isMuted: boolean;
+  onToggleMute: () => void;
+}
+
+export const Hero: React.FC<HeroProps> = ({
+  onCreateRoom,
+  onJoinRoom,
+  onOpenHowToPlay,
+  onOpenRoster,
+  isMuted,
+  onToggleMute
+}) => {
+  return (
+    <div className="relative min-h-screen flex flex-col justify-between overflow-hidden px-4 py-6 sm:px-8">
+      {/* Top Navbar */}
+      <header className="max-w-7xl mx-auto w-full flex justify-between items-center z-20">
+        <div className="flex items-center gap-2">
+          <div className="w-10 h-10 bg-comic-red border-3 border-black flex items-center justify-center rotate-[-6deg] shadow-comic-sm">
+            <span className="text-xl">⚡</span>
+          </div>
+          <span className="comic-font text-2xl sm:text-3xl text-white tracking-wider">
+            MARVEL BATTLE AUCTION
+          </span>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              SoundManager.playClick();
+              onOpenRoster();
+            }}
+            className="comic-btn bg-black hover:bg-zinc-800 text-comic-yellow border-2 border-comic-yellow px-3 py-2 flex items-center gap-1.5 shadow-comic-sm"
+            title="Browse all 52 Marvel heroes"
+          >
+            <BookOpen className="w-4 h-4 text-comic-yellow" />
+            <span className="text-xs font-black uppercase hidden sm:inline">HERO ROSTER (52)</span>
+          </button>
+
+          <button
+            onClick={onToggleMute}
+            className="comic-btn bg-zinc-800 hover:bg-zinc-700 text-comic-yellow p-2.5 flex items-center gap-2"
+            title={isMuted ? 'Unmute Sound' : 'Mute Sound'}
+          >
+            {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+            <span className="text-xs font-black uppercase hidden sm:inline">
+              {isMuted ? 'MUTED' : 'SOUND ON'}
+            </span>
+          </button>
+        </div>
+      </header>
+
+      {/* Main Hero Content */}
+      <main className="max-w-6xl mx-auto w-full flex-1 flex flex-col lg:flex-row items-center justify-center gap-12 my-8 z-10">
+        {/* Left Column: Title & Actions */}
+        <div className="flex-1 text-center lg:text-left">
+          {/* Tagline Ribbon */}
+          <div className="inline-block mb-4">
+            <div className="comic-ribbon bg-comic-yellow border-3 border-black px-4 py-1 shadow-comic-sm">
+              <span className="comic-ribbon-content comic-font text-xl sm:text-2xl text-black tracking-wider">
+                BID. BUILD. BATTLE.
+              </span>
+            </div>
+          </div>
+
+          {/* Main Title */}
+          <h1 className="comic-font text-5xl sm:text-7xl lg:text-8xl text-white tracking-wide uppercase leading-none drop-shadow-lg mb-6">
+            MARVEL <span className="text-comic-red">BATTLE</span> <br />
+            <span className="text-comic-yellow">AUCTION</span>
+          </h1>
+
+          <p className="text-lg sm:text-xl text-zinc-300 font-semibold max-w-xl mb-8 leading-relaxed">
+            The high-stakes superhero party game. Bid against your friends in a live character auction, draft your dream MCU lineup, and battle in high-energy tournament matchups!
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-8">
+            <ComicButton
+              variant="primary"
+              size="lg"
+              onClick={onCreateRoom}
+              className="w-full sm:w-auto"
+            >
+              <Hammer className="w-6 h-6" /> CREATE ROOM
+            </ComicButton>
+
+            <ComicButton
+              variant="yellow"
+              size="lg"
+              onClick={onJoinRoom}
+              className="w-full sm:w-auto"
+            >
+              <Zap className="w-6 h-6" /> JOIN ROOM
+            </ComicButton>
+
+            <ComicButton
+              variant="secondary"
+              size="md"
+              onClick={onOpenHowToPlay}
+              className="w-full sm:w-auto"
+            >
+              HOW TO PLAY
+            </ComicButton>
+
+            <ComicButton
+              variant="dark"
+              size="md"
+              onClick={onOpenRoster}
+              className="w-full sm:w-auto border-2 border-comic-yellow text-comic-yellow"
+            >
+              🦸 HERO ROSTER (52)
+            </ComicButton>
+          </div>
+
+          {/* Feature Highlights Pills */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-lg mx-auto lg:mx-0">
+            <div className="bg-black/70 comic-border p-2.5 flex items-center gap-2">
+              <span className="text-lg text-comic-yellow">👥</span>
+              <span className="text-xs font-black uppercase text-zinc-200">2-6 PLAYERS</span>
+            </div>
+            <div className="bg-black/70 comic-border p-2.5 flex items-center gap-2">
+              <span className="text-lg text-comic-red">🔨</span>
+              <span className="text-xs font-black uppercase text-zinc-200">LIVE AUCTION</span>
+            </div>
+            <div
+              onClick={() => {
+                SoundManager.playClick();
+                onOpenRoster();
+              }}
+              className="bg-black/70 comic-border p-2.5 flex items-center gap-2 cursor-pointer hover:bg-zinc-800 transition-colors"
+              title="Click to view all 52 heroes"
+            >
+              <span className="text-lg text-comic-blue">🦸</span>
+              <span className="text-xs font-black uppercase text-zinc-200">52 HEROES</span>
+            </div>
+            <div className="bg-black/70 comic-border p-2.5 flex items-center gap-2">
+              <span className="text-lg text-yellow-400">⚔️</span>
+              <span className="text-xs font-black uppercase text-zinc-200">1V1 ARENA</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Visual Comic Card Montage */}
+        <div className="relative flex-1 max-w-md w-full h-[420px] flex items-center justify-center">
+          {/* Action Burst Background (Angular Comic Flare, No Oval) */}
+          <div className="absolute inset-2 bg-comic-red/10 border-4 border-dashed border-comic-yellow/30 rotate-2 pointer-events-none" />
+
+          {/* Floating Hero Preview Cards */}
+          {/* Card 1: Thor */}
+          <div className="absolute top-4 left-6 w-48 bg-comic-panel comic-border-lg p-3 rotate-[-10deg] shadow-comic-lg hover:rotate-0 transition-transform duration-300">
+            <div className="h-28 bg-[#2b5c8f] border-2 border-black relative overflow-hidden mb-2">
+              <img
+                src="/characters/thor.jpg"
+                alt="Thor"
+                className="w-full h-full object-cover object-[center_15%]"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute bottom-1 left-2 text-[10px] font-black text-comic-yellow uppercase">
+                GOD OF THUNDER
+              </div>
+              <div className="absolute top-1 right-1 bg-comic-yellow text-black text-[9px] font-black px-1 border border-black shadow-comic-sm">
+                94 PWR
+              </div>
+            </div>
+            <h4 className="comic-font text-xl text-white">THOR</h4>
+            <div className="flex justify-between items-center mt-1">
+              <span className="text-[10px] font-bold text-zinc-400 uppercase">TANK / ASGARDIAN</span>
+              <span className="text-xs font-black text-comic-yellow">🪙 850</span>
+            </div>
+          </div>
+
+          {/* Card 2: Wanda (Scarlet Witch) */}
+          <div className="absolute bottom-4 right-6 w-48 bg-comic-panel comic-border-lg p-3 rotate-[8deg] shadow-comic-lg hover:rotate-0 transition-transform duration-300 z-10">
+            <div className="h-28 bg-[#9b111e] border-2 border-black relative overflow-hidden mb-2">
+              <img
+                src="/characters/wanda.jpg"
+                alt="Wanda Maximoff"
+                className="w-full h-full object-cover object-[center_15%]"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute bottom-1 left-2 text-[10px] font-black text-comic-yellow uppercase">
+                SCARLET WITCH
+              </div>
+              <div className="absolute top-1 right-1 bg-comic-yellow text-black text-[9px] font-black px-1 border border-black shadow-comic-sm">
+                99 PWR
+              </div>
+            </div>
+            <h4 className="comic-font text-xl text-white">WANDA</h4>
+            <div className="flex justify-between items-center mt-1">
+              <span className="text-[10px] font-bold text-zinc-400 uppercase">CHAOS SORCERER</span>
+              <span className="text-xs font-black text-comic-yellow">🪙 1200</span>
+            </div>
+          </div>
+
+          {/* Center VS Action Badge */}
+          <div className="absolute z-20 w-16 h-16 bg-comic-yellow border-4 border-black flex items-center justify-center rotate-[-12deg] shadow-comic-xl animate-bounce-short">
+            <span className="comic-font text-3xl text-black">VS</span>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="max-w-7xl mx-auto w-full text-center text-xs font-bold text-zinc-500 uppercase tracking-wider z-10">
+        MARVEL BATTLE AUCTION • REAL-TIME MULTIPLAYER • AUTHORITATIVE BID ENGINE
+      </footer>
+    </div>
+  );
+};

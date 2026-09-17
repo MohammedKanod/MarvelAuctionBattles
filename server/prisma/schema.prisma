@@ -1,0 +1,146 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model PlayerSession {
+  id           String       @id @default(uuid())
+  sessionToken String       @unique
+  displayName  String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  roomPlayers  RoomPlayer[]
+}
+
+model Room {
+  id                  String       @id @default(uuid())
+  roomCode            String       @unique
+  hostId              String
+  phase               String       @default("LOBBY")
+  maxPlayers          Int          @default(4)
+  charactersPerPlayer Int          @default(3)
+  startingCoins       Int          @default(1500)
+  bidIncrement        Int          @default(50)
+  allowDuplicates     Boolean      @default(false)
+  auctionTimerSeconds Int          @default(10)
+  battleFormat        String       @default("SingleElimination")
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  players             RoomPlayer[]
+  games               Game[]
+}
+
+model RoomPlayer {
+  id          String         @id @default(uuid())
+  roomId      String
+  room        Room           @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  sessionId   String
+  session     PlayerSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  name        String
+  isHost      Boolean        @default(false)
+  isReady     Boolean        @default(false)
+  coins       Int            @default(1500)
+  wins        Int            @default(0)
+  characters  PlayerCharacter[]
+  bids        Bid[]
+}
+
+model Game {
+  id          String       @id @default(uuid())
+  roomId      String
+  room        Room         @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  status      String       @default("IN_PROGRESS")
+  championId  String?
+  startedAt   DateTime     @default(now())
+  endedAt     DateTime?
+  auctions    Auction[]
+  battles     Battle[]
+  tournaments Tournament[]
+}
+
+model Character {
+  id               String            @id
+  name             String
+  alterEgo         String?
+  universe         String
+  role             String
+  rarity           String
+  power            Int
+  strength         Int
+  speed            Int
+  durability       Int
+  combat           Int
+  range            Int
+  intelligence     Int
+  specialAbilities String[]
+  description      String
+  tacticalNotes    String
+  primaryColor     String
+  accentColor      String
+  badgeText        String
+  comicQuote       String
+  auctions         Auction[]
+  playerCharacters PlayerCharacter[]
+}
+
+model Auction {
+  id           String      @id @default(uuid())
+  gameId       String
+  game         Game        @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  characterId  String
+  character    Character   @relation(fields: [characterId], references: [id])
+  roundNumber  Int
+  startingBid  Int         @default(100)
+  winningBid   Int?
+  winnerId     String?
+  status       String      @default("PENDING")
+  createdAt    DateTime    @default(now())
+  bids         Bid[]
+}
+
+model Bid {
+  id           String      @id @default(uuid())
+  auctionId    String
+  auction      Auction     @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  playerId     String
+  player       RoomPlayer  @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  amount       Int
+  createdAt    DateTime    @default(now())
+}
+
+model PlayerCharacter {
+  id           String      @id @default(uuid())
+  playerId     String
+  player       RoomPlayer  @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  characterId  String
+  character    Character   @relation(fields: [characterId], references: [id])
+  purchasedFor Int
+  createdAt    DateTime    @default(now())
+}
+
+model Battle {
+  id                String    @id @default(uuid())
+  gameId            String
+  game              Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  roundName         String
+  player1Id         String
+  player2Id         String
+  winnerId          String
+  loserId           String
+  decisiveAdvantage String
+  reason            String
+  createdAt         DateTime  @default(now())
+}
+
+model Tournament {
+  id           String    @id @default(uuid())
+  gameId       String
+  game         Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  championId   String?
+  standingsJson String
+  createdAt    DateTime  @default(now())
+}
