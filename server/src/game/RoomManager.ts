@@ -291,7 +291,7 @@ export class RoomManager {
         this.handleCharacterSold(room, winnerId, winnerName, character, winningBid);
       },
       onNoBids: (character) => {
-        this.handleNoBidsUnsold(room, character);
+        this.handleNoBids(room, character);
       }
     });
 
@@ -369,6 +369,14 @@ export class RoomManager {
       return { success: false, error: 'You have already passed on this character!' };
     }
 
+    const minBid = room.auction.startingBid || 100;
+    if (player.coins >= minBid) {
+      return {
+        success: false,
+        error: `You can only pass when your points are below the minimum bid (${minBid}🪙)!`
+      };
+    }
+
     const currentPasses = player.passesRemaining !== undefined ? player.passesRemaining : DEFAULT_PASSES_PER_PLAYER;
     if (currentPasses <= 0) {
       return { success: false, error: 'You have no passes remaining (0 left)!' };
@@ -440,7 +448,8 @@ export class RoomManager {
           room.auction.currentLeaderId,
           room.auction.currentLeaderName || 'Winner',
           room.auction.character!,
-          room.auction.currentBid
+          room.auction.currentBid,
+          false
         );
       }
     }
@@ -453,7 +462,8 @@ export class RoomManager {
     winnerId: string,
     winnerName: string,
     character: Character,
-    winningBid: number
+    winningBid: number,
+    isFreeAssignment: boolean = false
   ) {
     const player = room.players.find(p => p.id === winnerId);
     if (player) {
@@ -466,6 +476,7 @@ export class RoomManager {
       room.auction.winnerId = winnerId;
       room.auction.winnerName = winnerName;
       room.auction.winningBid = winningBid;
+      room.auction.isFreeAssignment = isFreeAssignment;
     }
 
     DatabaseService.saveRoom(room);
@@ -475,7 +486,7 @@ export class RoomManager {
       winnerName,
       character,
       winningBid,
-      isFreeAssignment: false,
+      isFreeAssignment,
       room
     });
 
@@ -486,8 +497,45 @@ export class RoomManager {
   }
 
   /**
-   * When an auction ends with NO bids or all players pass:
-   * Do NOT give the character for free to anyone!
+   * Evaluates what happens when no bids are placed before timer runs out:
+   * 1. If a player's money is below minimum bid (< $100) and other player doesn't bid:
+   *    The player with low points gets the character if they didn't pass on it.
+   *    If multiple low-point players qualify, priority goes to lowest points (or character count).
+   * 2. If all players had money >= minimum bid and didn't bid, or all low-point players passed:
+   *    Character is simply UNSOLD and discarded.
+   */
+  private handleNoBids(room: RoomState, character: Character) {
+    const minBid = room.auction?.startingBid || 100;
+    const eligiblePlayers = room.players.filter(
+      p => p.characters.length < room.settings.charactersPerPlayer
+    );
+
+    // Eligible players whose coins are below minimum bid and who did NOT pass on this character
+    const lowPointCandidates = eligiblePlayers.filter(
+      p => p.coins < minBid && !room.auction?.passedPlayerIds?.includes(p.id)
+    );
+
+    if (lowPointCandidates.length > 0) {
+      // Sort candidates by coins ascending (lowest points gets priority)
+      lowPointCandidates.sort((a, b) => {
+        if (a.coins !== b.coins) return a.coins - b.coins;
+        if (a.characters.length !== b.characters.length) {
+          return a.characters.length - b.characters.length;
+        }
+        return 0;
+      });
+
+      const recipient = lowPointCandidates[0];
+      this.handleCharacterSold(room, recipient.id, recipient.name, character, 0, true);
+      return;
+    }
+
+    // Otherwise (both had >= minBid, or low-point players passed), character is UNSOLD
+    this.handleNoBidsUnsold(room, character);
+  }
+
+  /**
+   * When an auction ends with NO bids and character cannot be assigned:
    * The character is simply UNSOLD and discarded back to the multiverse pool.
    */
   private handleNoBidsUnsold(room: RoomState, character: Character) {

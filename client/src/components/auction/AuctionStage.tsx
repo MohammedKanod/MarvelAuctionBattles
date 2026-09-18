@@ -107,14 +107,21 @@ export const AuctionStage: React.FC<AuctionStageProps> = ({
   const defenseStat = Math.min(100, Math.max(20, character.stats.durability));
   const speedStat = Math.min(100, Math.max(20, character.stats.speed));
 
-  // Current passes tracking
+  // Current passes tracking & low points rule (< startingBid)
+  const startingBid = auction.startingBid || 100;
   const currentSelf = room.players.find(p => p.id === selfPlayer.id) || selfPlayer;
   const currentOther = room.players.find(p => p.id === otherPlayer.id) || otherPlayer;
+  const isBelowMinBid = currentSelf.coins < startingBid;
+  const isOtherBelowMinBid = currentOther.coins < startingBid;
   const selfPassesLeft = currentSelf.passesRemaining !== undefined ? currentSelf.passesRemaining : 3;
   const otherPassesLeft = currentOther.passesRemaining !== undefined ? currentOther.passesRemaining : 3;
 
   const handlePass = () => {
     if (hasPassed || isSold || isUnsold || isLeader) return;
+    if (!isBelowMinBid) {
+      SoundManager.playOutbid();
+      return;
+    }
     if (selfPassesLeft <= 0) {
       SoundManager.playOutbid();
       return;
@@ -143,8 +150,15 @@ export const AuctionStage: React.FC<AuctionStageProps> = ({
               </div>
 
               {/* Passes counter badge */}
-              <span className={`text-[10px] font-black uppercase px-1.5 py-0.5 rounded border ${selfPassesLeft > 0 ? 'bg-amber-950/80 text-amber-300 border-amber-500/50' : 'bg-zinc-800 text-zinc-400 border-zinc-700'}`}>
-                {selfPassesLeft}P LEFT
+              <span
+                title={isBelowMinBid ? `${selfPassesLeft} passes left` : `Passes unlock when coins are below $${startingBid}`}
+                className={`text-[10px] font-black uppercase px-1.5 py-0.5 rounded border ${
+                  isBelowMinBid && selfPassesLeft > 0 
+                    ? 'bg-amber-950/80 text-amber-300 border-amber-500/50' 
+                    : 'bg-zinc-800 text-zinc-400 border-zinc-700'
+                }`}
+              >
+                {isBelowMinBid ? `${selfPassesLeft}P LEFT` : `${selfPassesLeft}P (LOCKED)`}
               </span>
 
               {/* Roster slot count (Amber/Yellow) */}
@@ -170,8 +184,15 @@ export const AuctionStage: React.FC<AuctionStageProps> = ({
               </div>
 
               {/* Passes counter badge */}
-              <span className={`text-[10px] font-black uppercase px-1.5 py-0.5 rounded border ${otherPassesLeft > 0 ? 'bg-cyan-950/80 text-cyan-300 border-cyan-500/50' : 'bg-zinc-800 text-zinc-400 border-zinc-700'}`}>
-                {otherPassesLeft}P LEFT
+              <span
+                title={isOtherBelowMinBid ? `${otherPassesLeft} passes left` : `Passes unlock when coins are below $${startingBid}`}
+                className={`text-[10px] font-black uppercase px-1.5 py-0.5 rounded border ${
+                  isOtherBelowMinBid && otherPassesLeft > 0 
+                    ? 'bg-cyan-950/80 text-cyan-300 border-cyan-500/50' 
+                    : 'bg-zinc-800 text-zinc-400 border-zinc-700'
+                }`}
+              >
+                {isOtherBelowMinBid ? `${otherPassesLeft}P LEFT` : `${otherPassesLeft}P (LOCKED)`}
               </span>
 
               {/* Roster slot count (Red) */}
@@ -370,48 +391,73 @@ export const AuctionStage: React.FC<AuctionStageProps> = ({
             </p>
           </div>
         ) : (
-          <div className="flex items-center justify-between gap-4">
-            {/* Left Button: Bid Parallelogram */}
-            <button
-              disabled={isSold || isUnsold || !canAfford}
-              onClick={() => onPlaceBid(minNextBid)}
-              className={`flex-1 relative group py-3 px-4 skew-parallelogram bg-gradient-to-b from-red-600 to-red-700 border-3 border-black shadow-[0_6px_22px_rgba(220,38,38,0.5)] transition-all duration-150 ${
-                !canAfford 
-                  ? 'opacity-50 cursor-not-allowed grayscale' 
-                  : 'hover:brightness-115 active:scale-95 cursor-pointer'
-              }`}
-            >
-              <div className="unskew-content flex items-center justify-center gap-2">
-                {/* Gold Embossed Coin */}
-                <div className="w-8 h-8 rounded-full bg-gradient-to-b from-amber-300 to-amber-500 border-2 border-black flex items-center justify-center shadow-md flex-shrink-0">
-                  <span className="font-mono font-black text-black text-sm">🪙</span>
-                </div>
-                {/* Price Display */}
-                <span className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow">
-                  ${minNextBid}
+          <div>
+            {/* Low coins priority notification for players below startingBid */}
+            {isBelowMinBid && !isSold && !isUnsold && (
+              <div className="bg-amber-950/40 border border-amber-500/60 rounded-xl px-3 py-2 mb-3 text-center flex items-center justify-center gap-1.5 shadow-sm">
+                <span className="text-amber-400 text-xs">⚡</span>
+                <span className="text-[11px] font-bold text-amber-200">
+                  {auction.currentLeaderId
+                    ? `Opponent currently leads at $${auction.currentBid}🪙`
+                    : `LOW COINS: If opponent does not bid, you receive this hero! Or click Pass to skip.`}
                 </span>
               </div>
-            </button>
+            )}
 
-            {/* Right Button: Pass Parallelogram */}
-            <button
-              disabled={isSold || isUnsold || isLeader || hasPassed || selfPassesLeft <= 0}
-              onClick={handlePass}
-              className={`flex-1 relative group py-2.5 px-3 skew-parallelogram border-3 transition-all duration-150 ${
-                selfPassesLeft <= 0 || isLeader || hasPassed
-                  ? 'bg-zinc-900/90 border-zinc-700 opacity-60 cursor-not-allowed'
-                  : 'bg-[#13141a] border-red-600 shadow-lg hover:bg-red-950/40 active:scale-95 cursor-pointer'
-              }`}
-            >
-              <div className="unskew-content flex flex-col items-center justify-center">
-                <span className="text-xl sm:text-2xl font-black text-white tracking-wider leading-none">
-                  Pass
-                </span>
-                <span className={`text-[10px] font-bold uppercase tracking-wider mt-1 ${selfPassesLeft > 0 ? 'text-amber-400' : 'text-zinc-500'}`}>
-                  {selfPassesLeft > 0 ? `${selfPassesLeft} of 3 left` : 'No passes left (0/3)'}
-                </span>
-              </div>
-            </button>
+            <div className="flex items-center justify-between gap-4">
+              {/* Left Button: Bid Parallelogram */}
+              <button
+                disabled={isSold || isUnsold || !canAfford}
+                onClick={() => onPlaceBid(minNextBid)}
+                className={`flex-1 relative group py-3 px-4 skew-parallelogram bg-gradient-to-b from-red-600 to-red-700 border-3 border-black shadow-[0_6px_22px_rgba(220,38,38,0.5)] transition-all duration-150 ${
+                  !canAfford 
+                    ? 'opacity-50 cursor-not-allowed grayscale' 
+                    : 'hover:brightness-115 active:scale-95 cursor-pointer'
+                }`}
+              >
+                <div className="unskew-content flex items-center justify-center gap-2">
+                  {/* Gold Embossed Coin */}
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-b from-amber-300 to-amber-500 border-2 border-black flex items-center justify-center shadow-md flex-shrink-0">
+                    <span className="font-mono font-black text-black text-sm">🪙</span>
+                  </div>
+                  {/* Price Display */}
+                  <span className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow">
+                    ${minNextBid}
+                  </span>
+                </div>
+              </button>
+
+              {/* Right Button: Pass Parallelogram */}
+              <button
+                disabled={isSold || isUnsold || isLeader || hasPassed || !isBelowMinBid || selfPassesLeft <= 0}
+                onClick={handlePass}
+                title={!isBelowMinBid ? `Pass unlocks only when points are below minimum bid ($${startingBid}🪙)` : undefined}
+                className={`flex-1 relative group py-2.5 px-3 skew-parallelogram border-3 transition-all duration-150 ${
+                  !isBelowMinBid || selfPassesLeft <= 0 || isLeader || hasPassed
+                    ? 'bg-zinc-900/90 border-zinc-700 opacity-60 cursor-not-allowed'
+                    : 'bg-[#13141a] border-red-600 shadow-lg hover:bg-red-950/40 active:scale-95 cursor-pointer'
+                }`}
+              >
+                <div className="unskew-content flex flex-col items-center justify-center">
+                  <span className="text-xl sm:text-2xl font-black text-white tracking-wider leading-none">
+                    Pass
+                  </span>
+                  <span className={`text-[10px] font-bold uppercase tracking-wider mt-1 ${
+                    !isBelowMinBid 
+                      ? 'text-zinc-500' 
+                      : selfPassesLeft > 0 
+                        ? 'text-amber-400' 
+                        : 'text-zinc-500'
+                  }`}>
+                    {!isBelowMinBid 
+                      ? `Locked (< $${startingBid})` 
+                      : selfPassesLeft > 0 
+                        ? `${selfPassesLeft} of 3 left` 
+                        : 'No passes left (0/3)'}
+                  </span>
+                </div>
+              </button>
+            </div>
           </div>
         )}
 

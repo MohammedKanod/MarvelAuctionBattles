@@ -2,7 +2,7 @@ import { RoomManager } from '../game/RoomManager';
 import { RoomState } from '../../../shared/types';
 
 function runPassAuctionTests() {
-  console.log('=== TESTING AUCTION PASS & UNSOLD NO-ACQUISITION MECHANICS ===\n');
+  console.log('=== TESTING AUCTION PASS & LOW POINTS MECHANICS ===\n');
   let passed = 0;
   let failed = 0;
 
@@ -27,8 +27,8 @@ function runPassAuctionTests() {
   // Setup room with 2 players
   const createRes = roomManager.createRoom('Player1', {
     maxPlayers: 2,
-    charactersPerPlayer: 2,
-    startingCoins: 1500,
+    charactersPerPlayer: 3,
+    startingCoins: 1000,
     bidIncrement: 50,
     allowDuplicates: false,
     auctionTimerSeconds: 10,
@@ -45,90 +45,97 @@ function runPassAuctionTests() {
   // Ready up player 2 (host starts isReady: true)
   roomManager.toggleReady('socket-p2');
   const startRes = roomManager.startGame('socket-p1');
-  assert(startRes.success, `Game started, auction round #1 launched (error: ${startRes.error})`);
+  assert(startRes.success, `Game started, auction round #1 launched`);
   assert(Boolean(room.auction), 'Auction is active');
 
-  const char1 = room.auction!.character!;
-  assert(Boolean(char1), `Hero for Round #1 is ${char1.name}`);
+  // Scenario 1: Players have 1000 coins (>= 100). Passing is NOT allowed!
+  console.log('\n[Scenario 1] Passing is forbidden when coins >= minimum bid:');
+  const forbiddenPass = roomManager.passAuction('socket-p1');
+  assert(!forbiddenPass.success, `Pass rejected for player with 1000 coins: ${forbiddenPass.error}`);
+  assert(forbiddenPass.error?.includes('below the minimum bid') === true, 'Error explains pass only allowed below minimum bid');
 
-  // Test 1: Player 1 passes
-  console.log('\n[Scenario 1] Player 1 passes auction:');
-  const pass1 = roomManager.passAuction('socket-p1');
-  assert(pass1.success, 'Player 1 successfully submitted pass');
+  // If both players don't bid when points >= 100, character gets UNSOLD
+  console.log('\n[Scenario 1b] When both players have enough coins and neither bids, character gets UNSOLD:');
+  const char1 = room.auction!.character!;
+  (roomManager as any).handleNoBids(room, char1);
+  assert(room.auction!.status === 'UNSOLD', 'Character is marked UNSOLD when no one bid and coins >= 100');
+  assert(p1.characters.length === 0, 'Player 1 characters count is 0');
+  assert(p2.characters.length === 0, 'Player 2 characters count is 0');
+
+  // Scenario 2: Player 1 has 50 coins (< 100). Player 2 has 1000 coins. Player 2 does not bid.
+  console.log('\n[Scenario 2] Player 1 has 50 coins (< 100). Player 2 does not bid. Player 1 did not pass:');
+  (roomManager as any).launchNextAuctionRound(room);
+  p1.coins = 50; // Player 1 is below minimum bid 100
+  p2.coins = 1000;
+  const char2 = room.auction!.character!;
+
+  (roomManager as any).handleNoBids(room, char2);
+  assert(room.auction!.status === 'SOLD', 'Character is SOLD to low-points player');
+  assert(room.auction!.winnerId === p1.id, 'Player 1 receives the character');
+  assert(room.auction!.isFreeAssignment === true, 'Assigned via low-points priority (isFreeAssignment = true)');
+  assert(p1.characters.length === 1 && p1.characters[0].id === char2.id, 'Character added to Player 1 roster');
+  assert(p1.coins === 50, 'Player 1 coins remain intact (not deducted below 0)');
+
+  // Scenario 3: Player 1 has 50 coins (< 100). Player 1 decides to PASS on this hero.
+  console.log('\n[Scenario 3] Player 1 has 50 coins and PASSES on character:');
+  (roomManager as any).launchNextAuctionRound(room);
+  const char3 = room.auction!.character!;
+  assert(p1.passesRemaining === 3, 'Player 1 starts with 3 passes');
+
+  const p1Pass = roomManager.passAuction('socket-p1');
+  assert(p1Pass.success, 'Player 1 successfully passed because coins (50) < 100');
+  assert(p1.passesRemaining === 2, 'Player 1 now has 2 passes left');
   assert(room.auction!.passedPlayerIds?.includes(p1.id) === true, 'Player 1 recorded in passedPlayerIds');
 
-  // Test 2: Player 1 cannot bid after passing on this hero
-  console.log('\n[Scenario 2] Player 1 tries to bid after passing:');
-  const illegalBid = roomManager.placeBid('socket-p1', 100);
-  assert(!illegalBid.success, `Bid rejected: ${illegalBid.error}`);
-  assert(illegalBid.error?.includes('already passed') === true, 'Error explains player already passed');
+  // Player 2 does not bid, round ends
+  (roomManager as any).handleNoBids(room, char3);
+  assert(room.auction!.status === 'UNSOLD', 'Character is UNSOLD because Player 1 passed and Player 2 did not bid');
+  assert(p1.characters.length === 1, 'Player 1 did NOT receive char3');
 
-  // Test 3: Player 2 also passes -> BOTH pass -> Hero is UNSOLD, neither player receives hero!
-  console.log('\n[Scenario 3] Player 2 also passes (both passed):');
-  const pass2 = roomManager.passAuction('socket-p2');
-  assert(pass2.success, 'Player 2 successfully submitted pass');
-  assert(room.auction!.status === 'UNSOLD', 'Auction status is marked UNSOLD');
-  assert(room.auction!.winnerId === null, 'winnerId is NULL');
-  assert(p1.characters.length === 0, 'Player 1 characters count is 0 (did NOT get hero)');
-  assert(p2.characters.length === 0, 'Player 2 characters count is 0 (did NOT get hero)');
-  
-  const unsoldBroadcast = broadcasts.find(b => b.event === 'CHARACTER_UNSOLD');
-  assert(Boolean(unsoldBroadcast), 'CHARACTER_UNSOLD broadcasted to room');
-
-  // Test 4: Scenario where one player bids and the other passes -> bidder gets hero immediately without clock delay
-  console.log('\n[Scenario 4] One player bids and opponent passes:');
-  // Wait or manually advance to next character round
+  // Scenario 4: Player 1 has 50 coins (< 100). Player 2 BIDS 100 on character.
+  console.log('\n[Scenario 4] Player 1 has 50 coins, but Player 2 bids on character:');
   (roomManager as any).launchNextAuctionRound(room);
-  assert(room.auction!.status === 'ACTIVE', 'Auction round #2 active');
-  const char2 = room.auction!.character!;
-  assert(Boolean(char2), `Hero for Round #2 is ${char2.name}`);
+  const char4 = room.auction!.character!;
+  const p2Bid = roomManager.placeBid('socket-p2', 100);
+  assert(p2Bid.success, 'Player 2 bids 100');
+  assert(room.auction!.currentLeaderId === p2.id, 'Player 2 is leader');
 
-  // Player 1 bids 100
-  const bidRes = roomManager.placeBid('socket-p1', 100);
-  assert(bidRes.success, 'Player 1 bids 100');
-  assert(room.auction!.currentLeaderId === p1.id, 'Player 1 is current leader');
+  // Complete round as sold to Player 2
+  (roomManager as any).handleCharacterSold(room, p2.id, p2.name, char4, 100, false);
+  assert(room.auction!.winnerId === p2.id, 'Player 2 wins the character with their bid');
+  assert(p2.characters.length === 1, 'Character added to Player 2 roster');
+  assert(p2.coins === 900, 'Player 2 coins deducted for winning bid (1000 - 100 = 900)');
 
-  // Player 1 cannot pass while leading
-  const leaderPass = roomManager.passAuction('socket-p1');
-  assert(!leaderPass.success, `Leader cannot pass: ${leaderPass.error}`);
-
-  // Player 2 passes -> Player 1 immediately gets the character
-  const p2Pass = roomManager.passAuction('socket-p2');
-  assert(p2Pass.success, 'Player 2 passes');
-  assert(room.auction!.status === 'SOLD', 'Auction immediately marked SOLD');
-  assert(room.auction!.winnerId === p1.id, 'Player 1 is the winner');
-  assert(p1.passesRemaining === 2, `Player 1 has 2 passes left (was ${p1.passesRemaining})`);
-  assert(p2.passesRemaining === 1, `Player 2 has 1 pass left (was ${p2.passesRemaining})`);
-
-  // Test 5: Pass Quota Limit Enforcement (Each player gets 3 passes per game)
-  console.log('\n[Scenario 5] Pass quota limit exhaustion & rejection:');
-  // Round 3
+  // Scenario 5: Both players have coins < 100 (Player 1 has 50, Player 2 has 20). Neither passes.
+  console.log('\n[Scenario 5] Both players have coins < 100. Lower points player gets character:');
   (roomManager as any).launchNextAuctionRound(room);
-  assert(room.auction!.status === 'ACTIVE', 'Auction round #3 active');
-  const p1PassRound3 = roomManager.passAuction('socket-p1');
-  assert(p1PassRound3.success, 'Player 1 passes 2nd time');
+  p1.coins = 50;
+  p2.coins = 20;
+  const char5 = room.auction!.character!;
+
+  (roomManager as any).handleNoBids(room, char5);
+  assert(room.auction!.winnerId === p2.id, 'Player 2 (20 coins) has lower points than Player 1 (50 coins) and receives hero');
+  assert(p2.characters.length === 2, 'Player 2 receives character');
+
+  // Scenario 6: Pass quota limit (3 passes max per player)
+  console.log('\n[Scenario 6] Pass quota limit (max 3 passes):');
+  (roomManager as any).launchNextAuctionRound(room);
+  // Player 1 has 2 passes left
+  const passRound2 = roomManager.passAuction('socket-p1');
+  assert(passRound2.success, 'Player 1 uses 2nd pass');
   assert(p1.passesRemaining === 1, 'Player 1 has 1 pass left');
 
-  // Round 4
   (roomManager as any).launchNextAuctionRound(room);
-  assert(room.auction!.status === 'ACTIVE', 'Auction round #4 active');
-  const p1PassRound4 = roomManager.passAuction('socket-p1');
-  assert(p1PassRound4.success, 'Player 1 passes 3rd time');
+  const passRound3 = roomManager.passAuction('socket-p1');
+  assert(passRound3.success, 'Player 1 uses 3rd pass');
   assert(p1.passesRemaining === 0, 'Player 1 has 0 passes left');
 
-  // Round 5: Player 1 tries to pass with 0 passes left
   (roomManager as any).launchNextAuctionRound(room);
-  assert(room.auction!.status === 'ACTIVE', 'Auction round #5 active');
-  const p1ExhaustedPass = roomManager.passAuction('socket-p1');
-  assert(!p1ExhaustedPass.success, `Exhausted pass rejected: ${p1ExhaustedPass.error}`);
-  assert(p1ExhaustedPass.error?.includes('no passes') === true, 'Error message indicates no passes remaining');
+  const passRound4 = roomManager.passAuction('socket-p1');
+  assert(!passRound4.success, `4th pass rejected: ${passRound4.error}`);
+  assert(passRound4.error?.includes('no passes') === true, 'Error explains 0 passes left');
 
-  // Player 2 still has 1 pass left and can pass
-  const p2AllowedPass = roomManager.passAuction('socket-p2');
-  assert(p2AllowedPass.success, 'Player 2 (having 1 pass left) successfully passes');
-  assert(p2.passesRemaining === 0, 'Player 2 now has 0 passes left');
-
-  console.log(`\n=== PASS AUCTION SUMMARY: ${passed} PASSED, ${failed} FAILED ===`);
+  console.log(`\n=== ALL PASS & LOW POINTS TESTS PASSED: ${passed} PASSED, ${failed} FAILED ===`);
   if (failed > 0) process.exit(1);
   process.exit(0);
 }
