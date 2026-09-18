@@ -15,11 +15,27 @@ import { CharacterRosterModal } from './components/roster/CharacterRosterModal';
 import { ToastContainer, ToastMessage } from './components/ui/Toast';
 import { SoundManager } from './sound/SoundManager';
 import { UpdatePrompt } from './components/pwa/UpdatePrompt';
+import { usePwaInstall } from './pwa/usePwaInstall';
+import { InstallAppModal } from './components/pwa/InstallAppModal';
 
 export const App: React.FC = () => {
   const [room, setRoom] = useState<RoomState | null>(null);
   const [selfPlayerId, setSelfPlayerId] = useState<string | null>(null);
   const [isMuted, setIsMuted] = useState<boolean>(SoundManager.isMuted());
+
+  // PWA Web App Install state & 2.5s building animation
+  const {
+    isStandalone,
+    isInstalled,
+    isBuilding,
+    buildProgress,
+    statusText,
+    installStatus,
+    isModalOpen: isInstallModalOpen,
+    isIos,
+    startBuildAndInstall,
+    closeModal: closeInstallModal
+  } = usePwaInstall();
 
   // Current active bout in clash arena
   const [currentBout, setCurrentBout] = useState<BattleBout | null>(null);
@@ -80,7 +96,9 @@ export const App: React.FC = () => {
   // Android Back button (popstate) handler
   useEffect(() => {
     const handlePopState = () => {
-      if (isRosterOpen) {
+      if (isInstallModalOpen) {
+        closeInstallModal();
+      } else if (isRosterOpen) {
         setIsRosterOpen(false);
       } else if (isHowToPlayOpen) {
         setIsHowToPlayOpen(false);
@@ -358,6 +376,8 @@ export const App: React.FC = () => {
           onOpenRoster={openRosterModal}
           isMuted={isMuted}
           onToggleMute={toggleMute}
+          onInstallApp={startBuildAndInstall}
+          isInstalled={isInstalled}
         />
       ) : room.phase === 'LOBBY' ? (
         <LobbyView
@@ -367,6 +387,8 @@ export const App: React.FC = () => {
           onStartGame={handleStartGame}
           onLeaveRoom={handleLeaveRoom}
           onOpenRoster={openRosterModal}
+          onInstallApp={startBuildAndInstall}
+          isInstalled={isInstalled}
         />
       ) : room.phase === 'AUCTION' && room.auction ? (
         <AuctionStage
@@ -433,6 +455,17 @@ export const App: React.FC = () => {
       <CharacterRosterModal
         isOpen={isRosterOpen}
         onClose={closeRosterModal}
+      />
+
+      {/* 2.5s Nano-Forge Building & PWA Install Modal */}
+      <InstallAppModal
+        isOpen={isInstallModalOpen}
+        onClose={closeInstallModal}
+        isBuilding={isBuilding}
+        buildProgress={buildProgress}
+        statusText={statusText}
+        installStatus={installStatus}
+        isIos={isIos}
       />
 
       {/* Unobtrusive PWA Update Banner */}

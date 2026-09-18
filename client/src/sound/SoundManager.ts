@@ -282,6 +282,60 @@ class SoundManagerClass {
     osc.stop(now + 0.65);
   }
 
+  /** High-tech synthesis charge & riser for 2.5s PWA building animation */
+  public playBuildingCharge() {
+    if (this.muted) return;
+    this.initCtx();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const dur = 2.5;
+
+    // Harmonic sci-fi riser
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(140, now);
+    osc.frequency.exponentialRampToValueAtTime(780, now + 2.4);
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(280, now);
+    filter.frequency.exponentialRampToValueAtTime(3400, now + 2.4);
+
+    gain.gain.setValueAtTime(0.01, now);
+    gain.gain.linearRampToValueAtTime(0.16, now + 1.2);
+    gain.gain.linearRampToValueAtTime(0.22, now + 2.3);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + dur);
+
+    // Beep pulses at intervals (0.5s, 1.2s, 1.8s)
+    [0.5, 1.2, 1.8].forEach((offset) => {
+      const beepOsc = this.ctx!.createOscillator();
+      const beepGain = this.ctx!.createGain();
+      beepOsc.type = 'sine';
+      beepOsc.frequency.setValueAtTime(880, now + offset);
+      beepGain.gain.setValueAtTime(0.12, now + offset);
+      beepGain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.08);
+      beepOsc.connect(beepGain);
+      beepGain.connect(this.ctx!.destination);
+      beepOsc.start(now + offset);
+      beepOsc.stop(now + offset + 0.08);
+    });
+
+    // Chime upon 2.5s completion
+    setTimeout(() => {
+      this.playCharacterReveal();
+    }, 2450);
+  }
+
   /** Kinetic Metal & Energy Impact Shockwave (Marvel Movie Style) */
   public playBattleClash() {
     if (this.muted) return;

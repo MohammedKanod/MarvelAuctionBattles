@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { RoomState, Player } from '../../../../shared/types';
 import { ComicButton } from '../ui/ComicButton';
-import { Copy, Check, Crown, User, ShieldAlert, Sparkles, BookOpen } from 'lucide-react';
+import { Copy, Check, Crown, User, ShieldAlert, Sparkles, BookOpen, Smartphone } from 'lucide-react';
 
 interface LobbyViewProps {
   room: RoomState;
@@ -10,6 +10,8 @@ interface LobbyViewProps {
   onStartGame: () => void;
   onLeaveRoom: () => void;
   onOpenRoster?: () => void;
+  onInstallApp?: () => void;
+  isInstalled?: boolean;
 }
 
 export const LobbyView: React.FC<LobbyViewProps> = ({
@@ -18,7 +20,9 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
   onToggleReady,
   onStartGame,
   onLeaveRoom,
-  onOpenRoster
+  onOpenRoster,
+  onInstallApp,
+  isInstalled = false
 }) => {
   const [copied, setCopied] = useState(false);
 
@@ -90,6 +94,17 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
             >
               <BookOpen className="w-4 h-4 text-comic-yellow" />
               <span className="text-xs font-black uppercase">HERO ROSTER (102)</span>
+            </button>
+          )}
+
+          {onInstallApp && !isInstalled && (
+            <button
+              onClick={onInstallApp}
+              className="comic-btn bg-comic-red hover:bg-red-600 text-white border-2 border-black px-3 py-2 flex items-center gap-1.5 text-xs font-black uppercase shadow-comic-sm animate-pulse"
+              title="Install Web App on your phone"
+            >
+              <Smartphone className="w-4 h-4 text-comic-yellow" />
+              <span>INSTALL APP</span>
             </button>
           )}
         </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComicButton } from '../ui/ComicButton';
-import { Volume2, VolumeX, Shield, Zap, Swords, Trophy, Hammer, BookOpen } from 'lucide-react';
+import { Volume2, VolumeX, Shield, Zap, Swords, Trophy, Hammer, BookOpen, Smartphone } from 'lucide-react';
 import { SoundManager } from '../../sound/SoundManager';
 
 interface HeroProps {
@@ -10,6 +10,8 @@ interface HeroProps {
   onOpenRoster: () => void;
   isMuted: boolean;
   onToggleMute: () => void;
+  onInstallApp?: () => void;
+  isInstalled?: boolean;
 }
 
 export const Hero: React.FC<HeroProps> = ({
@@ -18,7 +20,9 @@ export const Hero: React.FC<HeroProps> = ({
   onOpenHowToPlay,
   onOpenRoster,
   isMuted,
-  onToggleMute
+  onToggleMute,
+  onInstallApp,
+  isInstalled = false
 }) => {
   return (
     <div className="relative min-h-screen flex flex-col justify-between overflow-hidden px-4 py-6 sm:px-8">
@@ -33,7 +37,27 @@ export const Hero: React.FC<HeroProps> = ({
           </span>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          {onInstallApp && (
+            <button
+              onClick={() => {
+                SoundManager.playClick();
+                onInstallApp();
+              }}
+              className={`comic-btn px-3 py-2 flex items-center gap-1.5 shadow-comic-sm ${
+                isInstalled
+                  ? 'bg-zinc-900 border-2 border-green-400 text-green-400'
+                  : 'bg-comic-red hover:bg-red-600 text-white border-2 border-black animate-pulse'
+              }`}
+              title="Install Web App on your device"
+            >
+              <Smartphone className="w-4 h-4 text-comic-yellow shrink-0" />
+              <span className="text-xs font-black uppercase tracking-wider">
+                {isInstalled ? 'APP INSTALLED' : 'INSTALL APP'}
+              </span>
+            </button>
+          )}
+
           <button
             onClick={() => {
               SoundManager.playClick();
@@ -83,7 +107,7 @@ export const Hero: React.FC<HeroProps> = ({
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-6">
             <ComicButton
               variant="primary"
               size="lg"
@@ -120,6 +144,40 @@ export const Hero: React.FC<HeroProps> = ({
               🦸 HERO ROSTER (102)
             </ComicButton>
           </div>
+
+          {/* Dedicated Web App Quick Install Banner */}
+          {onInstallApp && !isInstalled && (
+            <div className="mb-8 p-3 bg-gradient-to-r from-zinc-900 via-comic-panel to-zinc-900 border-2 border-cyan-400/80 shadow-comic flex flex-col sm:flex-row items-center justify-between gap-3 max-w-xl">
+              <div className="flex items-center gap-3 text-left">
+                <div className="w-10 h-10 bg-cyan-500/20 border-2 border-cyan-400 flex items-center justify-center text-cyan-300 shrink-0">
+                  <Smartphone className="w-6 h-6 animate-pulse" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="comic-font text-base text-white tracking-wide">
+                      INSTALL TO HOME SCREEN
+                    </span>
+                    <span className="text-[9px] font-black uppercase bg-cyan-400 text-black px-1.5 py-0.5">
+                      WEB APP
+                    </span>
+                  </div>
+                  <p className="text-xs text-zinc-300">
+                    One-tap install on your phone • Zero app store download • Fullscreen
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  SoundManager.playClick();
+                  onInstallApp();
+                }}
+                className="comic-btn bg-cyan-400 hover:bg-cyan-300 text-black font-black text-xs px-4 py-2 border-2 border-black shadow-comic-sm whitespace-nowrap w-full sm:w-auto"
+              >
+                ⚡ INSTALL NOW
+              </button>
+            </div>
+          )}
 
           {/* Feature Highlights Pills */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-lg mx-auto lg:mx-0">
