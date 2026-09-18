@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { socket, SessionStorage } from './socket/socket';
 import { RoomState, Player, RoomSettings, BattleRoundState, BattleBout } from '../../shared/types';
 import { Hero } from './components/landing/Hero';
 import { HowToPlayModal } from './components/landing/HowToPlayModal';
 import { CreateRoomModal } from './components/room/CreateRoomModal';
 import { JoinRoomModal } from './components/room/JoinRoomModal';
+import { InviteLandingView, InviteErrorType } from './components/room/InviteLandingView';
 import { LobbyView } from './components/lobby/LobbyView';
 import { AuctionStage } from './components/auction/AuctionStage';
 import { AuctionToBattleTransition } from './components/battle/AuctionToBattleTransition';
@@ -17,6 +18,7 @@ import { SoundManager } from './sound/SoundManager';
 import { UpdatePrompt } from './components/pwa/UpdatePrompt';
 import { usePwaInstall } from './pwa/usePwaInstall';
 import { InstallAppModal } from './components/pwa/InstallAppModal';
+import { gameAnalytics } from './analytics/gameAnalytics';
 
 export const App: React.FC = () => {
   const [room, setRoom] = useState<RoomState | null>(null);

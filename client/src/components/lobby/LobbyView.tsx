@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { RoomState, Player } from '../../../../shared/types';
 import { ComicButton } from '../ui/ComicButton';
-import { Copy, Check, Crown, User, ShieldAlert, Sparkles, BookOpen, Smartphone } from 'lucide-react';
+import { gameAnalytics } from '../../analytics/gameAnalytics';
+import { SoundManager } from '../../sound/SoundManager';
+import { Copy, Check, Crown, User, ShieldAlert, Sparkles, BookOpen, Smartphone, Share2, Link2 } from 'lucide-react';
 
 interface LobbyViewProps {
   room: RoomState;
@@ -26,10 +28,39 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
 }) => {
   const [copied, setCopied] = useState(false);
 
-  const handleCopyCode = () => {
-    navigator.clipboard.writeText(room.roomCode);
+  const getInviteUrl = () => {
+    return `${window.location.origin}/join/${room.roomCode}`;
+  };
+
+  const handleCopyInviteLink = () => {
+    const url = getInviteUrl();
+    navigator.clipboard.writeText(url);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    SoundManager.playClick();
+    gameAnalytics.shareClicked('clipboard', room.roomCode);
+    setTimeout(() => setCopied(false), 2200);
+  };
+
+  const handleShare = async () => {
+    const url = getInviteUrl();
+    SoundManager.playClick();
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Battle Auction',
+          text: `Play Battle Auction with me! Join my battle: ${url}`,
+          url
+        });
+        gameAnalytics.shareClicked('web_share', room.roomCode);
+      } catch (err: any) {
+        // Fallback to clipboard if user dismissed or canceled
+        if (err.name !== 'AbortError') {
+          handleCopyInviteLink();
+        }
+      }
+    } else {
+      handleCopyInviteLink();
+    }
   };
 
   const isHost = selfPlayer.isHost;
@@ -40,7 +71,7 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
   return (
     <div className="max-w-5xl mx-auto w-full px-4 py-6">
       {/* Lobby Top Header */}
-      <div className="bg-comic-panel comic-border-lg p-6 mb-6">
+      <div className="bg-comic-panel comic-border-lg p-5 sm:p-6 mb-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
@@ -52,61 +83,89 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
                 SERVER AUTHORITATIVE
               </span>
             </div>
-            <h1 className="comic-font text-4xl text-white tracking-wide">
+            <h1 className="comic-font text-3xl sm:text-4xl text-white tracking-wide">
               ASSEMBLE YOUR HEROES
             </h1>
           </div>
 
-          {/* Room Code Card */}
-          <div className="bg-black comic-border p-3 flex items-center gap-3">
-            <div>
-              <span className="text-[10px] font-black uppercase text-zinc-400 block leading-none">
-                ROOM CODE
-              </span>
-              <span className="comic-font text-3xl text-comic-yellow tracking-wider">
-                {room.roomCode}
-              </span>
-            </div>
-            <button
-              onClick={handleCopyCode}
-              className="comic-btn bg-zinc-800 hover:bg-zinc-700 text-white p-2.5 flex items-center gap-1"
-              title="Copy Room Code"
-            >
-              {copied ? (
-                <>
-                  <Check className="w-4 h-4 text-green-400" />
-                  <span className="text-xs font-black text-green-400">COPIED!</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-4 h-4 text-comic-yellow" />
-                  <span className="text-xs font-black">COPY</span>
-                </>
-              )}
-            </button>
+          <div className="flex items-center gap-2 flex-wrap">
+            {onOpenRoster && (
+              <button
+                onClick={onOpenRoster}
+                className="comic-btn bg-black hover:bg-zinc-800 text-comic-yellow border-2 border-comic-yellow px-3 py-2 flex items-center gap-2 shadow-comic-sm"
+                title="Browse all 200 multiverse heroes"
+              >
+                <BookOpen className="w-4 h-4 text-comic-yellow" />
+                <span className="text-xs font-black uppercase">HERO ROSTER (200)</span>
+              </button>
+            )}
+
+            {onInstallApp && !isInstalled && (
+              <button
+                onClick={onInstallApp}
+                className="comic-btn bg-comic-red hover:bg-red-600 text-white border-2 border-black px-3 py-2 flex items-center gap-1.5 text-xs font-black uppercase shadow-comic-sm animate-pulse"
+                title="Install Web App on your phone"
+              >
+                <Smartphone className="w-4 h-4 text-comic-yellow" />
+                <span>INSTALL APP</span>
+              </button>
+            )}
           </div>
+        </div>
 
-          {onOpenRoster && (
-            <button
-              onClick={onOpenRoster}
-              className="comic-btn bg-black hover:bg-zinc-800 text-comic-yellow border-2 border-comic-yellow px-3 py-2 flex items-center gap-2 shadow-comic-sm"
-              title="Browse all 200 multiverse heroes"
-            >
-              <BookOpen className="w-4 h-4 text-comic-yellow" />
-              <span className="text-xs font-black uppercase">HERO ROSTER (200)</span>
-            </button>
-          )}
+        {/* Mobile-First Shareable Room & Invite Controls (Part 4 & Part 7) */}
+        <div className="mt-5 pt-4 border-t-2 border-black/80">
+          <div className="bg-black/90 comic-border p-3.5 sm:p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-comic-sm">
+            {/* Room Code and Status */}
+            <div className="flex items-center gap-3">
+              <div className="bg-[#12131b] border-2 border-amber-400/80 px-3 py-1.5 rounded-sm">
+                <span className="text-[10px] font-black uppercase text-zinc-400 block leading-none">
+                  ROOM CODE
+                </span>
+                <span className="comic-font text-2xl sm:text-3xl text-comic-yellow tracking-widest font-mono">
+                  {room.roomCode}
+                </span>
+              </div>
+              <div>
+                <span className="text-xs font-bold text-zinc-300 block">
+                  Waiting for players...
+                </span>
+                <span className="text-xs font-black text-amber-400 font-mono">
+                  {room.players.length} / {room.settings.maxPlayers} players
+                </span>
+              </div>
+            </div>
 
-          {onInstallApp && !isInstalled && (
-            <button
-              onClick={onInstallApp}
-              className="comic-btn bg-comic-red hover:bg-red-600 text-white border-2 border-black px-3 py-2 flex items-center gap-1.5 text-xs font-black uppercase shadow-comic-sm animate-pulse"
-              title="Install Web App on your phone"
-            >
-              <Smartphone className="w-4 h-4 text-comic-yellow" />
-              <span>INSTALL APP</span>
-            </button>
-          )}
+            {/* Action Buttons: COPY INVITE LINK & SHARE */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleCopyInviteLink}
+                className="flex-1 sm:flex-initial comic-btn bg-comic-yellow hover:bg-yellow-300 text-black px-4 py-2.5 flex items-center justify-center gap-1.5 min-h-[44px] shadow-comic-sm font-black text-xs uppercase transition-all"
+                title="Copy shareable invite link"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-4 h-4 text-black stroke-[3]" />
+                    <span>LINK COPIED!</span>
+                  </>
+                ) : (
+                  <>
+                    <Link2 className="w-4 h-4 text-black" />
+                    <span>COPY INVITE LINK</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                onClick={handleShare}
+                className="flex-1 sm:flex-initial comic-btn bg-zinc-800 hover:bg-zinc-700 text-white border-2 border-black px-4 py-2.5 flex items-center justify-center gap-1.5 min-h-[44px] shadow-comic-sm font-black text-xs uppercase transition-all"
+                title="Share invite via message or app"
+              >
+                <Share2 className="w-4 h-4 text-comic-yellow" />
+                <span>SHARE</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
