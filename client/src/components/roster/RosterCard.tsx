@@ -88,7 +88,7 @@ export const RosterCard: React.FC<RosterCardProps> = ({ character, onClick }) =>
   return (
     <div
       onClick={onClick}
-      className={`group relative w-full flex flex-col rounded-xl overflow-hidden bg-[#111218] border-2 ${currentRarity.border} ${currentRarity.glow} transition-all duration-200 cursor-pointer select-none active:scale-[0.96] hover:-translate-y-1 hover:brightness-105`}
+      className={`group relative w-full flex flex-col rounded-xl overflow-hidden bg-[#111218] border-2 ${currentRarity.border} ${currentRarity.glow} transition-all duration-200 cursor-pointer select-none touch-manipulation active:scale-[0.96] hover:-translate-y-1 hover:brightness-105`}
     >
       {/* Top Foil Gradient Ambient Tint */}
       <div className={`absolute inset-0 bg-gradient-to-b ${currentRarity.foilGrad} pointer-events-none z-10`} />

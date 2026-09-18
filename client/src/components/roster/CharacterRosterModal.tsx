@@ -67,6 +67,17 @@ export const CharacterRosterModal: React.FC<CharacterRosterModalProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, inspectCharacter, onClose]);
 
+  // Lock body scroll when modal is open so mobile gestures scroll the modal container
+  useEffect(() => {
+    if (isOpen) {
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prevOverflow;
+      };
+    }
+  }, [isOpen]);
+
   // Handle scroll to show back-to-top button
   const handleScroll = () => {
     if (scrollContainerRef.current) {
@@ -152,8 +163,8 @@ export const CharacterRosterModal: React.FC<CharacterRosterModalProps> = ({
   return (
     <>
       {/* 1. Main Hero Roster Modal: Fullscreen on mobile, centered card on desktop */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-3 md:p-6 bg-black/90 backdrop-blur-md animate-pop-in">
-        <div className="relative w-full h-[100dvh] sm:h-[94vh] sm:max-w-6xl sm:max-h-[920px] bg-[#0c0d14] sm:comic-border-xl sm:rounded-2xl flex flex-col overflow-hidden text-white shadow-2xl">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-3 md:p-6 bg-black/90 backdrop-blur-md">
+        <div className="relative w-full h-full sm:h-[94vh] max-h-full sm:max-h-[920px] sm:max-w-6xl bg-[#0c0d14] sm:comic-border-xl sm:rounded-2xl flex flex-col overflow-hidden text-white shadow-2xl">
           
           {/* Subtle Halftone BG effect */}
           <div className="absolute inset-0 bg-halftone opacity-15 pointer-events-none" />
@@ -214,7 +225,10 @@ export const CharacterRosterModal: React.FC<CharacterRosterModalProps> = ({
             {/* Row 1: Universe Segmented Switcher & Sort Selector */}
             <div className="flex items-center justify-between gap-2">
               {/* Universe Segmented Control */}
-              <div className="flex items-center bg-black/90 p-1 rounded-lg border border-zinc-800 overflow-x-auto no-scrollbar shrink-0">
+              <div
+                className="flex items-center bg-black/90 p-1 rounded-lg border border-zinc-800 overflow-x-auto no-scrollbar shrink-0"
+                style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x' }}
+              >
                 <button
                   onClick={() => {
                     SoundManager.playClick();
@@ -298,7 +312,10 @@ export const CharacterRosterModal: React.FC<CharacterRosterModalProps> = ({
             </div>
 
             {/* Row 3: Horizontal Scrollable Role Chips */}
-            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+            <div
+              className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5"
+              style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x' }}
+            >
               {roles.map((r) => {
                 const active = selectedRole === r.id;
                 return (
@@ -326,7 +343,11 @@ export const CharacterRosterModal: React.FC<CharacterRosterModalProps> = ({
           <div
             ref={scrollContainerRef}
             onScroll={handleScroll}
-            className="relative z-10 flex-1 overflow-y-auto p-2.5 sm:p-5 bg-gradient-to-b from-black/60 to-[#07080c]"
+            className="relative z-10 flex-1 min-h-0 overflow-y-auto overscroll-contain p-2.5 sm:p-5 bg-gradient-to-b from-black/60 to-[#07080c]"
+            style={{
+              WebkitOverflowScrolling: 'touch',
+              touchAction: 'pan-y'
+            }}
           >
             {filteredCharacters.length === 0 ? (
               <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-center p-6 sm:p-12">
@@ -391,7 +412,7 @@ export const CharacterRosterModal: React.FC<CharacterRosterModalProps> = ({
       {/* 2. Tactical Hero Dossier Sheet / Modal (Cinematic Mobile Bottom-Sheet & Desktop Centered Modal) */}
       {inspectCharacter && (
         <div
-          className="fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/92 backdrop-blur-md animate-pop-in"
+          className="fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/92 backdrop-blur-md"
           style={{ zIndex: 99999 }}
           onClick={(e) => {
             if (e.target === e.currentTarget) {
@@ -400,7 +421,7 @@ export const CharacterRosterModal: React.FC<CharacterRosterModalProps> = ({
           }}
         >
           <div
-            className="relative w-full sm:max-w-xl max-h-[92dvh] sm:max-h-[88vh] bg-[#10121a] border-t-4 sm:border-4 border-black sm:comic-border-xl rounded-t-3xl sm:rounded-2xl text-white flex flex-col overflow-hidden shadow-2xl"
+            className="relative w-full sm:max-w-xl h-[92dvh] sm:h-auto max-h-[92dvh] sm:max-h-[88vh] bg-[#10121a] border-t-4 sm:border-4 border-black sm:comic-border-xl rounded-t-3xl sm:rounded-2xl text-white flex flex-col overflow-hidden shadow-2xl"
             style={{ zIndex: 100000 }}
           >
             {/* Top Sheet Drag Pill for Mobile */}
@@ -431,7 +452,13 @@ export const CharacterRosterModal: React.FC<CharacterRosterModalProps> = ({
             </div>
 
             {/* Scrollable Dossier Content */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+            <div
+              className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 sm:p-6 space-y-4"
+              style={{
+                WebkitOverflowScrolling: 'touch',
+                touchAction: 'pan-y'
+              }}
+            >
               
               {/* Hero Showcase Banner */}
               <div className="flex items-start gap-3.5 sm:gap-4 bg-[#141622] border-2 border-zinc-800 rounded-xl p-3 sm:p-4">
