@@ -94,14 +94,19 @@ export const ComicCard: React.FC<ComicCardProps> = ({
         borderTopWidth: '5px'
       }}
     >
-      {/* Top Banner: Minimalist Category & Rarity */}
-      <div className="flex justify-between items-center px-3 py-1.5 bg-black/90 border-b-2 border-black z-10">
-        <span className="text-[10px] font-black uppercase tracking-wider text-comic-yellow truncate max-w-[120px]">
+      {/* Top Banner: Minimalist Category, Power & Rarity */}
+      <div className="flex justify-between items-center px-2.5 py-1.5 bg-black/90 border-b-2 border-black z-10">
+        <span className="text-[10px] font-black uppercase tracking-wider text-comic-yellow truncate max-w-[110px]">
           {character.visuals.badgeText}
         </span>
-        <span className={`text-[9px] font-black uppercase px-1.5 py-0.2 border ${rarity.border} ${rarity.bg} ${rarity.text}`}>
-          {character.rarity}
-        </span>
+        <div className="flex items-center gap-1.5">
+          <span className="bg-comic-yellow text-black font-black text-[10px] px-1.5 py-0.2 border border-black font-mono shadow-sm">
+            ⚡{character.stats.power}
+          </span>
+          <span className={`text-[9px] font-black uppercase px-1.5 py-0.2 border ${rarity.border} ${rarity.bg} ${rarity.text}`}>
+            {character.rarity}
+          </span>
+        </div>
       </div>
 
       {/* Dominant Character Artwork Box (Full-Bleed Superhero Art - No Oval Crop) */}
@@ -186,11 +191,11 @@ export const ComicCard: React.FC<ComicCardProps> = ({
       </div>
 
       {/* Bottom Nameplate (Clean Collectible Card format) */}
-      <div className="p-3 bg-black border-t-3 border-black text-center z-10">
-        <h3 className="comic-font text-2xl sm:text-3xl text-white leading-tight tracking-wider truncate uppercase">
+      <div className="px-2.5 py-2 bg-black border-t-3 border-black text-center z-10 flex flex-col justify-center">
+        <h3 className="comic-font text-base sm:text-xl md:text-2xl text-white leading-tight tracking-wide truncate uppercase">
           {character.name}
         </h3>
-        <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wide truncate mt-0.5">
+        <p className="text-[10px] sm:text-[11px] font-bold text-zinc-400 uppercase tracking-wide truncate mt-0.5">
           {character.alterEgo || character.universe}
         </p>
       </div>

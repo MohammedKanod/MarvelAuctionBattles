@@ -130,25 +130,27 @@ export const TeamBuildingView: React.FC<TeamBuildingViewProps> = ({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 justify-items-center">
           {orderedCharacters.map((char, index) => (
-            <div key={char.id} className="relative flex flex-col">
+            <div key={char.id} className="relative flex flex-col items-center w-full max-w-[240px] sm:max-w-[260px]">
               {/* Lineup Bout Slot Badge */}
-              <div className="flex justify-between items-center bg-black border-2 border-black p-2 text-xs font-black text-comic-yellow mb-1">
+              <div className="w-full flex justify-between items-center bg-black border-2 border-black p-2 text-xs font-black text-comic-yellow mb-1.5 shadow-comic-sm">
                 <span>BOUT #{index + 1} VANGUARD</span>
                 {isViewingSelf && !selfPlayer.isReady && (
-                  <div className="flex gap-1">
+                  <div className="flex gap-1.5">
                     <button
                       onClick={() => handleMoveUp(index)}
                       disabled={index === 0}
-                      className="bg-zinc-800 hover:bg-zinc-700 px-2 py-0.5 disabled:opacity-30"
+                      className="bg-zinc-800 hover:bg-comic-yellow hover:text-black text-white px-2 py-0.5 rounded-xs disabled:opacity-30 transition-colors"
+                      title="Move Forward"
                     >
                       ▲
                     </button>
                     <button
                       onClick={() => handleMoveDown(index)}
                       disabled={index === orderedCharacters.length - 1}
-                      className="bg-zinc-800 hover:bg-zinc-700 px-2 py-0.5 disabled:opacity-30"
+                      className="bg-zinc-800 hover:bg-comic-yellow hover:text-black text-white px-2 py-0.5 rounded-xs disabled:opacity-30 transition-colors"
+                      title="Move Backward"
                     >
                       ▼
                     </button>
@@ -156,7 +158,7 @@ export const TeamBuildingView: React.FC<TeamBuildingViewProps> = ({
                 )}
               </div>
 
-              <ComicCard character={char} showStats={true} />
+              <ComicCard character={char} showStats={true} className="w-full" />
             </div>
           ))}
         </div>
