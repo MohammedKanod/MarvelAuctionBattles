@@ -25,7 +25,7 @@ export const Hero: React.FC<HeroProps> = ({
   isInstalled = false
 }) => {
   return (
-    <div className="relative min-h-screen flex flex-col justify-between overflow-hidden px-4 py-6 sm:px-8">
+    <div className="relative min-h-[100dvh] flex flex-col justify-between overflow-x-hidden overflow-y-auto px-4 py-6 sm:px-8">
       {/* Top Navbar */}
       <header className="max-w-7xl mx-auto w-full flex justify-between items-center z-20">
         <div className="flex items-center gap-2">
@@ -84,9 +84,9 @@ export const Hero: React.FC<HeroProps> = ({
       </header>
 
       {/* Main Hero Content */}
-      <main className="max-w-6xl mx-auto w-full flex-1 flex flex-col lg:flex-row items-center justify-center gap-12 my-8 z-10">
+      <main className="max-w-6xl mx-auto w-full flex-1 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12 my-6 sm:my-8 z-10">
         {/* Left Column: Title & Actions */}
-        <div className="flex-1 text-center lg:text-left">
+        <div className="w-full lg:flex-1 text-center lg:text-left flex flex-col items-center lg:items-start z-10">
           {/* Tagline Ribbon */}
           <div className="inline-block mb-4">
             <div className="comic-ribbon bg-comic-yellow border-3 border-black px-4 py-1 shadow-comic-sm">
@@ -107,7 +107,7 @@ export const Hero: React.FC<HeroProps> = ({
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-6 w-full sm:w-auto">
             <ComicButton
               variant="primary"
               size="lg"
@@ -147,7 +147,7 @@ export const Hero: React.FC<HeroProps> = ({
 
           {/* Dedicated Web App Quick Install Banner */}
           {onInstallApp && !isInstalled && (
-            <div className="mb-8 p-3 bg-gradient-to-r from-zinc-900 via-comic-panel to-zinc-900 border-2 border-cyan-400/80 shadow-comic flex flex-col sm:flex-row items-center justify-between gap-3 max-w-xl">
+            <div className="mb-6 p-3 bg-gradient-to-r from-zinc-900 via-comic-panel to-zinc-900 border-2 border-cyan-400/80 shadow-comic flex flex-col sm:flex-row items-center justify-between gap-3 max-w-xl w-full">
               <div className="flex items-center gap-3 text-left">
                 <div className="w-10 h-10 bg-cyan-500/20 border-2 border-cyan-400 flex items-center justify-center text-cyan-300 shrink-0">
                   <Smartphone className="w-6 h-6 animate-pulse" />
@@ -180,7 +180,7 @@ export const Hero: React.FC<HeroProps> = ({
           )}
 
           {/* Feature Highlights Pills */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-lg mx-auto lg:mx-0">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-lg mx-auto lg:mx-0 w-full sm:w-auto">
             <div className="bg-black/70 comic-border p-2.5 flex items-center gap-2">
               <span className="text-lg text-comic-yellow">👥</span>
               <span className="text-xs font-black uppercase text-zinc-200">2-6 PLAYERS</span>
@@ -208,14 +208,14 @@ export const Hero: React.FC<HeroProps> = ({
         </div>
 
         {/* Right Column: Visual Comic Card Montage */}
-        <div className="relative flex-1 max-w-md w-full h-[420px] flex items-center justify-center">
+        <div className="relative w-full max-w-[340px] sm:max-w-md h-[280px] sm:h-[360px] lg:h-[420px] flex items-center justify-center shrink-0 mt-8 lg:mt-0 z-0">
           {/* Action Burst Background (Angular Comic Flare, No Oval) */}
           <div className="absolute inset-2 bg-comic-red/10 border-4 border-dashed border-comic-yellow/30 rotate-2 pointer-events-none" />
 
           {/* Floating Hero Preview Cards */}
           {/* Card 1: Thor */}
-          <div className="absolute top-4 left-6 w-48 bg-comic-panel comic-border-lg p-3 rotate-[-10deg] shadow-comic-lg hover:rotate-0 transition-transform duration-300">
-            <div className="h-28 bg-[#2b5c8f] border-2 border-black relative overflow-hidden mb-2">
+          <div className="absolute top-1 left-2 sm:top-4 sm:left-6 w-36 sm:w-44 lg:w-48 bg-comic-panel comic-border-lg p-2 sm:p-3 rotate-[-8deg] sm:rotate-[-10deg] shadow-comic-lg hover:rotate-0 transition-transform duration-300">
+            <div className="h-20 sm:h-24 lg:h-28 bg-[#2b5c8f] border-2 border-black relative overflow-hidden mb-2">
               <img
                 src="/characters/thor.jpg"
                 alt="Thor"
@@ -225,23 +225,23 @@ export const Hero: React.FC<HeroProps> = ({
                 }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
-              <div className="absolute bottom-1 left-2 text-[10px] font-black text-comic-yellow uppercase">
+              <div className="absolute bottom-1 left-2 text-[9px] sm:text-[10px] font-black text-comic-yellow uppercase">
                 GOD OF THUNDER
               </div>
-              <div className="absolute top-1 right-1 bg-comic-yellow text-black text-[9px] font-black px-1 border border-black shadow-comic-sm">
+              <div className="absolute top-1 right-1 bg-comic-yellow text-black text-[8px] sm:text-[9px] font-black px-1 border border-black shadow-comic-sm">
                 94 PWR
               </div>
             </div>
-            <h4 className="comic-font text-xl text-white">THOR</h4>
+            <h4 className="comic-font text-lg sm:text-xl text-white">THOR</h4>
             <div className="flex justify-between items-center mt-1">
-              <span className="text-[10px] font-bold text-zinc-400 uppercase">TANK / ASGARDIAN</span>
+              <span className="text-[9px] sm:text-[10px] font-bold text-zinc-400 uppercase truncate">TANK / ASG</span>
               <span className="text-xs font-black text-comic-yellow">🪙 850</span>
             </div>
           </div>
 
           {/* Card 2: Wanda (Scarlet Witch) */}
-          <div className="absolute bottom-4 right-6 w-48 bg-comic-panel comic-border-lg p-3 rotate-[8deg] shadow-comic-lg hover:rotate-0 transition-transform duration-300 z-10">
-            <div className="h-28 bg-[#9b111e] border-2 border-black relative overflow-hidden mb-2">
+          <div className="absolute bottom-1 right-2 sm:bottom-4 sm:right-6 w-36 sm:w-44 lg:w-48 bg-comic-panel comic-border-lg p-2 sm:p-3 rotate-[6deg] sm:rotate-[8deg] shadow-comic-lg hover:rotate-0 transition-transform duration-300 z-10">
+            <div className="h-20 sm:h-24 lg:h-28 bg-[#9b111e] border-2 border-black relative overflow-hidden mb-2">
               <img
                 src="/characters/wanda.jpg"
                 alt="Wanda Maximoff"
@@ -251,29 +251,29 @@ export const Hero: React.FC<HeroProps> = ({
                 }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
-              <div className="absolute bottom-1 left-2 text-[10px] font-black text-comic-yellow uppercase">
+              <div className="absolute bottom-1 left-2 text-[9px] sm:text-[10px] font-black text-comic-yellow uppercase">
                 SCARLET WITCH
               </div>
-              <div className="absolute top-1 right-1 bg-comic-yellow text-black text-[9px] font-black px-1 border border-black shadow-comic-sm">
+              <div className="absolute top-1 right-1 bg-comic-yellow text-black text-[8px] sm:text-[9px] font-black px-1 border border-black shadow-comic-sm">
                 99 PWR
               </div>
             </div>
-            <h4 className="comic-font text-xl text-white">WANDA</h4>
+            <h4 className="comic-font text-lg sm:text-xl text-white">WANDA</h4>
             <div className="flex justify-between items-center mt-1">
-              <span className="text-[10px] font-bold text-zinc-400 uppercase">CHAOS SORCERER</span>
+              <span className="text-[9px] sm:text-[10px] font-bold text-zinc-400 uppercase truncate">CHAOS SORC</span>
               <span className="text-xs font-black text-comic-yellow">🪙 1200</span>
             </div>
           </div>
 
           {/* Center VS Action Badge */}
-          <div className="absolute z-20 w-16 h-16 bg-comic-yellow border-4 border-black flex items-center justify-center rotate-[-12deg] shadow-comic-xl animate-bounce-short">
-            <span className="comic-font text-3xl text-black">VS</span>
+          <div className="absolute z-20 w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-comic-yellow border-3 sm:border-4 border-black flex items-center justify-center rotate-[-12deg] shadow-comic-xl animate-bounce-short">
+            <span className="comic-font text-xl sm:text-2xl lg:text-3xl text-black">VS</span>
           </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="max-w-7xl mx-auto w-full text-center text-xs font-bold text-zinc-500 uppercase tracking-wider z-10">
+      <footer className="max-w-7xl mx-auto w-full text-center text-xs font-bold text-zinc-500 uppercase tracking-wider z-10 pt-4">
         MARVEL BATTLE AUCTION • REAL-TIME MULTIPLAYER • AUTHORITATIVE BID ENGINE
       </footer>
     </div>
