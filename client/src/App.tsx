@@ -42,6 +42,24 @@ export const App: React.FC = () => {
   // Current active bout in clash arena
   const [currentBout, setCurrentBout] = useState<BattleBout | null>(null);
 
+  // Invite URL routing state
+  const [inviteRoomCode, setInviteRoomCode] = useState<string | null>(() => {
+    const path = window.location.pathname;
+    const joinMatch = path.match(/^\/join\/([A-Za-z0-9]+)$/i);
+    if (joinMatch) return joinMatch[1].toUpperCase();
+    const roomMatch = path.match(/^\/room\/([A-Za-z0-9]+)$/i);
+    if (roomMatch) return roomMatch[1].toUpperCase();
+    return null;
+  });
+  const [inviteErrorType, setInviteErrorType] = useState<InviteErrorType>(null);
+  const [isJoiningInvite, setIsJoiningInvite] = useState(false);
+  const joiningViaInviteRef = useRef(false);
+
+  // Analytics dedup refs
+  const lastAuctionRoundRef = useRef<number>(-1);
+  const lastBattleRoundRef = useRef<number>(-1);
+  const gameCompletedFiredRef = useRef(false);
+
   // Modals state
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isJoinOpen, setIsJoinOpen] = useState(false);
@@ -95,6 +113,29 @@ export const App: React.FC = () => {
   };
   const closeRosterModal = () => setIsRosterOpen(false);
 
+  // Fire app_loaded analytics once on mount
+  useEffect(() => {
+    gameAnalytics.appLoaded();
+  }, []);
+
+  // URL synchronization helper
+  const syncUrl = useCallback((path: string) => {
+    try {
+      if (window.location.pathname !== path) {
+        window.history.replaceState(null, '', path);
+      }
+    } catch {}
+  }, []);
+
+  // Sync URL when room state changes
+  useEffect(() => {
+    if (room) {
+      syncUrl(`/room/${room.roomCode}`);
+    } else if (!inviteRoomCode) {
+      syncUrl('/');
+    }
+  }, [room, inviteRoomCode, syncUrl]);
+
   // Android Back button (popstate) handler
   useEffect(() => {
     const handlePopState = () => {
@@ -108,6 +149,11 @@ export const App: React.FC = () => {
         setIsJoinOpen(false);
       } else if (isCreateOpen) {
         setIsCreateOpen(false);
+      } else if (inviteRoomCode && !room) {
+        // Back from invite landing -> go home
+        setInviteRoomCode(null);
+        setInviteErrorType(null);
+        syncUrl('/');
       } else if (room) {
         // Protect active real-time battle & auction states from accidental back gestures
         if (room.phase === 'AUCTION' || room.phase === 'BATTLE') {
@@ -118,13 +164,14 @@ export const App: React.FC = () => {
           setRoom(null);
           setSelfPlayerId(null);
           setCurrentBout(null);
+          syncUrl('/');
         }
       }
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [isRosterOpen, isHowToPlayOpen, isJoinOpen, isCreateOpen, room, addToast]);
+  }, [isRosterOpen, isHowToPlayOpen, isJoinOpen, isCreateOpen, room, inviteRoomCode, addToast, syncUrl]);
 
   // Socket event subscriptions
   useEffect(() => {
@@ -141,6 +188,8 @@ export const App: React.FC = () => {
       setSelfPlayerId(selfPlayerId);
       SessionStorage.saveSession(sessionToken, room.roomCode, selfPlayerId);
       setIsCreateOpen(false);
+      gameAnalytics.roomCreated(room.settings?.maxPlayers || 0, room.players.length);
+      gameCompletedFiredRef.current = false;
       addToast('success', 'ROOM CREATED', `Room ${room.roomCode} is live! Share with friends.`);
     });
 
@@ -149,6 +198,15 @@ export const App: React.FC = () => {
       setSelfPlayerId(selfPlayerId);
       SessionStorage.saveSession(sessionToken, room.roomCode, selfPlayerId);
       setIsJoinOpen(false);
+      // Clear invite state on successful join
+      if (joiningViaInviteRef.current) {
+        setInviteRoomCode(null);
+        setInviteErrorType(null);
+        setIsJoiningInvite(false);
+        joiningViaInviteRef.current = false;
+      }
+      gameAnalytics.roomJoined(room.settings?.maxPlayers || 0, room.players.length, room.roomCode);
+      gameCompletedFiredRef.current = false;
       addToast('success', 'JOINED LOBBY', `Connected to Room ${room.roomCode}`);
     });
 
@@ -185,6 +243,17 @@ export const App: React.FC = () => {
     socket.on('AUCTION_ROUND_STARTED', ({ auction, room }) => {
       setRoom(room);
       SoundManager.playCharacterReveal();
+      const roundIndex = auction?.currentRound ?? room?.auction?.currentRound ?? 0;
+      if (roundIndex !== lastAuctionRoundRef.current) {
+        lastAuctionRoundRef.current = roundIndex;
+        if (roundIndex === 0) {
+          gameAnalytics.auctionStarted(roundIndex, room.players?.length || 0);
+        }
+        const charId = auction?.character?.id || room?.auction?.character?.id || '';
+        if (charId) {
+          gameAnalytics.characterRevealed(charId, roundIndex);
+        }
+      }
     });
 
     socket.on('AUCTION_TIMER_TICK', ({ timerSeconds, endsAt }) => {
@@ -237,8 +306,11 @@ export const App: React.FC = () => {
       }
     });
 
-    socket.on('CHARACTER_SOLD', ({ room }) => {
+    socket.on('CHARACTER_SOLD', ({ winnerId, character, winningBid, room }) => {
       setRoom(room);
+      if (character?.id) {
+        gameAnalytics.characterWon(character.id, winningBid);
+      }
     });
 
     socket.on('CHARACTER_UNSOLD', ({ character, room }) => {
@@ -249,12 +321,18 @@ export const App: React.FC = () => {
 
     socket.on('AUCTION_TRANSITION_STARTED', ({ room }) => {
       setRoom(room);
+      gameAnalytics.auctionCompleted();
     });
 
     socket.on('FIGHTER_SELECTION_STARTED', ({ battleRound, room }) => {
       setRoom(room);
       setCurrentBout(null);
       SoundManager.playCharacterReveal();
+      const ri = battleRound?.roundIndex ?? 0;
+      if (ri !== lastBattleRoundRef.current) {
+        lastBattleRoundRef.current = ri;
+        gameAnalytics.battleStarted(ri, room.players?.length || 0);
+      }
       addToast('info', 'CHOOSE YOUR FIGHTER', `Bout #${battleRound.roundIndex}: Secretly lock in 1 hero!`);
     });
 
@@ -280,16 +358,38 @@ export const App: React.FC = () => {
 
     socket.on('BOUT_COMPLETED', ({ bout, room }) => {
       setRoom(room);
+      const ri = bout?.roundNumber ?? room?.battleRound?.roundIndex ?? 0;
+      gameAnalytics.battleCompleted(ri);
     });
 
     socket.on('GAME_COMPLETED', ({ tournament, room }) => {
       setRoom(room);
       setCurrentBout(null);
       SoundManager.playVictory();
+      if (!gameCompletedFiredRef.current) {
+        gameCompletedFiredRef.current = true;
+        gameAnalytics.winnerRevealed(room.players?.length || 0);
+        gameAnalytics.gameCompleted();
+      }
     });
 
     socket.on('ERROR_NOTIFICATION', ({ message }) => {
       SoundManager.playOutbid();
+      // Map join errors to invite error types when joining via invite link
+      if (joiningViaInviteRef.current) {
+        setIsJoiningInvite(false);
+        if (message.includes('does not exist')) {
+          setInviteErrorType('NOT_FOUND');
+        } else if (message.includes('full')) {
+          setInviteErrorType('FULL');
+        } else if (message.includes('already started')) {
+          setInviteErrorType('STARTED');
+        } else {
+          setInviteErrorType('GENERIC');
+        }
+        joiningViaInviteRef.current = false;
+        return; // Don't show normal toast for invite errors
+      }
       addToast('error', 'REJECTED', message);
     });
 
@@ -323,14 +423,36 @@ export const App: React.FC = () => {
 
   // Client Actions
   const handleCreateRoom = (playerName: string, settings: RoomSettings) => {
+    gameAnalytics.createRoomClicked();
     socket.emit('CREATE_ROOM', { playerName, settings });
   };
 
   const handleJoinRoom = (roomCode: string, playerName: string) => {
+    gameAnalytics.joinRoomClicked(roomCode);
     socket.emit('JOIN_ROOM', { roomCode, playerName });
   };
 
+  // Join via invite link
+  const handleInviteJoin = (roomCode: string, playerName: string) => {
+    gameAnalytics.playClicked('invite_landing');
+    gameAnalytics.joinRoomClicked(roomCode);
+    setIsJoiningInvite(true);
+    joiningViaInviteRef.current = true;
+    socket.emit('JOIN_ROOM', { roomCode, playerName });
+  };
+
+  // Return from invite landing to home
+  const handleInviteBackToHome = () => {
+    setInviteRoomCode(null);
+    setInviteErrorType(null);
+    setIsJoiningInvite(false);
+    joiningViaInviteRef.current = false;
+    syncUrl('/');
+  };
+
   const handleToggleReady = () => {
+    const selfP = room?.players.find((p) => p.id === selfPlayerId);
+    gameAnalytics.playerReady(!selfP?.isReady);
     socket.emit('TOGGLE_READY');
   };
 
@@ -339,6 +461,8 @@ export const App: React.FC = () => {
   };
 
   const handlePlaceBid = (amount: number) => {
+    const charId = room?.auction?.character?.id;
+    gameAnalytics.bidPlaced(amount, charId);
     socket.emit('PLACE_BID', { amount });
   };
 
@@ -355,6 +479,8 @@ export const App: React.FC = () => {
   };
 
   const handlePlayAgain = () => {
+    gameAnalytics.rematchClicked();
+    gameCompletedFiredRef.current = false;
     socket.emit('PLAY_AGAIN');
   };
 
@@ -363,6 +489,7 @@ export const App: React.FC = () => {
     setRoom(null);
     setSelfPlayerId(null);
     setCurrentBout(null);
+    syncUrl('/');
   };
 
   const selfPlayer = room?.players.find((p) => p.id === selfPlayerId) || null;
@@ -370,10 +497,25 @@ export const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-comic-dark text-white flex flex-col justify-between select-none">
       {/* Dynamic View by Game Phase */}
-      {!room || !selfPlayer ? (
+      {/* Show InviteLandingView when invite URL is active and not yet in a room */}
+      {inviteRoomCode && (!room || !selfPlayer) ? (
+        <InviteLandingView
+          roomCode={inviteRoomCode}
+          onJoin={handleInviteJoin}
+          onBackToHome={handleInviteBackToHome}
+          errorType={inviteErrorType}
+          isJoining={isJoiningInvite}
+        />
+      ) : !room || !selfPlayer ? (
         <Hero
-          onCreateRoom={openCreateModal}
-          onJoinRoom={() => openJoinModal()}
+          onCreateRoom={() => {
+            gameAnalytics.playClicked('hero_create');
+            openCreateModal();
+          }}
+          onJoinRoom={() => {
+            gameAnalytics.playClicked('hero_join');
+            openJoinModal();
+          }}
           onOpenHowToPlay={openHowToPlayModal}
           onOpenRoster={openRosterModal}
           isMuted={isMuted}
