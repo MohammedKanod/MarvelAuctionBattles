@@ -1,0 +1,15 @@
+{
+  "name": "marvel-battle-auction-android",
+  "version": "1.0.0",
+  "description": "Android TWA package for Marvel Battle Auction",
+  "private": true,
+  "scripts": {
+    "build:apk": "gradlew.bat assembleRelease",
+    "build:aab": "gradlew.bat bundleRelease",
+    "build": "gradlew.bat assembleRelease bundleRelease",
+    "bubblewrap:build": "npx @bubblewrap/cli build --skipPwaValidation"
+  },
+  "keywords": ["android", "twa", "bubblewrap", "pwa"],
+  "author": "Antigravity",
+  "license": "MIT"
+}

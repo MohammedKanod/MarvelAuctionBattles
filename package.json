@@ -12,6 +12,8 @@
     "build:server": "npm --prefix server install && npm --prefix server run build",
     "build:client": "npm --prefix client install && npm --prefix client run build",
     "build": "npm run build:server && npm run build:client",
+    "android:apk": "npm --prefix android run build:apk",
+    "android:aab": "npm --prefix android run build:aab",
     "start": "npm --prefix server start"
   },
   "keywords": ["marvel", "auction", "multiplayer", "socket.io", "react", "game"],

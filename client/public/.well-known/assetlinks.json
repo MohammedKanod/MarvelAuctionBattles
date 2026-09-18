@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.marvelbattleauction.app",
+      "sha256_cert_fingerprints": [
+        "58:C1:C2:26:31:D4:41:8A:5D:65:6B:B3:54:4B:CB:B0:7B:E8:54:F5:C0:16:E4:C0:9B:D9:AC:3D:5D:35:31:B1"
+      ]
+    }
+  }
+]

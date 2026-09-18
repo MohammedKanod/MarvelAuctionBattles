@@ -43,3 +43,21 @@ export const SessionStorage = {
     } catch {}
   }
 };
+
+// Automatic reconnect & session re-sync when Android TWA returns to foreground
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      if (!socket.connected) {
+        socket.connect();
+      }
+      const saved = SessionStorage.getSavedSession();
+      if (saved) {
+        socket.emit('RECONNECT_SESSION', {
+          sessionToken: saved.sessionToken,
+          roomCode: saved.roomCode
+        });
+      }
+    }
+  });
+}

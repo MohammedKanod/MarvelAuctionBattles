@@ -39,3 +39,15 @@ Thumbs.db
 .vite/
 .turbo/
 .cache/
+
+# Android Keystores & Build Artifacts (NEVER COMMIT)
+*.keystore
+*.jks
+*.key
+*.pem
+*.p12
+android/build/
+android/.gradle/
+android/app/build/
+*.apk
+*.aab

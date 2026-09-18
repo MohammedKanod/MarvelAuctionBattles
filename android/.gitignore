@@ -1,0 +1,21 @@
+# Android Signing Keystores and Secrets (NEVER COMMIT)
+*.keystore
+*.jks
+*.key
+*.pem
+*.p12
+*.properties
+local.properties
+signing.properties
+
+# Gradle & Build Artifacts
+build/
+.gradle/
+app/build/
+*.apk
+*.aab
+
+# OS & IDE
+.idea/
+.DS_Store
+*.iml

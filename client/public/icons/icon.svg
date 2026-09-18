@@ -1,0 +1,157 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Comic Halftone Pattern -->
+    <pattern id="halftone" x="0" y="0" width="12" height="12" patternUnits="userSpaceOnUse">
+      <circle cx="6" cy="6" r="2.2" fill="#000000" opacity="0.25"/>
+    </pattern>
+
+    <!-- Gradients -->
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#991b1b"/>
+    </linearGradient>
+
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffea00"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+
+    <linearGradient id="boltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="35%" stop-color="#fff066"/>
+      <stop offset="100%" stop-color="#ffd100"/>
+    </linearGradient>
+
+    <!-- Hard Comic Drop Shadow Filter -->
+    <filter id="comicShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="10" dy="12" stdDeviation="0" flood-color="#000000" flood-opacity="1"/>
+    </filter>
+
+    <filter id="ribbonShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="6" dy="8" stdDeviation="0" flood-color="#000000" flood-opacity="1"/>
+    </filter>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="512" height="512" rx="100" fill="#0d0d11"/>
+  
+  <!-- Outer Comic Border -->
+  <rect width="496" height="496" x="8" y="8" rx="92" fill="none" stroke="#27272a" stroke-width="4"/>
+
+  <!-- Comic Action Rays -->
+  <g opacity="0.12">
+    <polygon points="256,256 0,0 75,0" fill="#ffd100"/>
+    <polygon points="256,256 150,0 225,0" fill="#ffd100"/>
+    <polygon points="256,256 300,0 375,0" fill="#ffd100"/>
+    <polygon points="256,256 450,0 512,0" fill="#ffd100"/>
+    <polygon points="256,256 512,100 512,175" fill="#ffd100"/>
+    <polygon points="256,256 512,250 512,325" fill="#ffd100"/>
+    <polygon points="256,256 512,400 512,475" fill="#ffd100"/>
+    <polygon points="256,256 475,512 400,512" fill="#ffd100"/>
+    <polygon points="256,256 325,512 250,512" fill="#ffd100"/>
+    <polygon points="256,256 175,512 100,512" fill="#ffd100"/>
+    <polygon points="256,256 25,512 0,450" fill="#ffd100"/>
+    <polygon points="256,256 0,350 0,275" fill="#ffd100"/>
+    <polygon points="256,256 0,200 0,125" fill="#ffd100"/>
+  </g>
+
+  <!-- Primary Shield (Hard Comic Drop Shadow) -->
+  <g filter="url(#comicShadow)">
+    <!-- Outer Shield Border -->
+    <path d="M 256,54 
+             L 416,104 
+             C 416,284 360,378 256,432 
+             C 152,378 96,284 96,104 
+             Z" 
+          fill="#000000"/>
+    
+    <!-- Outer Red Shield -->
+    <path d="M 256,66 
+             L 404,112 
+             C 404,276 352,364 256,416 
+             C 160,364 108,276 108,112 
+             Z" 
+          fill="url(#shieldGrad)"/>
+
+    <!-- Halftone Overlay on Red Shield -->
+    <path d="M 256,66 
+             L 404,112 
+             C 404,276 352,364 256,416 
+             C 160,364 108,276 108,112 
+             Z" 
+          fill="url(#halftone)"/>
+
+    <!-- Inner Gold Shield Inset -->
+    <path d="M 256,88 
+             L 384,128 
+             C 384,260 340,338 256,384 
+             C 172,338 128,260 128,128 
+             Z" 
+          fill="url(#goldGrad)" 
+          stroke="#000000" 
+          stroke-width="8"/>
+  </g>
+
+  <!-- Crossed Combat Gavels (Symbolizing Auction & Clash) -->
+  <g stroke="#000000" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Gavel 1 (Left to Right) -->
+    <g transform="rotate(-30 256 220)">
+      <rect x="250" y="140" width="12" height="120" rx="4" fill="#d4d4d8"/>
+      <rect x="234" y="130" width="44" height="26" rx="4" fill="#18181b"/>
+      <rect x="238" y="134" width="36" height="8" fill="#ffd100"/>
+    </g>
+    <!-- Gavel 2 (Right to Left) -->
+    <g transform="rotate(30 256 220)">
+      <rect x="250" y="140" width="12" height="120" rx="4" fill="#d4d4d8"/>
+      <rect x="234" y="130" width="44" height="26" rx="4" fill="#18181b"/>
+      <rect x="238" y="134" width="36" height="8" fill="#ffd100"/>
+    </g>
+  </g>
+
+  <!-- Central Action Comic Lightning Bolt -->
+  <g filter="url(#comicShadow)">
+    <!-- Black Outline Silhouette -->
+    <polygon points="274,80 184,234 260,234 220,366 338,198 262,198" 
+             fill="#000000" 
+             stroke="#000000" 
+             stroke-width="16" 
+             stroke-linejoin="round"/>
+    <!-- Yellow/White Glowing Bolt -->
+    <polygon points="274,80 184,234 260,234 220,366 338,198 262,198" 
+             fill="url(#boltGrad)" 
+             stroke="#000000" 
+             stroke-width="5" 
+             stroke-linejoin="round"/>
+  </g>
+
+  <!-- Comic Slanted Ribbon Banner: "BATTLE AUCTION" -->
+  <g filter="url(#ribbonShadow)" transform="rotate(-5 256 390)">
+    <!-- Ribbon Black Border Box -->
+    <polygon points="46,368 466,368 450,428 30,428" fill="#000000"/>
+    <!-- Ribbon Yellow Background -->
+    <polygon points="52,374 460,374 446,422 38,422" fill="#ffd100"/>
+    <!-- Halftone Ribbon Accent -->
+    <polygon points="52,374 460,374 446,422 38,422" fill="url(#halftone)" opacity="0.4"/>
+    
+    <!-- Text: BATTLE AUCTION -->
+    <text x="249" y="410" 
+          font-family="'Impact', 'Arial Black', sans-serif" 
+          font-size="34" 
+          font-weight="900" 
+          letter-spacing="3" 
+          text-anchor="middle" 
+          fill="#000000">
+      BATTLE AUCTION
+    </text>
+  </g>
+
+  <!-- Comic Sparkles / Energy Stars -->
+  <g fill="#ffd100" stroke="#000000" stroke-width="2">
+    <!-- Top Left Spark -->
+    <polygon points="80,70 85,85 100,90 85,95 80,110 75,95 60,90 75,85"/>
+    <!-- Right Spark -->
+    <polygon points="430,220 434,232 446,236 434,240 430,252 426,240 414,236 426,232"/>
+    <!-- Bottom Left Spark -->
+    <polygon points="90,320 93,328 102,331 93,334 90,342 87,334 78,331 87,328"/>
+  </g>
+</svg>

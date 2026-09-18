@@ -14,6 +14,7 @@ import { ResultsView } from './components/results/ResultsView';
 import { CharacterRosterModal } from './components/roster/CharacterRosterModal';
 import { ToastContainer, ToastMessage } from './components/ui/Toast';
 import { SoundManager } from './sound/SoundManager';
+import { UpdatePrompt } from './components/pwa/UpdatePrompt';
 
 export const App: React.FC = () => {
   const [room, setRoom] = useState<RoomState | null>(null);
@@ -49,6 +50,61 @@ export const App: React.FC = () => {
     const nextMuted = SoundManager.toggleMute();
     setIsMuted(nextMuted);
   };
+
+  // Modal navigation with Android back button support
+  const openCreateModal = () => {
+    try { window.history.pushState({ modal: 'create' }, ''); } catch {}
+    setIsCreateOpen(true);
+  };
+  const closeCreateModal = () => setIsCreateOpen(false);
+
+  const openJoinModal = (code: string = '') => {
+    setInitialRoomCode(code);
+    try { window.history.pushState({ modal: 'join' }, ''); } catch {}
+    setIsJoinOpen(true);
+  };
+  const closeJoinModal = () => setIsJoinOpen(false);
+
+  const openHowToPlayModal = () => {
+    try { window.history.pushState({ modal: 'howToPlay' }, ''); } catch {}
+    setIsHowToPlayOpen(true);
+  };
+  const closeHowToPlayModal = () => setIsHowToPlayOpen(false);
+
+  const openRosterModal = () => {
+    try { window.history.pushState({ modal: 'roster' }, ''); } catch {}
+    setIsRosterOpen(true);
+  };
+  const closeRosterModal = () => setIsRosterOpen(false);
+
+  // Android Back button (popstate) handler
+  useEffect(() => {
+    const handlePopState = () => {
+      if (isRosterOpen) {
+        setIsRosterOpen(false);
+      } else if (isHowToPlayOpen) {
+        setIsHowToPlayOpen(false);
+      } else if (isJoinOpen) {
+        setIsJoinOpen(false);
+      } else if (isCreateOpen) {
+        setIsCreateOpen(false);
+      } else if (room) {
+        // Protect active real-time battle & auction states from accidental back gestures
+        if (room.phase === 'AUCTION' || room.phase === 'BATTLE') {
+          try { window.history.pushState(null, ''); } catch {}
+          addToast('info', 'MATCH IN PROGRESS', 'Active match in progress. Cannot navigate back.');
+        } else if (room.phase === 'LOBBY' || room.phase === 'RESULTS') {
+          SessionStorage.clearSession();
+          setRoom(null);
+          setSelfPlayerId(null);
+          setCurrentBout(null);
+        }
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [isRosterOpen, isHowToPlayOpen, isJoinOpen, isCreateOpen, room, addToast]);
 
   // Socket event subscriptions
   useEffect(() => {
@@ -296,13 +352,10 @@ export const App: React.FC = () => {
       {/* Dynamic View by Game Phase */}
       {!room || !selfPlayer ? (
         <Hero
-          onCreateRoom={() => setIsCreateOpen(true)}
-          onJoinRoom={() => {
-            setInitialRoomCode('');
-            setIsJoinOpen(true);
-          }}
-          onOpenHowToPlay={() => setIsHowToPlayOpen(true)}
-          onOpenRoster={() => setIsRosterOpen(true)}
+          onCreateRoom={openCreateModal}
+          onJoinRoom={() => openJoinModal()}
+          onOpenHowToPlay={openHowToPlayModal}
+          onOpenRoster={openRosterModal}
           isMuted={isMuted}
           onToggleMute={toggleMute}
         />
@@ -313,7 +366,7 @@ export const App: React.FC = () => {
           onToggleReady={handleToggleReady}
           onStartGame={handleStartGame}
           onLeaveRoom={handleLeaveRoom}
-          onOpenRoster={() => setIsRosterOpen(true)}
+          onOpenRoster={openRosterModal}
         />
       ) : room.phase === 'AUCTION' && room.auction ? (
         <AuctionStage
@@ -322,7 +375,7 @@ export const App: React.FC = () => {
           selfPlayer={selfPlayer}
           onPlaceBid={handlePlaceBid}
           onPassAuction={handlePassAuction}
-          onOpenRoster={() => setIsRosterOpen(true)}
+          onOpenRoster={openRosterModal}
         />
       ) : room.phase === 'AUCTION_TRANSITION' ? (
         <AuctionToBattleTransition />
@@ -361,26 +414,29 @@ export const App: React.FC = () => {
       {/* Floating Modals */}
       <CreateRoomModal
         isOpen={isCreateOpen}
-        onClose={() => setIsCreateOpen(false)}
+        onClose={closeCreateModal}
         onCreate={handleCreateRoom}
       />
 
       <JoinRoomModal
         isOpen={isJoinOpen}
-        onClose={() => setIsJoinOpen(false)}
+        onClose={closeJoinModal}
         onJoin={handleJoinRoom}
         initialRoomCode={initialRoomCode}
       />
 
       <HowToPlayModal
         isOpen={isHowToPlayOpen}
-        onClose={() => setIsHowToPlayOpen(false)}
+        onClose={closeHowToPlayModal}
       />
 
       <CharacterRosterModal
         isOpen={isRosterOpen}
-        onClose={() => setIsRosterOpen(false)}
+        onClose={closeRosterModal}
       />
+
+      {/* Unobtrusive PWA Update Banner */}
+      <UpdatePrompt currentPhase={room?.phase} />
 
       {/* Toast Notifications */}
       <ToastContainer toasts={toasts} onDismiss={handleDismissToast} />
