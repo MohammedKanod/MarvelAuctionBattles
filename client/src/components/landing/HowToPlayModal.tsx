@@ -25,7 +25,7 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose 
     {
       step: '03',
       title: 'LIVE CHARACTER AUCTION',
-      desc: 'Marvel heroes appear one by one on the auction block. Compete in real-time with anti-sniping rules.',
+      desc: 'Multiverse superheroes and villains appear one by one on the auction block. Compete in real-time with anti-sniping rules.',
       icon: '🔨'
     },
     {

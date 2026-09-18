@@ -71,7 +71,7 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
               type="text"
               value={playerName}
               onChange={(e) => setPlayerName(e.target.value)}
-              placeholder="e.g. CaptainMarvel, Deadpool"
+              placeholder="e.g. Batman, IronMan, Flash"
               maxLength={18}
               className="w-full bg-black border-3 border-black text-white font-bold p-3 focus:outline-none focus:border-comic-yellow text-base shadow-comic-sm"
               autoFocus

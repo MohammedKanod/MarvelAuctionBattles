@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Character, Rarity } from '../../../../shared/types';
-import { MARVEL_CHARACTERS } from '../../data/characters';
+import { ALL_CHARACTERS } from '../../data/characters';
 import { ComicCard } from '../ui/ComicCard';
 import { ComicButton } from '../ui/ComicButton';
 import { SoundManager } from '../../sound/SoundManager';
@@ -15,8 +15,9 @@ export const CharacterRosterModal: React.FC<CharacterRosterModalProps> = ({
   isOpen,
   onClose
 }) => {
-  const [characters, setCharacters] = useState<Character[]>(MARVEL_CHARACTERS);
+  const [characters, setCharacters] = useState<Character[]>(ALL_CHARACTERS);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedUniverse, setSelectedUniverse] = useState<'ALL' | 'MARVEL' | 'DC'>('ALL');
   const [selectedRole, setSelectedRole] = useState<string>('ALL');
   const [selectedRarity, setSelectedRarity] = useState<string>('ALL');
   const [sortBy, setSortBy] = useState<'power' | 'name' | 'rarity'>('power');
@@ -32,7 +33,7 @@ export const CharacterRosterModal: React.FC<CharacterRosterModalProps> = ({
         }
       })
       .catch(() => {
-        // Fallback to local MARVEL_CHARACTERS bundle
+        // Fallback to local ALL_CHARACTERS bundle
       });
   }, []);
 
@@ -48,8 +49,13 @@ export const CharacterRosterModal: React.FC<CharacterRosterModalProps> = ({
 
         const matchesRole = selectedRole === 'ALL' || char.role === selectedRole;
         const matchesRarity = selectedRarity === 'ALL' || char.rarity === selectedRarity;
+        const isDc = char.universe.includes('DC');
+        const matchesUniverse =
+          selectedUniverse === 'ALL' ||
+          (selectedUniverse === 'DC' && isDc) ||
+          (selectedUniverse === 'MARVEL' && !isDc);
 
-        return matchesSearch && matchesRole && matchesRarity;
+        return matchesSearch && matchesRole && matchesRarity && matchesUniverse;
       })
       .sort((a, b) => {
         if (sortBy === 'power') {
@@ -70,7 +76,7 @@ export const CharacterRosterModal: React.FC<CharacterRosterModalProps> = ({
         }
         return 0;
       });
-  }, [characters, searchTerm, selectedRole, selectedRarity, sortBy]);
+  }, [characters, searchTerm, selectedUniverse, selectedRole, selectedRarity, sortBy]);
 
   if (!isOpen) return null;
 
@@ -97,9 +103,11 @@ export const CharacterRosterModal: React.FC<CharacterRosterModalProps> = ({
           {/* Modal Header */}
           <div className="relative z-10 p-4 sm:p-5 bg-black border-b-3 border-black flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-comic-red border-3 border-black flex items-center justify-center rotate-[-4deg] shadow-comic-sm">
-                <span className="text-xl">🦸</span>
-              </div>
+              <img
+                src="/logo.png"
+                alt="Battle Auction"
+                className="w-10 h-10 object-cover border-2 border-black rotate-[-4deg] shadow-comic-sm shrink-0"
+              />
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="comic-font text-3xl sm:text-4xl text-white tracking-wider uppercase">
@@ -110,7 +118,7 @@ export const CharacterRosterModal: React.FC<CharacterRosterModalProps> = ({
                   </span>
                 </div>
                 <p className="text-xs text-zinc-400 font-semibold">
-                  Browse all authentic Marvel combatants, battle archetypes, and tactical dossiers.
+                  Browse all authentic Marvel and DC multiverse combatants, battle archetypes, and tactical dossiers.
                 </p>
               </div>
             </div>
@@ -130,6 +138,51 @@ export const CharacterRosterModal: React.FC<CharacterRosterModalProps> = ({
 
           {/* Search & Controls Toolbar */}
           <div className="relative z-10 bg-comic-panel border-b-2 border-black p-3 sm:p-4 flex flex-col gap-3">
+            {/* Universe Filter Tabs */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+              <span className="text-[10px] font-black uppercase text-zinc-400 shrink-0">UNIVERSE:</span>
+              <button
+                onClick={() => {
+                  SoundManager.playClick();
+                  setSelectedUniverse('ALL');
+                }}
+                className={`comic-border px-3 py-1 text-xs font-black uppercase whitespace-nowrap transition-all ${
+                  selectedUniverse === 'ALL'
+                    ? 'bg-comic-yellow text-black -translate-y-0.5 shadow-comic-sm'
+                    : 'bg-black text-zinc-300 hover:bg-zinc-800'
+                }`}
+              >
+                🌌 ALL UNIVERSES ({characters.length})
+              </button>
+              <button
+                onClick={() => {
+                  SoundManager.playClick();
+                  setSelectedUniverse('MARVEL');
+                }}
+                className={`comic-border px-3 py-1 text-xs font-black uppercase whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                  selectedUniverse === 'MARVEL'
+                    ? 'bg-comic-red text-white -translate-y-0.5 shadow-comic-sm'
+                    : 'bg-black text-zinc-300 hover:bg-zinc-800'
+                }`}
+              >
+                <span className="w-2 h-2 bg-comic-red rounded-full" />
+                MARVEL ({characters.filter(c => !c.universe.includes('DC')).length})
+              </button>
+              <button
+                onClick={() => {
+                  SoundManager.playClick();
+                  setSelectedUniverse('DC');
+                }}
+                className={`comic-border px-3 py-1 text-xs font-black uppercase whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                  selectedUniverse === 'DC'
+                    ? 'bg-blue-600 text-white -translate-y-0.5 shadow-comic-sm'
+                    : 'bg-black text-zinc-300 hover:bg-zinc-800'
+                }`}
+              >
+                <span className="w-2 h-2 bg-blue-500 rounded-full" />
+                DC COMICS ({characters.filter(c => c.universe.includes('DC')).length})
+              </button>
+            </div>
             {/* Top row: Search input & sort */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
               <div className="relative flex-1">

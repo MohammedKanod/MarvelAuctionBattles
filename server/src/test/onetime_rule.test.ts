@@ -1,4 +1,4 @@
-import { MARVEL_CHARACTERS, getCharacterById } from '../data/characters';
+import { MARVEL_CHARACTERS, DC_CHARACTERS, ALL_CHARACTERS, getCharacterById } from '../data/characters';
 import { RoomManager } from '../game/RoomManager';
 import { RoomState, Player } from '../../../shared/types';
 
@@ -19,26 +19,28 @@ function runOnetimeDeploymentTests() {
 
   // 1. Character Database Image Verification
   console.log('[Test 1] Character Artwork & Image Links:');
-  assert(MARVEL_CHARACTERS.length === 102, `Total characters in roster: 102 (Actual: ${MARVEL_CHARACTERS.length})`);
+  assert(MARVEL_CHARACTERS.length === 102, `Total Marvel characters in roster: 102 (Actual: ${MARVEL_CHARACTERS.length})`);
+  assert(DC_CHARACTERS.length === 98, `Total DC characters in roster: 98 (Actual: ${DC_CHARACTERS.length})`);
+  assert(ALL_CHARACTERS.length === 200, `Total combined multiverse characters: 200 (Actual: ${ALL_CHARACTERS.length})`);
   
-  const uniqueIds = new Set(MARVEL_CHARACTERS.map(c => c.id));
-  assert(uniqueIds.size === 102, `All 102 characters have unique IDs (Unique: ${uniqueIds.size})`);
+  const uniqueIds = new Set(ALL_CHARACTERS.map(c => c.id));
+  assert(uniqueIds.size === 200, `All 200 characters have unique IDs (Unique: ${uniqueIds.size})`);
 
-  const missingImages = MARVEL_CHARACTERS.filter(c => !c.imageUrl || !c.artwork);
-  assert(missingImages.length === 0, `All characters have valid imageUrl and artwork (Missing: ${missingImages.length})`);
+  const missingImages = ALL_CHARACTERS.filter(c => !c.imageUrl || !c.artwork);
+  assert(missingImages.length === 0, `All 200 characters have valid imageUrl and artwork (Missing: ${missingImages.length})`);
 
-  // Verify all 102 image files exist on disk
+  // Verify all 200 image files exist on disk
   const fs = require('fs');
   const path = require('path');
   const clientDir = path.resolve(__dirname, '../../../client/public/characters');
   let missingFiles = 0;
-  for (const c of MARVEL_CHARACTERS) {
+  for (const c of ALL_CHARACTERS) {
     const file = path.join(clientDir, `${c.id}.jpg`);
     if (!fs.existsSync(file) || fs.statSync(file).size < 5000) {
       missingFiles++;
     }
   }
-  assert(missingFiles === 0, `All 102 characters have verified JPG image files (>5KB) on disk`);
+  assert(missingFiles === 0, `All 200 characters have verified JPG image files (>5KB) on disk`);
 
   // Verify specific image accuracy (no duplicate copies)
   const ikarisSize = fs.statSync(path.join(clientDir, 'ikaris.jpg')).size;

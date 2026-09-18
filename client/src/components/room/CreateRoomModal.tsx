@@ -91,7 +91,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
               type="text"
               value={playerName}
               onChange={(e) => setPlayerName(e.target.value)}
-              placeholder="e.g. IronSpidey, Thor99"
+              placeholder="e.g. Batman, IronMan, Superman"
               maxLength={18}
               className="w-full bg-black border-3 border-black text-white font-bold p-3 focus:outline-none focus:border-comic-yellow text-base shadow-comic-sm"
               autoFocus

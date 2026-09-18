@@ -170,10 +170,17 @@ export const ComicCard: React.FC<ComicCardProps> = ({
           </div>
         )}
 
-        {/* Role Pill - Bottom Left Corner */}
-        <div className="absolute bottom-2 left-2 z-20">
-          <span className="text-[10px] font-black uppercase tracking-widest text-black bg-white/95 px-2.5 py-0.5 border border-black shadow-comic-sm">
+        {/* Role & Universe Pill - Bottom Left Corner */}
+        <div className="absolute bottom-2 left-2 z-20 flex items-center gap-1">
+          <span className="text-[10px] font-black uppercase tracking-widest text-black bg-white/95 px-2 py-0.5 border border-black shadow-comic-sm">
             {character.role}
+          </span>
+          <span className={`text-[9px] font-black uppercase px-1.5 py-0.5 border border-black shadow-comic-sm ${
+            character.universe.includes('DC')
+              ? 'bg-blue-600 text-white'
+              : 'bg-red-600 text-white'
+          }`}>
+            {character.universe.includes('DC') ? 'DC' : 'MARVEL'}
           </span>
         </div>
       </div>

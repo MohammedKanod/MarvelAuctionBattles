@@ -5,7 +5,7 @@ import cors from 'cors';
 import path from 'path';
 import { RoomManager } from './game/RoomManager';
 import { setupSocketHandlers } from './socket/socketHandler';
-import { MARVEL_CHARACTERS } from './data/characters';
+import { ALL_CHARACTERS, MARVEL_CHARACTERS } from './data/characters';
 import { ServerToClientEvents, ClientToServerEvents } from '../../shared/types';
 
 const app = express();
@@ -29,8 +29,8 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
     origin: '*',
     methods: ['GET', 'POST']
   },
-  pingInterval: 10000,
-  pingTimeout: 5000
+  pingTimeout: 30000,
+  pingInterval: 10000
 });
 
 // Initialize Authoritative Room Manager
@@ -48,11 +48,11 @@ setupSocketHandlers(io, roomManager);
 
 // REST API Endpoints
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', time: new Date().toISOString(), service: 'Marvel Battle Auction Engine' });
+  res.json({ status: 'ok', time: new Date().toISOString(), service: 'Battle Auction Multiverse Engine' });
 });
 
 app.get('/api/characters', (req, res) => {
-  res.json({ total: MARVEL_CHARACTERS.length, characters: MARVEL_CHARACTERS });
+  res.json({ total: ALL_CHARACTERS.length, characters: ALL_CHARACTERS });
 });
 
 app.get('/api/room/:code', (req, res) => {
@@ -75,14 +75,14 @@ app.use(express.static(clientDist));
 app.get('*', (req, res, next) => {
   if (req.url.startsWith('/api') || req.url.startsWith('/health')) return next();
   res.sendFile(path.join(clientDist, 'index.html'), (err) => {
-    if (err) res.status(200).send('Marvel Battle Auction API Server Running');
+    if (err) res.status(200).send('Battle Auction Multiverse API Server Running');
   });
 });
 
 server.listen(PORT, () => {
   console.log(`================================================`);
-  console.log(`💥 MARVEL BATTLE AUCTION SERVER ONLINE`);
+  console.log(`💥 BATTLE AUCTION MULTIVERSE SERVER ONLINE`);
   console.log(`⚡ Port: ${PORT}`);
-  console.log(`🔥 Ready for real-time superhero bidding & battles`);
+  console.log(`🔥 Ready for real-time superhero bidding & battles (200 Heroes)`);
   console.log(`================================================`);
 });

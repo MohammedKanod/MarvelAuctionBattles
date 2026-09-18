@@ -28,13 +28,20 @@ export const Hero: React.FC<HeroProps> = ({
     <div className="relative min-h-[100dvh] flex flex-col justify-between overflow-x-hidden overflow-y-auto px-4 py-6 sm:px-8">
       {/* Top Navbar */}
       <header className="max-w-7xl mx-auto w-full flex justify-between items-center z-20">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-comic-red border-3 border-black flex items-center justify-center rotate-[-6deg] shadow-comic-sm">
-            <span className="text-xl">⚡</span>
+        <div className="flex items-center gap-3">
+          <img
+            src="/logo.png"
+            alt="Battle Auction"
+            className="w-10 h-10 object-cover border-2 border-black rotate-[-4deg] shadow-comic-sm shrink-0"
+          />
+          <div>
+            <span className="comic-font text-2xl sm:text-3xl text-white tracking-wider block leading-none">
+              BATTLE AUCTION
+            </span>
+            <span className="text-[9px] font-black uppercase text-comic-yellow tracking-widest block mt-0.5">
+              SUPERHERO MULTIVERSE CLASH
+            </span>
           </div>
-          <span className="comic-font text-2xl sm:text-3xl text-white tracking-wider">
-            MARVEL BATTLE AUCTION
-          </span>
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
@@ -64,10 +71,10 @@ export const Hero: React.FC<HeroProps> = ({
               onOpenRoster();
             }}
             className="comic-btn bg-black hover:bg-zinc-800 text-comic-yellow border-2 border-comic-yellow px-3 py-2 flex items-center gap-1.5 shadow-comic-sm"
-            title="Browse all 102 Marvel heroes"
+            title="Browse all 200 multiverse heroes"
           >
             <BookOpen className="w-4 h-4 text-comic-yellow" />
-            <span className="text-xs font-black uppercase hidden sm:inline">HERO ROSTER (102)</span>
+            <span className="text-xs font-black uppercase hidden sm:inline">HERO ROSTER (200)</span>
           </button>
 
           <button
@@ -98,12 +105,12 @@ export const Hero: React.FC<HeroProps> = ({
 
           {/* Main Title */}
           <h1 className="comic-font text-5xl sm:text-7xl lg:text-8xl text-white tracking-wide uppercase leading-none drop-shadow-lg mb-6">
-            MARVEL <span className="text-comic-red">BATTLE</span> <br />
+            <span className="text-comic-red">BATTLE</span> <br />
             <span className="text-comic-yellow">AUCTION</span>
           </h1>
 
           <p className="text-lg sm:text-xl text-zinc-300 font-semibold max-w-xl mb-8 leading-relaxed">
-            The high-stakes superhero party game. Bid against your friends in a live character auction, draft your dream MCU lineup, and battle in high-energy tournament matchups!
+            The high-stakes superhero party game. Bid against your friends in a live character auction, draft your dream superhero & villain lineup across Marvel & DC, and battle in high-energy multiverse tournament matchups!
           </p>
 
           {/* CTA Buttons */}
@@ -141,7 +148,7 @@ export const Hero: React.FC<HeroProps> = ({
               onClick={onOpenRoster}
               className="w-full sm:w-auto border-2 border-comic-yellow text-comic-yellow"
             >
-              🦸 HERO ROSTER (102)
+              🦸 HERO ROSTER (200)
             </ComicButton>
           </div>
 
@@ -195,10 +202,10 @@ export const Hero: React.FC<HeroProps> = ({
                 onOpenRoster();
               }}
               className="bg-black/70 comic-border p-2.5 flex items-center gap-2 cursor-pointer hover:bg-zinc-800 transition-colors"
-              title="Click to view all 102 heroes"
+              title="Click to view all 200 heroes"
             >
               <span className="text-lg text-comic-blue">🦸</span>
-              <span className="text-xs font-black uppercase text-zinc-200">102 HEROES</span>
+              <span className="text-xs font-black uppercase text-zinc-200">200 HEROES</span>
             </div>
             <div className="bg-black/70 comic-border p-2.5 flex items-center gap-2">
               <span className="text-lg text-yellow-400">⚔️</span>
@@ -213,7 +220,7 @@ export const Hero: React.FC<HeroProps> = ({
           <div className="absolute inset-2 bg-comic-red/10 border-4 border-dashed border-comic-yellow/30 rotate-2 pointer-events-none" />
 
           {/* Floating Hero Preview Cards */}
-          {/* Card 1: Thor */}
+          {/* Card 1: Thor (Marvel) */}
           <div className="absolute top-1 left-2 sm:top-4 sm:left-6 w-36 sm:w-44 lg:w-48 bg-comic-panel comic-border-lg p-2 sm:p-3 rotate-[-8deg] sm:rotate-[-10deg] shadow-comic-lg hover:rotate-0 transition-transform duration-300">
             <div className="h-20 sm:h-24 lg:h-28 bg-[#2b5c8f] border-2 border-black relative overflow-hidden mb-2">
               <img
@@ -231,6 +238,9 @@ export const Hero: React.FC<HeroProps> = ({
               <div className="absolute top-1 right-1 bg-comic-yellow text-black text-[8px] sm:text-[9px] font-black px-1 border border-black shadow-comic-sm">
                 94 PWR
               </div>
+              <div className="absolute top-1 left-1 bg-red-600 text-white text-[7px] sm:text-[8px] font-black px-1 border border-black uppercase">
+                MARVEL
+              </div>
             </div>
             <h4 className="comic-font text-lg sm:text-xl text-white">THOR</h4>
             <div className="flex justify-between items-center mt-1">
@@ -239,12 +249,12 @@ export const Hero: React.FC<HeroProps> = ({
             </div>
           </div>
 
-          {/* Card 2: Wanda (Scarlet Witch) */}
+          {/* Card 2: Superman (DC) */}
           <div className="absolute bottom-1 right-2 sm:bottom-4 sm:right-6 w-36 sm:w-44 lg:w-48 bg-comic-panel comic-border-lg p-2 sm:p-3 rotate-[6deg] sm:rotate-[8deg] shadow-comic-lg hover:rotate-0 transition-transform duration-300 z-10">
-            <div className="h-20 sm:h-24 lg:h-28 bg-[#9b111e] border-2 border-black relative overflow-hidden mb-2">
+            <div className="h-20 sm:h-24 lg:h-28 bg-[#0047AB] border-2 border-black relative overflow-hidden mb-2">
               <img
-                src="/characters/wanda.jpg"
-                alt="Wanda Maximoff"
+                src="/characters/superman.jpg"
+                alt="Superman"
                 className="w-full h-full object-cover object-[center_15%]"
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = 'none';
@@ -252,29 +262,37 @@ export const Hero: React.FC<HeroProps> = ({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
               <div className="absolute bottom-1 left-2 text-[9px] sm:text-[10px] font-black text-comic-yellow uppercase">
-                SCARLET WITCH
+                MAN OF STEEL
               </div>
               <div className="absolute top-1 right-1 bg-comic-yellow text-black text-[8px] sm:text-[9px] font-black px-1 border border-black shadow-comic-sm">
                 99 PWR
               </div>
+              <div className="absolute top-1 left-1 bg-blue-600 text-white text-[7px] sm:text-[8px] font-black px-1 border border-black uppercase">
+                DC
+              </div>
             </div>
-            <h4 className="comic-font text-lg sm:text-xl text-white">WANDA</h4>
+            <h4 className="comic-font text-lg sm:text-xl text-white">SUPERMAN</h4>
             <div className="flex justify-between items-center mt-1">
-              <span className="text-[9px] sm:text-[10px] font-bold text-zinc-400 uppercase truncate">CHAOS SORC</span>
-              <span className="text-xs font-black text-comic-yellow">🪙 1200</span>
+              <span className="text-[9px] sm:text-[10px] font-bold text-zinc-400 uppercase truncate">TANK / KRYPTON</span>
+              <span className="text-xs font-black text-comic-yellow">🪙 1250</span>
             </div>
           </div>
 
           {/* Center VS Action Badge */}
-          <div className="absolute z-20 w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-comic-yellow border-3 sm:border-4 border-black flex items-center justify-center rotate-[-12deg] shadow-comic-xl animate-bounce-short">
-            <span className="comic-font text-xl sm:text-2xl lg:text-3xl text-black">VS</span>
+          <div className="absolute z-20 flex flex-col items-center">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-comic-yellow border-3 sm:border-4 border-black flex items-center justify-center rotate-[-12deg] shadow-comic-xl animate-bounce-short">
+              <span className="comic-font text-xl sm:text-2xl lg:text-3xl text-black">VS</span>
+            </div>
+            <span className="text-[9px] sm:text-[10px] font-black bg-black text-white px-2 py-0.5 border border-comic-yellow mt-1 tracking-wider uppercase rotate-[-6deg] shadow-comic-sm">
+              MARVEL VS DC
+            </span>
           </div>
         </div>
       </main>
 
       {/* Footer */}
       <footer className="max-w-7xl mx-auto w-full text-center text-xs font-bold text-zinc-500 uppercase tracking-wider z-10 pt-4">
-        MARVEL BATTLE AUCTION • REAL-TIME MULTIPLAYER • AUTHORITATIVE BID ENGINE
+        BATTLE AUCTION • SUPERHERO MULTIVERSE CLASH • REAL-TIME MULTIPLAYER • AUTHORITATIVE BID ENGINE
       </footer>
     </div>
   );

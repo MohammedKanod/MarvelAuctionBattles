@@ -1,7 +1,7 @@
 {
   "packageId": "com.marvelbattleauction.app",
   "host": "marvel-auction-battles.vercel.app",
-  "name": "Marvel Battle Auction",
+  "name": "Battle Auction",
   "launcherName": "Battle Auction",
   "themeColor": "#0D0D11",
   "themeColorDark": "#0D0D11",

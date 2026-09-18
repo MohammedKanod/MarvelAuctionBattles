@@ -116,7 +116,7 @@ export const InstallAppModal: React.FC<InstallAppModalProps> = ({
             </div>
 
             <p className="text-sm text-zinc-300 font-semibold mb-6 leading-relaxed">
-              <span className="text-white font-bold">Marvel Battle Auction</span> is now installed directly in your browser. Launch it anytime from your home screen for fullscreen gameplay and instant loading!
+              <span className="text-white font-bold">Battle Auction</span> is now installed directly in your browser. Launch it anytime from your home screen for fullscreen gameplay and instant loading!
             </p>
 
             <button

@@ -1,0 +1,120 @@
+const fs = require('fs');
+const path = require('path');
+
+const dcCharacters = [
+  // Tanks (16)
+  { id: 'superman', name: 'Superman', alterEgo: 'Clark Kent / Kal-El', akababId: 644, slug: '644-superman' },
+  { id: 'darkseid', name: 'Darkseid', alterEgo: 'Uxas of Apokolips', akababId: 204, slug: '204-darkseid' },
+  { id: 'doomsday', name: 'Doomsday', alterEgo: 'The Ultimate Destroyer', akababId: 230, slug: '230-doomsday' },
+  { id: 'bane', name: 'Bane', alterEgo: 'Antonio Diego', akababId: 60, slug: '60-bane' },
+  { id: 'solomon-grundy', name: 'Solomon Grundy', alterEgo: 'Cyrus Gold', akababId: 609, slug: '609-solomon-grundy' },
+  { id: 'lobo', name: 'Lobo', alterEgo: 'The Main Man of Czarnia', akababId: 413, slug: '413-lobo' },
+  { id: 'bizarro', name: 'Bizarro', alterEgo: 'El-Kal / Bizarro #1', akababId: 93, slug: '93-bizarro' },
+  { id: 'swamp-thing', name: 'Swamp Thing', alterEgo: 'Dr. Alec Holland', akababId: 645, slug: '645-swamp-thing' },
+  { id: 'killer-croc', name: 'Killer Croc', alterEgo: 'Waylon Jones', akababId: 386, slug: '386-killer-croc' },
+  { id: 'steppenwolf', name: 'Steppenwolf', alterEgo: 'General of Apokolips', akababId: 637, slug: '637-steppenwolf' },
+  { id: 'superboy-prime', name: 'Superboy-Prime', alterEgo: 'Kal-El of Earth-Prime', akababId: 642, slug: '642-superboy-prime' },
+  { id: 'king-shark', name: 'King Shark', alterEgo: 'Nanaue', akababId: 390, slug: '390-king-shark' },
+  { id: 'giganta', name: 'Giganta', alterEgo: 'Dr. Doris Zuel', akababId: 286, slug: '286-giganta' },
+  { id: 'gorilla-grodd', name: 'Gorilla Grodd', alterEgo: 'Grodd of Gorilla City', akababId: 294, slug: '294-gorilla-grodd' },
+  { id: 'kilowog', name: 'Kilowog', alterEgo: 'Kilowog of Bolovax Vik', akababId: 388, slug: '388-kilowog' },
+  { id: 'citizen-steel', name: 'Citizen Steel', alterEgo: 'Nathan Heywood', akababId: 177, slug: '177-citizen-steel' },
+
+  // Strikers (24)
+  { id: 'wonder-woman', name: 'Wonder Woman', alterEgo: 'Diana Prince', akababId: 720, slug: '720-wonder-woman' },
+  { id: 'batman', name: 'Batman', alterEgo: 'Bruce Wayne', akababId: 70, slug: '70-batman' },
+  { id: 'deathstroke', name: 'Deathstroke', alterEgo: 'Slade Wilson', akababId: 216, slug: '216-deathstroke' },
+  { id: 'nightwing', name: 'Nightwing', alterEgo: 'Dick Grayson', akababId: 491, slug: '491-nightwing' },
+  { id: 'red-hood', name: 'Red Hood', alterEgo: 'Jason Todd', akababId: 546, slug: '546-red-hood' },
+  { id: 'black-adam', name: 'Black Adam', alterEgo: 'Teth-Adam', akababId: 95, slug: '95-black-adam' },
+  { id: 'big-barda', name: 'Big Barda', alterEgo: 'Barda Free', akababId: 81, slug: '81-big-barda' },
+  { id: 'shazam', name: 'Shazam', alterEgo: 'Billy Batson', akababId: 156, slug: '156-captain-marvel' },
+  { id: 'aquaman', name: 'Aquaman', alterEgo: 'Arthur Curry', akababId: 38, slug: '38-aquaman' },
+  { id: 'ares-dc', name: 'Ares', alterEgo: 'Olympian God of War', akababId: 43, slug: '43-ares' },
+  { id: 'batgirl', name: 'Batgirl', alterEgo: 'Barbara Gordon', akababId: 63, slug: '63-batgirl' },
+  { id: 'batwoman', name: 'Batwoman', alterEgo: 'Katherine Kane', akababId: 67, slug: '67-batwoman-v' },
+  { id: 'azrael', name: 'Azrael', alterEgo: 'Jean-Paul Valley', akababId: 58, slug: '58-azrael' },
+  { id: 'vixen', name: 'Vixen', alterEgo: 'Mari McCabe', akababId: 699, slug: '699-vixen' },
+  { id: 'hawk', name: 'Hawk', alterEgo: 'Hank Hall', akababId: 312, slug: '312-hawk' },
+  { id: 'hawkgirl', name: 'Hawkgirl', alterEgo: 'Kendra Saunders', akababId: 315, slug: '315-hawkgirl' },
+  { id: 'red-robin', name: 'Red Robin', alterEgo: 'Tim Drake', akababId: 549, slug: '549-red-robin' },
+  { id: 'robin', name: 'Robin', alterEgo: 'Damian Wayne', akababId: 564, slug: '564-robin-v' },
+  { id: 'huntress', name: 'Huntress', alterEgo: 'Helena Bertinelli', akababId: 334, slug: '334-huntress' },
+  { id: 'catwoman', name: 'Catwoman', alterEgo: 'Selina Kyle', akababId: 165, slug: '165-catwoman' },
+  { id: 'black-canary', name: 'Black Canary', alterEgo: 'Dinah Laurel Lance', akababId: 97, slug: '97-black-canary' },
+  { id: 'cheetah', name: 'Cheetah', alterEgo: 'Dr. Barbara Ann Minerva', akababId: 172, slug: '172-cheetah' },
+  { id: 'green-arrow', name: 'Green Arrow', alterEgo: 'Oliver Queen', akababId: 298, slug: '298-green-arrow' },
+  { id: 'speedy', name: 'Speedy', alterEgo: 'Mia Dearden / Thea Queen', akababId: 615, slug: '615-speedy' },
+
+  // Blasters (18)
+  { id: 'cyborg', name: 'Cyborg', alterEgo: 'Victor Stone', akababId: 194, slug: '194-cyborg' },
+  { id: 'hal-jordan', name: 'Green Lantern (Hal)', alterEgo: 'Hal Jordan', akababId: 306, slug: '306-hal-jordan' },
+  { id: 'guy-gardner', name: 'Green Lantern (Guy)', alterEgo: 'Guy Gardner', akababId: 305, slug: '305-guy-gardner' },
+  { id: 'kyle-rayner', name: 'Green Lantern (Kyle)', alterEgo: 'Kyle Rayner', akababId: 397, slug: '397-kyle-rayner' },
+  { id: 'starfire', name: 'Starfire', alterEgo: 'Princess Koriand\'r', akababId: 632, slug: '632-starfire' },
+  { id: 'sinestro', name: 'Sinestro', alterEgo: 'Thaal Sinestro', akababId: 601, slug: '601-sinestro' },
+  { id: 'firestorm', name: 'Firestorm', alterEgo: 'Ronnie Raymond & Martin Stein', akababId: 260, slug: '260-firestorm' },
+  { id: 'black-manta', name: 'Black Manta', alterEgo: 'David Hyde', akababId: 105, slug: '105-black-manta' },
+  { id: 'captain-cold', name: 'Captain Cold', alterEgo: 'Leonard Snart', akababId: 152, slug: '152-captain-cold' },
+  { id: 'deadshot', name: 'Deadshot', alterEgo: 'Floyd Lawton', akababId: 214, slug: '214-deadshot' },
+  { id: 'blue-beetle', name: 'Blue Beetle', alterEgo: 'Jaime Reyes', akababId: 126, slug: '126-blue-beetle-iii' },
+  { id: 'heat-wave', name: 'Heat Wave', alterEgo: 'Mick Rory', akababId: 320, slug: '320-heat-wave' },
+  { id: 'red-tornado', name: 'Red Tornado', alterEgo: 'John Smith / Ulthoon', akababId: 551, slug: '551-red-tornado' },
+  { id: 'captain-atom', name: 'Captain Atom', alterEgo: 'Nathaniel Adams', akababId: 150, slug: '150-captain-atom' },
+  { id: 'black-lightning', name: 'Black Lightning', alterEgo: 'Jefferson Pierce', akababId: 99, slug: '99-black-lightning' },
+  { id: 'static', name: 'Static Shock', alterEgo: 'Virgil Hawkins', akababId: 634, slug: '634-static' },
+  { id: 'steel', name: 'Steel', alterEgo: 'Dr. John Henry Irons', akababId: 635, slug: '635-steel' },
+  { id: 'stargirl', name: 'Stargirl', alterEgo: 'Courtney Whitmore', akababId: 633, slug: '633-stargirl' },
+
+  // Tacticians (16)
+  { id: 'lex-luthor', name: 'Lex Luthor', alterEgo: 'Alexander Joseph Luthor', akababId: 405, slug: '405-lex-luthor' },
+  { id: 'brainiac', name: 'Brainiac', alterEgo: 'Vril Dox of Colu', akababId: 136, slug: '136-brainiac' },
+  { id: 'the-riddler', name: 'The Riddler', alterEgo: 'Edward Nygma', akababId: 558, slug: '558-riddler' },
+  { id: 'ras-al-ghul', name: 'Ra\'s al Ghul', alterEgo: 'Head of the Demon', akababId: 538, slug: '538-ras-al-ghul' },
+  { id: 'the-question', name: 'The Question', alterEgo: 'Vic Sage / Charles Szasz', akababId: 535, slug: '535-question' },
+  { id: 'the-penguin', name: 'The Penguin', alterEgo: 'Oswald Chesterfield Cobblepot', akababId: 514, slug: '514-penguin' },
+  { id: 'two-face', name: 'Two-Face', alterEgo: 'Harvey Dent', akababId: 678, slug: '678-two-face' },
+  { id: 'general-zod', name: 'General Zod', alterEgo: 'Dru-Zod of Krypton', akababId: 278, slug: '278-general-zod' },
+  { id: 'joker', name: 'The Joker', alterEgo: 'Unknown / Jack Oswald White', akababId: 370, slug: '370-joker' },
+  { id: 'harley-quinn', name: 'Harley Quinn', alterEgo: 'Dr. Harleen Quinzel', akababId: 309, slug: '309-harley-quinn' },
+  { id: 'scarecrow', name: 'Scarecrow', alterEgo: 'Dr. Jonathan Crane', akababId: 576, slug: '576-scarecrow' },
+  { id: 'mister-freeze', name: 'Mister Freeze', alterEgo: 'Dr. Victor Fries', akababId: 457, slug: '457-mister-freeze' },
+  { id: 'poison-ivy', name: 'Poison Ivy', alterEgo: 'Dr. Pamela Lillian Isley', akababId: 522, slug: '522-poison-ivy' },
+  { id: 'ozymandias', name: 'Ozymandias', alterEgo: 'Adrian Veidt', akababId: 499, slug: '499-ozymandias' },
+  { id: 'rorschach', name: 'Rorschach', alterEgo: 'Walter Joseph Kovacs', akababId: 569, slug: '569-rorschach' },
+  { id: 'the-comedian', name: 'The Comedian', alterEgo: 'Edward Blake', akababId: 657, slug: '657-the-comedian' },
+
+  // Speedsters (10)
+  { id: 'the-flash', name: 'The Flash (Barry)', alterEgo: 'Bartholomew Henry Allen', akababId: 265, slug: '265-flash-ii' },
+  { id: 'reverse-flash', name: 'Reverse-Flash', alterEgo: 'Professor Eobard Thawne', akababId: 528, slug: '528-professor-zoom' },
+  { id: 'wally-west', name: 'The Flash (Wally)', alterEgo: 'Wallace Rudolph West', akababId: 266, slug: '266-flash-iii' },
+  { id: 'kid-flash', name: 'Kid Flash', alterEgo: 'Wallace West II', akababId: 384, slug: '384-kid-flash' },
+  { id: 'impulse', name: 'Impulse', alterEgo: 'Bartholomew Allen II', akababId: 340, slug: '340-impulse' },
+  { id: 'zoom', name: 'Zoom', alterEgo: 'Hunter Zolomon', akababId: 731, slug: '731-zoom' },
+  { id: 'black-flash', name: 'Black Flash', alterEgo: 'Avatar of Speed Force Death', akababId: 100, slug: '100-black-flash' },
+  { id: 'jay-garrick', name: 'The Flash (Jay)', alterEgo: 'Jason Peter Garrick', akababId: 263, slug: '263-flash' },
+  { id: 'superboy', name: 'Superboy', alterEgo: 'Kon-El / Conner Kent', akababId: 641, slug: '641-superboy' },
+  { id: 'supergirl', name: 'Supergirl', alterEgo: 'Kara Zor-El', akababId: 643, slug: '643-supergirl' },
+
+  // Sorcerers (14)
+  { id: 'doctor-fate', name: 'Doctor Fate', alterEgo: 'Kent Nelson', akababId: 224, slug: '224-doctor-fate' },
+  { id: 'zatanna', name: 'Zatanna', alterEgo: 'Zatanna Zatara', akababId: 730, slug: '730-zatanna' },
+  { id: 'john-constantine', name: 'John Constantine', alterEgo: 'Hellblazer', akababId: 367, slug: '367-john-constantine' },
+  { id: 'raven', name: 'Raven', alterEgo: 'Rachel Roth', akababId: 542, slug: '542-raven' },
+  { id: 'etrigan', name: 'Etrigan the Demon', alterEgo: 'Jason Blood', akababId: 246, slug: '246-etrigan' },
+  { id: 'the-spectre', name: 'The Spectre', alterEgo: 'Jim Corrigan / Wrath of God', akababId: 613, slug: '613-spectre' },
+  { id: 'enchantress-dc', name: 'Enchantress', alterEgo: 'June Moone', akababId: 242, slug: '242-enchantress' },
+  { id: 'deadman', name: 'Deadman', alterEgo: 'Boston Brand', akababId: 212, slug: '212-deadman' },
+  { id: 'dr-manhattan', name: 'Dr. Manhattan', alterEgo: 'Dr. Jonathan Osterman', akababId: 233, slug: '233-dr-manhattan' },
+  { id: 'martian-manhunter', name: 'Martian Manhunter', alterEgo: 'J\'onn J\'onzz', akababId: 432, slug: '432-martian-manhunter' },
+  { id: 'beast-boy', name: 'Beast Boy', alterEgo: 'Garfield Mark Logan', akababId: 76, slug: '76-beast-boy' },
+  { id: 'plastic-man', name: 'Plastic Man', alterEgo: 'Patrick \"Eel\" O\'Brian', akababId: 520, slug: '520-plastic-man' },
+  { id: 'mera', name: 'Mera', alterEgo: 'Queen Mera of Xebel', akababId: 444, slug: '444-mera' },
+  { id: 'power-girl', name: 'Power Girl', alterEgo: 'Kara Zor-L / Karen Starr', akababId: 524, slug: '524-power-girl' }
+];
+
+console.log('Total DC characters defined:', dcCharacters.length);
+const uniqueIds = new Set(dcCharacters.map(c => c.id));
+console.log('Unique IDs:', uniqueIds.size);
+fs.writeFileSync('server/scripts/dc_98_list.json', JSON.stringify(dcCharacters, null, 2));
+console.log('Saved dc_98_list.json');

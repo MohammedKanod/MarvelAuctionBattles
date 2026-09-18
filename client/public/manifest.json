@@ -1,7 +1,7 @@
 {
-  "name": "Marvel Battle Auction",
+  "name": "Battle Auction",
   "short_name": "Battle Auction",
-  "description": "Real-time superhero auction & tournament battle game. Bid against friends, assemble your ultimate Marvel roster, and clash in cinematic matches!",
+  "description": "Real-time superhero auction & tournament battle game featuring 200 iconic multiverse heroes and villains across Marvel and DC.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

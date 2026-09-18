@@ -24,7 +24,7 @@ def twaManifest = [
     applicationId: 'com.marvelbattleauction.app',
     hostName: 'marvel-auction-battles.vercel.app', // The domain being opened in the TWA.
     launchUrl: '/', // The start path for the TWA. Must be relative to the domain.
-    name: 'Marvel Battle Auction', // The application name.
+    name: 'Battle Auction', // The application name.
     launcherName: 'Battle Auction', // The name shown on the Android Launcher.
     themeColor: '#0D0D11', // The color used for the status bar.
     themeColorDark: '#0D0D11', // The color used for the dark status bar.
