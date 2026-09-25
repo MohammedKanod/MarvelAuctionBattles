@@ -1,10 +1,52 @@
 import { io, Socket } from 'socket.io-client';
 import { ServerToClientEvents, ClientToServerEvents } from '../../../shared/types';
 
-// Connect to backend (supports VITE_SERVER_URL env var, localhost:3001 in dev, or origin in prod)
-const SERVER_URL = 
-  import.meta.env.VITE_SERVER_URL || 
-  (import.meta.env.DEV ? 'http://localhost:3001' : window.location.origin);
+// Helper to determine the target backend server URL
+function resolveServerUrl(): string {
+  // 1. Explicit Vite build environment variable
+  if (import.meta.env.VITE_SERVER_URL) {
+    return import.meta.env.VITE_SERVER_URL;
+  }
+
+  if (typeof window !== 'undefined') {
+    // 2. Window runtime global override (e.g. window.__MAB_SERVER_URL__ = 'https://...')
+    if (window.__MAB_SERVER_URL__) {
+      return window.__MAB_SERVER_URL__;
+    }
+
+    // 3. Query string override (?server=https://your-server.com)
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const queryServer = urlParams.get('server');
+      if (queryServer) {
+        localStorage.setItem('mab_server_url', queryServer);
+        return queryServer;
+      }
+
+      // 4. Stored server URL
+      const savedServer = localStorage.getItem('mab_server_url');
+      if (savedServer) {
+        return savedServer;
+      }
+    } catch {}
+
+    // 5. If hosted on CrazyGames iframe/CDN, use configured backend or origin
+    if (window.location.hostname.includes('crazygames')) {
+      const savedOrFallback = localStorage.getItem('mab_server_url');
+      if (savedOrFallback) return savedOrFallback;
+    }
+
+    // 6. Local development or production standard origin
+    if (import.meta.env.DEV) {
+      return 'http://localhost:3001';
+    }
+    return window.location.origin;
+  }
+
+  return 'http://localhost:3001';
+}
+
+const SERVER_URL = resolveServerUrl();
 
 export const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(SERVER_URL, {
   autoConnect: true,

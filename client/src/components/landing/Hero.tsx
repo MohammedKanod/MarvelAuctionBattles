@@ -1,7 +1,8 @@
 import React from 'react';
 import { ComicButton } from '../ui/ComicButton';
-import { Volume2, VolumeX, Shield, Zap, Swords, Trophy, Hammer, BookOpen, Smartphone, Bot } from 'lucide-react';
+import { Volume2, VolumeX, Shield, Zap, Swords, Trophy, Hammer, BookOpen, Smartphone, Bot, Gamepad2 } from 'lucide-react';
 import { SoundManager } from '../../sound/SoundManager';
+import { crazyGamesService } from '../../services/crazyGamesService';
 
 interface HeroProps {
   onCreateRoom: () => void;
@@ -99,8 +100,9 @@ export const Hero: React.FC<HeroProps> = ({
           {/* Tagline Ribbon */}
           <div className="inline-block mb-4">
             <div className="comic-ribbon bg-comic-yellow border-3 border-black px-4 py-1 shadow-comic-sm">
-              <span className="comic-ribbon-content comic-font text-xl sm:text-2xl text-black tracking-wider">
-                BID. BUILD. BATTLE.
+              <span className="comic-ribbon-content comic-font text-xl sm:text-2xl text-black tracking-wider flex items-center gap-2">
+                {crazyGamesService.isCrazyGames() && <Gamepad2 className="w-5 h-5 text-black inline" />}
+                {crazyGamesService.isCrazyGames() ? 'CRAZYGAMES EDITION • BID. BUILD. BATTLE.' : 'BID. BUILD. BATTLE.'}
               </span>
             </div>
           </div>
@@ -163,8 +165,8 @@ export const Hero: React.FC<HeroProps> = ({
             </ComicButton>
           </div>
 
-          {/* Dedicated Web App Quick Install Banner */}
-          {onInstallApp && !isInstalled && (
+          {/* Dedicated Web App Quick Install Banner (Only in regular browser PWA mode) */}
+          {!crazyGamesService.isCrazyGames() && onInstallApp && !isInstalled && (
             <div className="mb-6 p-3 bg-gradient-to-r from-zinc-900 via-comic-panel to-zinc-900 border-2 border-cyan-400/80 shadow-comic flex flex-col sm:flex-row items-center justify-between gap-3 max-w-xl w-full">
               <div className="flex items-center gap-3 text-left">
                 <div className="w-10 h-10 bg-cyan-500/20 border-2 border-cyan-400 flex items-center justify-center text-cyan-300 shrink-0">

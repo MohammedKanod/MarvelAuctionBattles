@@ -2,7 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { App } from './App';
 import { Analytics } from '@vercel/analytics/react';
+import { crazyGamesService } from './services/crazyGamesService';
 import './index.css';
+
+// Safely initialize CrazyGames SDK (no-ops in standard browser)
+crazyGamesService.init().catch(() => {});
 
 // Render React App
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -21,7 +25,11 @@ if (typeof window !== 'undefined') {
       splash.style.transition = 'opacity 0.35s ease-out';
       setTimeout(() => {
         splash.remove();
+        // Notify CrazyGames platform that loading has finished and game is interactive
+        crazyGamesService.loadingStop();
       }, 380);
+    } else {
+      crazyGamesService.loadingStop();
     }
   });
 }

@@ -19,6 +19,7 @@ import { UpdatePrompt } from './components/pwa/UpdatePrompt';
 import { usePwaInstall } from './pwa/usePwaInstall';
 import { InstallAppModal } from './components/pwa/InstallAppModal';
 import { gameAnalytics } from './analytics/gameAnalytics';
+import { crazyGamesService } from './services/crazyGamesService';
 
 export const App: React.FC = () => {
   const [room, setRoom] = useState<RoomState | null>(null);
@@ -137,6 +138,19 @@ export const App: React.FC = () => {
       syncUrl('/');
     }
   }, [room, inviteRoomCode, syncUrl]);
+
+  // CrazyGames lifecycle management (gameplayStart / gameplayStop)
+  useEffect(() => {
+    if (!room) {
+      crazyGamesService.gameplayStop();
+      return;
+    }
+    if (room.phase === 'AUCTION' || room.phase === 'BATTLE') {
+      crazyGamesService.gameplayStart();
+    } else if (room.phase === 'LOBBY' || room.phase === 'RESULTS') {
+      crazyGamesService.gameplayStop();
+    }
+  }, [room?.phase]);
 
   // Android Back button (popstate) handler
   useEffect(() => {
@@ -324,6 +338,8 @@ export const App: React.FC = () => {
     socket.on('AUCTION_TRANSITION_STARTED', ({ room }) => {
       setRoom(room);
       gameAnalytics.auctionCompleted();
+      // Midgame Ad on CrazyGames (no-ops in standard browser)
+      crazyGamesService.requestMidgameAd();
     });
 
     socket.on('FIGHTER_SELECTION_STARTED', ({ battleRound, room }) => {
@@ -368,6 +384,9 @@ export const App: React.FC = () => {
       setRoom(room);
       setCurrentBout(null);
       SoundManager.playVictory();
+      // Trigger CrazyGames celebratory confetti
+      crazyGamesService.happytime();
+      crazyGamesService.gameplayStop();
       if (!gameCompletedFiredRef.current) {
         gameCompletedFiredRef.current = true;
         gameAnalytics.winnerRevealed(room.players?.length || 0);
