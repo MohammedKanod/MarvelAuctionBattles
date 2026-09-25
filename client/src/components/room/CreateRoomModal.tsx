@@ -26,7 +26,13 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const [playerName, setPlayerName] = useState('');
+  const [playerName, setPlayerName] = useState(() => {
+    try {
+      return localStorage.getItem('mab_player_name') || '';
+    } catch {
+      return '';
+    }
+  });
   const [withBot, setWithBot] = useState<boolean>(initialWithBot);
   const [settings, setSettings] = useState<RoomSettings>({
     ...DEFAULT_ROOM_SETTINGS,
@@ -36,6 +42,10 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
   });
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [error, setError] = useState('');
+
+  React.useEffect(() => {
+    setWithBot(initialWithBot);
+  }, [initialWithBot]);
 
   const handleCharCountSelect = (num: 3 | 5 | 7 | 11) => {
     const presetCoins = COIN_PRESETS_BY_CHAR_COUNT[num] || 1000;
@@ -48,12 +58,12 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!playerName.trim()) {
-      setError('Please enter your player name');
-      return;
-    }
+    const effectiveName = playerName.trim() || 'Player 1';
+    try {
+      localStorage.setItem('mab_player_name', effectiveName);
+    } catch {}
     setError('');
-    onCreate(playerName.trim(), { ...settings, maxPlayers: 2 }, withBot);
+    onCreate(effectiveName, { ...settings, maxPlayers: 2 }, withBot);
   };
 
   return (

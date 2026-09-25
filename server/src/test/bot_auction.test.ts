@@ -86,10 +86,84 @@ async function runBotTests() {
   assert(valuation > 400, `High valuation calculated for Legendary Iron Man (${valuation} coins)`);
 
   const wtp = BotEngine.getWillingnessToPay(ironMan, botPlayer, mockRoom);
-  assert(wtp >= 200 && wtp <= 800, `Willingness to pay computed within realistic budget bounds: ${wtp} coins`);
+  assert(wtp >= 200 && wtp <= 400, `Willingness to pay computed within realistic budget bounds: ${wtp} coins`);
 
-  // Reserve check: With 3 slots needed and 1000 coins, reserve is 2 * 100 = 200. Max affordable is 800.
-  assert(wtp <= (1000 - 200), `WTP does not exceed safe reserve (WTP ${wtp} <= 800)`);
+  // Reserve check: With 3 slots needed and 1000 coins, reserve preserves at least 150*2 = 300 coins.
+  assert(wtp <= 380, `Iron Man WTP adheres to Legendary budget cap (WTP ${wtp} <= 380)`);
+
+  // 2b. Test Hulk Specific Budget Protection (Fixing user's issue: Bot bidding $700 leaving $300)
+  console.log('\n[Test 2b] Hulk Budget Protection & Future Slot Reserve:');
+  const hulk = getCharacterById('hulk') || {
+    id: 'hulk',
+    name: 'Hulk',
+    universe: 'Marvel',
+    role: 'Tank' as const,
+    rarity: 'Legendary' as const,
+    stats: { power: 96, strength: 100, speed: 60, durability: 98, combat: 80, range: 40, intelligence: 55 },
+    specialAbilities: ['Thunderclap', 'Rage Empowerment'],
+    description: 'Green Goliath',
+    visuals: { primaryColor: '#0f0', accentColor: '#080', badgeText: 'SMASH', comicQuote: 'Hulk Smash' },
+    tacticalNotes: 'Immense physical force',
+    matchupStrengths: ['Striker', 'Blaster'],
+    matchupWeaknesses: ['Sorcerer']
+  };
+
+  const hulkWtp = BotEngine.getWillingnessToPay(hulk, botPlayer, mockRoom);
+  assert(
+    hulkWtp <= 380,
+    `Hulk WTP is strictly capped under single-hero budget limit (${hulkWtp} <= 380 🪙). Bot will NEVER bid $700 and leave $300!`
+  );
+  assert(
+    (botPlayer.coins - hulkWtp) >= 620,
+    `Bot safely preserves at least 620🪙 for remaining slots after bidding on Hulk (remaining: ${botPlayer.coins - hulkWtp}🪙)`
+  );
+
+  // 2c. Test Superhero PhD Lore & Opponent Counter-Drafting (Magneto vs Metal heroes)
+  console.log('\n[Test 2c] Superhero PhD Lore & Counter-Drafting (Magneto vs Metal heroes):');
+  const magneto = getCharacterById('magneto') || {
+    id: 'magneto',
+    name: 'Magneto',
+    universe: 'Marvel',
+    role: 'Blaster' as const,
+    rarity: 'Legendary' as const,
+    stats: { power: 94, strength: 60, speed: 75, durability: 85, combat: 85, range: 95, intelligence: 96 },
+    specialAbilities: ['Magnetic Mastery', 'Metallic Crush'],
+    description: 'Master of Magnetism',
+    visuals: { primaryColor: '#800', accentColor: '#400', badgeText: 'MUTANT', comicQuote: 'Never again' },
+    tacticalNotes: 'Dominates metal opponents',
+    matchupStrengths: ['Tank'],
+    matchupWeaknesses: ['Speedster']
+  };
+
+  const humanWithoutMetal: Player = {
+    id: 'p-human',
+    sessionId: 's-human',
+    name: 'HumanPlayer',
+    isHost: true,
+    isReady: true,
+    connected: true,
+    coins: 1000,
+    characters: [], // No heroes yet
+    wins: 0,
+    eliminated: false,
+    avatarSeed: 1
+  };
+
+  const humanWithIronMan: Player = {
+    ...humanWithoutMetal,
+    characters: [ironMan] // Opponent has drafted Iron Man!
+  };
+
+  const roomWithoutOppMetal: RoomState = { ...mockRoom, players: [botPlayer, humanWithoutMetal] };
+  const roomWithOppMetal: RoomState = { ...mockRoom, players: [botPlayer, humanWithIronMan] };
+
+  const magValNormal = BotEngine.evaluateCharacterValue(magneto, botPlayer, roomWithoutOppMetal);
+  const magValCounter = BotEngine.evaluateCharacterValue(magneto, botPlayer, roomWithOppMetal);
+
+  assert(
+    magValCounter > magValNormal,
+    `Magneto valuation rises significantly when opponent has Iron Man (${magValCounter} > ${magValNormal}) due to +18 combat counter!`
+  );
 
   // 3. Test Bidding Decision when price is affordable
   console.log('\n[Test 3] Bot Bidding Decision Logic:');
@@ -121,10 +195,24 @@ async function runBotTests() {
   assert(createdRoom.players[1].isBot === true, `Player 2 is Bot (${createdRoom.players[1].name})`);
   assert(createdRoom.players[1].isReady === true, `Bot player is ready to start`);
 
+  // 5b. Test Start Room Button Reliability (Disconnect & Reconnect host preservation)
+  console.log('\n[Test 5b] Start Room Button Reliability & Host Protection:');
+  // Simulate human socket disconnect
+  roomManager.handleDisconnect('socket-human');
+  assert(createdRoom.hostId !== createdRoom.players[1].id, 'Bot was NOT made host upon human disconnect');
+
+  // Simulate human reconnection with new socket
+  const reconnectRes = roomManager.reconnect(createRes.sessionToken, createdRoom.roomCode, 'socket-human-reconnected');
+  assert(reconnectRes.success === true, 'Human successfully reconnected');
+  assert(reconnectRes.player?.isHost === true, 'Human retained host status');
+  assert(createdRoom.hostId === reconnectRes.player?.id, 'Room hostId correctly points to human');
+
+  // Test that human can start game immediately
+  const startAfterReconnect = roomManager.startGame('socket-human-reconnected');
+  assert(startAfterReconnect.success === true, 'Start Room works smoothly after reconnection!');
+
   // 6. Test Start Game & Bot Auction Bidding
-  console.log('\n[Test 6] Start Game and Bot Auction Automation:');
-  const startRes = roomManager.startGame('socket-human');
-  assert(startRes.success, 'Game starts successfully with human and bot');
+  console.log('\n[Test 6] Bot Auction Automation in Active Room:');
   assert(createdRoom.phase === 'AUCTION', 'Room enters AUCTION phase');
   assert(Boolean(createdRoom.auction), 'Auction round initialized');
 
@@ -133,7 +221,7 @@ async function runBotTests() {
   assert(timers && timers.length > 0, 'Bot action timer was scheduled on auction launch');
 
   // 7. Test Bot Fighter Selection in Battle
-  console.log('\n[Test 7] Bot Fighter Selection:');
+  console.log('\n[Test 7] Bot Tactical Fighter Selection:');
   const botHero1 = getCharacterById('thor') || ironMan;
   const botHero2 = getCharacterById('hulk') || ironMan;
   const botWithHeroes: Player = {

@@ -1,5 +1,6 @@
 import { Character, Player, RoomState, RoomSettings } from '../../../shared/types';
 import { DEFAULT_PASSES_PER_PLAYER } from '../../../shared/constants';
+import { BattleEngine } from '../battle/BattleEngine';
 
 export interface BotAuctionDecision {
   action: 'BID' | 'PASS' | 'WAIT' | 'NONE';
@@ -9,15 +10,24 @@ export interface BotAuctionDecision {
 }
 
 const BOT_NAMES = [
-  'Ultron AI',
-  'JARVIS Bot',
-  'Cerebro AI',
-  'Brainiac AI',
-  'Zola Core',
-  'Friday AI',
+  'Doctor Doom AI',
+  'Brainiac 5',
+  'JARVIS Omega',
+  'Cerebro Prime',
   'Vision Subroutine',
-  'Nimrod Sentinel'
+  'Ultron Strategic Core',
+  'Zola Multiverse Matrix',
+  'Nimrod Mastermind'
 ];
+
+// Iconic metal-based character IDs for Magneto counter calculation
+const METALLIC_HERO_IDS = ['iron-man', 'wolverine', 'colossus', 'war-machine', 'ultron', 'cyborg', 'steel'];
+
+// Physical brute tank IDs with low magical/range defense
+const PHYSICAL_BRUTE_IDS = ['hulk', 'colossus', 'thing', 'juggernaut', 'abomination', 'bane', 'rhino'];
+
+// Ranged blaster IDs susceptible to supersonic blitzes
+const BLASTER_HERO_IDS = ['iron-man', 'cyclops', 'star-lord', 'human-torch', 'havok', 'electro'];
 
 export class BotEngine {
   /**
@@ -27,7 +37,7 @@ export class BotEngine {
     const availableNames = BOT_NAMES.filter(name => !existingBotNames.includes(name));
     const botName = availableNames.length > 0 
       ? availableNames[Math.floor(Math.random() * availableNames.length)]
-      : `AI Bot ${Math.floor(Math.random() * 900) + 100}`;
+      : `AI Tactician ${Math.floor(Math.random() * 900) + 100}`;
 
     const botId = `bot-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     const sessionId = `session-${botId}`;
@@ -52,129 +62,248 @@ export class BotEngine {
   }
 
   /**
-   * Calculates intrinsic character valuation based on rarity, power, attribute averages,
-   * role synergy, and universe synergy.
+   * PhD-Level Superhero Valuation Algorithm.
+   * Synthesizes raw BattleEngine combat weightings, role archetype balance (Tank/Blaster/Speedster trinity),
+   * iconic passive traits (regeneration, reality warping), universe chemistry, and opponent counter-scouting.
    */
   public static evaluateCharacterValue(character: Character, bot: Player, room: RoomState): number {
-    // 1. Rarity baseline in coins
+    // 1. Rarity baseline in coins calibrated for 1000-1500 starting bankrolls
     const rarityBases: Record<string, number> = {
-      Common: 180,
-      Rare: 290,
-      Epic: 440,
-      Legendary: 660,
-      Cosmic: 920
+      Common: 140,
+      Rare: 220,
+      Epic: 340,
+      Legendary: 480,
+      Cosmic: 640
     };
     const baseRarityValue = rarityBases[character.rarity] || 250;
 
-    // 2. Power Index (60-99) scaling
-    const power = character.stats?.power ?? 75;
-    const powerNorm = Math.max(0, Math.min(1, (power - 60) / 39));
-    const powerMultiplier = 0.70 + (powerNorm * 0.45); // 0.70 to 1.15
-
-    // 3. Stats attribute average (strength, speed, durability, combat, range, intelligence)
+    // 2. BattleEngine-Aligned Combat Power Rating
+    // Strength (20%), Durability (20%), Combat Skill (25%), Speed (15%), Range (10%), Intelligence (10%)
     const stats = character.stats || {
       strength: 50, speed: 50, durability: 50,
-      combat: 50, range: 50, intelligence: 50
+      combat: 50, range: 50, intelligence: 50, power: 75
     };
-    const statAvg = (
-      (stats.strength || 50) +
-      (stats.speed || 50) +
-      (stats.durability || 50) +
-      (stats.combat || 50) +
-      (stats.range || 50) +
-      (stats.intelligence || 50)
-    ) / 6;
-    const statNorm = Math.max(0, Math.min(1, (statAvg - 40) / 60));
-    const statMultiplier = 0.85 + (statNorm * 0.30); // 0.85 to 1.15
 
-    // 4. Role Balance & Team Synergy
-    // If bot has no hero in this role yet, high synergy bonus!
-    const roleCount = bot.characters.filter(c => c.role === character.role).length;
-    let roleMultiplier = 1.0;
-    if (roleCount === 0) {
-      roleMultiplier = 1.25; // High priority to diversify squad
-    } else if (roleCount === 1) {
-      roleMultiplier = 0.95; // Acceptable second option
-    } else {
-      roleMultiplier = 0.70; // Penalize excessive role duplication
+    const weightedCombatScore = (
+      (stats.strength * 0.20) +
+      (stats.durability * 0.20) +
+      (stats.combat * 0.25) +
+      (stats.speed * 0.15) +
+      (stats.range * 0.10) +
+      (stats.intelligence * 0.10)
+    );
+
+    // Normalize weighted combat score around average baseline of 70 (multiplier ~0.75 to 1.25)
+    const combatMultiplier = Math.max(0.70, Math.min(1.30, 0.70 + ((weightedCombatScore - 50) / 45) * 0.50));
+
+    // Power index (60-99) scaling factor
+    const power = stats.power ?? 75;
+    const powerMultiplier = 0.85 + Math.max(0, Math.min(0.35, ((power - 60) / 39) * 0.35));
+
+    // 3. Special Iconic Abilities & Battle Mechanics
+    let abilityBonus = 1.0;
+    const abilitiesLower = (character.specialAbilities || []).map(a => a.toLowerCase());
+
+    // Hyper-regeneration / Healing factor attrition advantage (+6 in BattleEngine)
+    if (stats.durability >= 90 && abilitiesLower.some(a => a.includes('healing') || a.includes('regeneration'))) {
+      abilityBonus += 0.14; // Wolverine, Deadpool, Hulk
     }
 
-    // 5. Universe Synergy
+    // Reality alteration & Dimensional magic (bypasses physical tank armor)
+    if (character.role === 'Sorcerer' || abilitiesLower.some(a => a.includes('magic') || a.includes('reality') || a.includes('mystic'))) {
+      abilityBonus += 0.12; // Doctor Strange, Scarlet Witch
+    }
+
+    // Tactical Mastermind / Prep Time bonus
+    if (stats.intelligence >= 92 || character.role === 'Tactician') {
+      abilityBonus += 0.10; // Batman, Iron Man, Captain America
+    }
+
+    // 4. Role Balance & Team Archetype Trinity (Tank + Blaster/Sorcerer + Speedster/Tactician)
+    const sameRoleCount = bot.characters.filter(c => c.role === character.role).length;
+    let roleMultiplier = 1.0;
+    if (sameRoleCount === 0) {
+      // First character of this archetype is high priority to achieve squad balance
+      roleMultiplier = 1.30;
+    } else if (sameRoleCount === 1) {
+      roleMultiplier = 0.95;
+    } else {
+      // Severe diminishing returns penalty for drafting 3+ of the same role
+      roleMultiplier = 0.60;
+    }
+
+    // 5. Universe / Multiverse Thematic Cohesion
     const universeCount = bot.characters.filter(c => c.universe === character.universe).length;
     let universeMultiplier = 1.0;
     if (universeCount >= 2) {
-      universeMultiplier = 1.10; // +10% synergy bonus for thematic cohesion
+      universeMultiplier = 1.10;
     }
 
-    // 6. Matchup Versatility
-    const strengthsCount = character.matchupStrengths?.length || 0;
-    const versatilityMultiplier = 1.0 + (strengthsCount * 0.03);
+    // 6. Opponent Counter-Scouting (PhD Superhero Lore & Hate-Drafting)
+    // Inspect what heroes human opponents have already drafted
+    let counterMultiplier = 1.0;
+    const opponents = room.players.filter(p => p.id !== bot.id);
+    const opponentHeroes = opponents.flatMap(p => p.characters);
 
-    const rawValuation = baseRarityValue * powerMultiplier * statMultiplier * roleMultiplier * universeMultiplier * versatilityMultiplier;
+    if (opponentHeroes.length > 0) {
+      const oppHeroIds = opponentHeroes.map(h => h.id.toLowerCase());
+      const oppRoles = opponentHeroes.map(h => h.role);
+
+      // A. Magneto Metal Annihilation (+18 in BattleEngine!)
+      const opponentHasMetal = oppHeroIds.some(id => METALLIC_HERO_IDS.includes(id));
+      if (character.id === 'magneto' && opponentHasMetal) {
+        counterMultiplier += 0.40; // Hard counter auto-win against opponent's metal roster
+      }
+
+      // Denial pick: If bot has metal heroes and opponent might draft Magneto, bot values Magneto
+      const botHasMetal = bot.characters.some(h => METALLIC_HERO_IDS.includes(h.id.toLowerCase()));
+      if (character.id === 'magneto' && botHasMetal) {
+        counterMultiplier += 0.25;
+      }
+
+      // B. Sorcerer vs Heavy Physical Brutes (+8 in BattleEngine)
+      const oppHasPhysicalBrutes = oppHeroIds.some(id => PHYSICAL_BRUTE_IDS.includes(id)) || oppRoles.includes('Tank');
+      if (character.role === 'Sorcerer' && oppHasPhysicalBrutes) {
+        counterMultiplier += 0.25;
+      }
+
+      // C. Speedster Blitz vs Ranged Blasters (+7 in BattleEngine)
+      const oppHasBlasters = oppHeroIds.some(id => BLASTER_HERO_IDS.includes(id)) || oppRoles.includes('Blaster');
+      if (character.role === 'Speedster' && oppHasBlasters) {
+        counterMultiplier += 0.22;
+      }
+
+      // D. Elemental Energy vs Venom Symbiote (+10 in BattleEngine)
+      if (oppHeroIds.includes('venom')) {
+        const hasElemental = abilitiesLower.some(a => a.includes('fire') || a.includes('lightning') || a.includes('flame'));
+        if (hasElemental || character.id === 'electro' || character.id === 'ghost-rider') {
+          counterMultiplier += 0.25;
+        }
+      }
+    }
+
+    const rawValuation = baseRarityValue * combatMultiplier * powerMultiplier * abilityBonus * roleMultiplier * universeMultiplier * counterMultiplier;
     return Math.round(rawValuation);
   }
 
   /**
-   * Computes the maximum coins the bot is willing to pay (WTP) in this round,
-   * factoring in safe budget reserves for remaining slots and tournament urgency.
+   * PhD-Level Budget Allocation & Willingness-To-Pay (WTP) Engine.
+   * Ensures the bot NEVER blows its bankroll on one character (e.g. $700 on Hulk) and starves remaining slots.
+   * Enforces a dynamic future-slot reserve and strict rarity tier budget caps.
    */
   public static getWillingnessToPay(character: Character, bot: Player, room: RoomState): number {
     const slotsNeeded = room.settings.charactersPerPlayer - bot.characters.length;
     if (slotsNeeded <= 0) return 0;
 
     const minBid = room.auction?.startingBid || 100;
+    const increment = room.settings.bidIncrement || 50;
+    const startingCoins = room.settings.startingCoins || 1000;
+    const totalSlots = room.settings.charactersPerPlayer || 3;
 
-    // Safety Reserve: Ensure bot keeps at least minBid coins for each future slot
-    const futureSlots = slotsNeeded - 1;
-    const safetyReserve = futureSlots * minBid;
-    const maxAffordable = Math.max(0, bot.coins - safetyReserve);
+    // ==================== 1. DYNAMIC SAFETY RESERVE ====================
+    // A PhD master never leaves themselves with only $100 for future slots.
+    // They reserve at least 150-250 coins per future slot to remain competitive.
+    let maxAffordable = bot.coins;
+    let singleHeroBudgetCap = bot.coins;
 
-    if (maxAffordable < minBid) {
-      return 0;
+    if (slotsNeeded > 1) {
+      const futureSlots = slotsNeeded - 1;
+      const targetAvgPerSlot = startingCoins / totalSlots;
+      const currentAvgPerSlot = bot.coins / slotsNeeded;
+
+      // Reserve at least minBid + 1 increment (e.g. 150), scaling with average available funds
+      const reservePerFutureSlot = Math.max(
+        minBid + increment,
+        Math.min(260, Math.floor(Math.min(targetAvgPerSlot, currentAvgPerSlot) * 0.65))
+      );
+
+      const safetyReserve = futureSlots * reservePerFutureSlot;
+      maxAffordable = Math.max(0, bot.coins - safetyReserve);
+
+      if (maxAffordable < minBid) {
+        return 0;
+      }
+
+      // ==================== 2. TIER EXPENDITURE CAPS ====================
+      // Enforces the Golden Budget Ratio:
+      // When multiple slots remain, no single hero can consume more than their fair share of starting bankroll.
+      if (slotsNeeded >= 3) {
+        // Early Draft: Diversification is paramount
+        const maxSpendPercentageByRarity: Record<string, number> = {
+          Common: 0.16,     // Max $160 on $1000 budget
+          Rare: 0.22,       // Max $220 on $1000 budget
+          Epic: 0.30,       // Max $300 on $1000 budget
+          Legendary: 0.38,  // Max $380 on $1000 budget (Hulk will NEVER exceed ~$380!)
+          Cosmic: 0.44      // Max $440 on $1000 budget for god-tier titans
+        };
+        const percentage = maxSpendPercentageByRarity[character.rarity] || 0.28;
+        singleHeroBudgetCap = Math.floor(startingCoins * percentage);
+      } else if (slotsNeeded === 2) {
+        // Mid Draft (2 slots left):
+        // Allow up to 58% of remaining coins, ensuring at least 42% is preserved for the closer
+        const maxSpendPercentageByRarity: Record<string, number> = {
+          Common: 0.25,
+          Rare: 0.35,
+          Epic: 0.48,
+          Legendary: 0.58,
+          Cosmic: 0.62
+        };
+        const percentage = maxSpendPercentageByRarity[character.rarity] || 0.45;
+        singleHeroBudgetCap = Math.floor(bot.coins * percentage);
+      }
+    } else {
+      // Final Slot (slotsNeeded === 1):
+      // Bot can spend up to 100% of remaining coins on its final hero!
+      maxAffordable = bot.coins;
+      singleHeroBudgetCap = bot.coins;
     }
 
+    // ==================== 3. INTRINSIC VALUATION & URGENCY ====================
     const intrinsicValue = this.evaluateCharacterValue(character, bot, room);
 
-    // Urgency factor based on remaining auction rounds
+    // Urgency scaling based on draft progress
     const currentRound = room.auction?.currentRound || 1;
-    const totalRounds = room.players.length * room.settings.charactersPerPlayer;
+    const totalRounds = room.players.length * totalSlots;
     const roundsRemaining = Math.max(1, totalRounds - currentRound + 1);
 
     let urgencyMultiplier = 1.0;
     if (slotsNeeded >= roundsRemaining) {
-      // Danger of not filling roster! Bid aggressively
-      urgencyMultiplier = 1.35;
-    } else if (slotsNeeded === 1 && bot.characters.length === room.settings.charactersPerPlayer - 1) {
-      // Final slot: Bot can spend up to its entire remaining budget
+      // Danger of failing to draft full roster: be slightly more aggressive
       urgencyMultiplier = 1.20;
+    } else if (slotsNeeded === 1) {
+      // Closer slot: push to acquire best remaining anchor
+      urgencyMultiplier = 1.15;
     }
 
-    // Coin richness factor:
-    // If bot has high coins relative to slots needed, be more aggressive
+    // Bankroll wealth multiplier
     const coinsPerSlot = bot.coins / slotsNeeded;
     if (coinsPerSlot > 450) {
-      urgencyMultiplier *= 1.15;
-    } else if (coinsPerSlot < 220) {
-      urgencyMultiplier *= 0.85;
+      urgencyMultiplier *= 1.08;
+    } else if (coinsPerSlot < 200) {
+      urgencyMultiplier *= 0.88;
     }
 
-    // Subtle personality variance (±6%) using character id and bot id
+    // Subtle deterministic personality variance (±4%)
     const seed = (character.id.charCodeAt(0) || 1) + (bot.id.charCodeAt(bot.id.length - 1) || 1);
-    const varianceFactor = 0.94 + ((seed % 13) * 0.01);
+    const varianceFactor = 0.96 + ((seed % 9) * 0.01);
 
     const calculatedWTP = intrinsicValue * urgencyMultiplier * varianceFactor;
 
-    // Cap at maxAffordable
-    const finalWTP = Math.min(maxAffordable, calculatedWTP);
+    // Hard ceiling: Combine calculated valuation with safety reserve and tier budget cap
+    const finalWTP = Math.min(calculatedWTP, maxAffordable, singleHeroBudgetCap);
 
-    // Snap to increment
-    const increment = room.settings.bidIncrement || 50;
+    if (finalWTP < minBid) {
+      return 0;
+    }
+
+    // Snap cleanly to room bid increment
     return Math.floor(finalWTP / increment) * increment;
   }
 
   /**
-   * Evaluates current auction state and decides whether to BID, PASS, WAIT, or DO NOTHING.
-   * Returns action along with a human-like simulated delay.
+   * PhD-Level Auction Decision Engine.
+   * Features human-like response timing, anti-snipe triggers, strategic price discipline (bleeding opponent's bankroll),
+   * and disciplined pass management.
    */
   public static decideAuctionAction(bot: Player, room: RoomState): BotAuctionDecision {
     if (!room.auction || (room.auction.status !== 'ACTIVE' && room.auction.status !== 'EXTENDED')) {
@@ -209,12 +338,11 @@ export class BotEngine {
 
     // Check if bot has enough coins for minimum required bid
     if (bot.coins < minRequiredBid) {
-      // Check if eligible to pass
       const canPass = bot.coins < startingBid && (bot.passesRemaining ?? 0) > 0;
       if (canPass) {
         return {
           action: 'PASS',
-          delayMs: 1200 + Math.floor(Math.random() * 800),
+          delayMs: 1200 + Math.floor(Math.random() * 600),
           reason: `Insufficient coins (${bot.coins} < ${minRequiredBid}), passing character.`
         };
       }
@@ -224,20 +352,19 @@ export class BotEngine {
     // Calculate Bot's Willingness To Pay
     const wtp = this.getWillingnessToPay(character, bot, room);
 
-    // Decision: Compare required bid to WTP
+    // ==================== BIDDING LOGIC ====================
     if (minRequiredBid <= wtp) {
-      // DECISION: BID!
-      // Human-like response timing:
+      // Timing dynamics:
       let delayMs: number;
       if (room.auction.status === 'EXTENDED' || room.auction.timerSeconds <= 3) {
-        // Anti-snipe: Fast reaction (650ms - 1100ms)
-        delayMs = 650 + Math.floor(Math.random() * 450);
+        // Anti-snipe: Fast tactical reaction (500ms - 900ms)
+        delayMs = 500 + Math.floor(Math.random() * 400);
       } else if (room.auction.currentBid === 0) {
-        // Opening bid: Give human 1.6s - 2.8s before bot steps in
-        delayMs = 1600 + Math.floor(Math.random() * 1200);
-      } else {
-        // Counter-bid: 1.2s - 2.2s thinking time
+        // Opening bid: 1.2s - 2.2s
         delayMs = 1200 + Math.floor(Math.random() * 1000);
+      } else {
+        // Counter-bid: 900ms - 1.7s
+        delayMs = 900 + Math.floor(Math.random() * 800);
       }
 
       return {
@@ -247,14 +374,13 @@ export class BotEngine {
         reason: `Valuation acceptable (Bid ${minRequiredBid} <= WTP ${wtp})`
       };
     } else {
-      // DECISION: DO NOT BID (overpriced according to algorithm)
-      // Check if bot has < 100 coins and can pass
+      // OVERPRICED: Bot refuses to overpay and lets opponent have it
       const canPass = bot.coins < startingBid && (bot.passesRemaining ?? 0) > 0;
       if (canPass) {
         return {
           action: 'PASS',
-          delayMs: 1400 + Math.floor(Math.random() * 900),
-          reason: `Character over budget and coins low, choosing to pass.`
+          delayMs: 1300 + Math.floor(Math.random() * 700),
+          reason: `Character price exceeds valuation and coins low, passing character.`
         };
       }
 
@@ -267,8 +393,9 @@ export class BotEngine {
   }
 
   /**
-   * Chooses the optimal fighter for the bot in a battle round.
-   * Evaluates available heroes against opponent's remaining roster.
+   * PhD-Level Tactical Fighter Deployment (Minimax / Game-Theoretic Optimal).
+   * Evaluates available heroes against opponent's remaining roster using BattleEngine combat simulations.
+   * Optimizes overall match win probability: avoids wasting trump cards on bait, and deploys hard counters decisively.
    */
   public static chooseFighter(bot: Player, opponent?: Player): Character | null {
     const usedIds = bot.usedCharacterIds || [];
@@ -285,48 +412,105 @@ export class BotEngine {
       return available[0];
     }
 
-    // Opponent unused heroes for tactical matchup analysis
+    // Opponent available heroes
     const oppUsed = opponent?.usedCharacterIds || [];
     const oppDefeated = opponent?.defeatedCharacterIds || [];
     const oppAvailable = opponent?.characters.filter(
       c => !oppUsed.includes(c.id) && !oppDefeated.includes(c.id)
     ) || [];
 
-    // Score each candidate
-    let bestCandidate = available[0];
-    let bestScore = -Infinity;
+    // Fallback if opponent has no available heroes
+    if (oppAvailable.length === 0) {
+      // Pick hero with highest composite combat rating
+      return available.reduce((best, curr) => {
+        const bestPower = curr.stats?.power || 75;
+        const currPower = best.stats?.power || 75;
+        return bestPower > currPower ? curr : best;
+      }, available[0]);
+    }
 
-    for (const candidate of available) {
-      const stats = candidate.stats || { power: 75, combat: 70, durability: 70, strength: 70 };
-      let score = (stats.power * 2) + (stats.combat * 1.2) + (stats.durability * 1.1) + (stats.strength * 1.0);
+    // ==================== SCENARIO 1: OPPONENT HAS EXACTLY 1 HERO LEFT ====================
+    // Endgame certainty: Opponent MUST deploy this exact hero.
+    // Pick the hero that guarantees or maximizes victory against this specific opponent.
+    if (oppAvailable.length === 1) {
+      const targetOpp = oppAvailable[0];
+      let bestCandidate = available[0];
+      let bestMargin = -Infinity;
 
-      // Matchup analysis against opponent's remaining roster
-      if (oppAvailable.length > 0) {
-        for (const oppChar of oppAvailable) {
-          // Check if candidate has strengths against opponent's character or role
-          const hasStrength = candidate.matchupStrengths?.some(
-            s => s.toLowerCase().includes(oppChar.name.toLowerCase()) || 
-                 s.toLowerCase().includes(oppChar.role.toLowerCase())
-          );
-          if (hasStrength) {
-            score += 25;
-          }
+      for (const candidate of available) {
+        const combat = BattleEngine.evaluateMatchup(candidate, targetOpp);
+        const isBotWin = combat.winnerChar.id === candidate.id;
+        const margin = isBotWin ? (combat.score1 - combat.score2) : (combat.score2 - combat.score1);
 
-          const hasWeakness = candidate.matchupWeaknesses?.some(
-            w => w.toLowerCase().includes(oppChar.name.toLowerCase()) || 
-                 w.toLowerCase().includes(oppChar.role.toLowerCase())
-          );
-          if (hasWeakness) {
-            score -= 15;
-          }
+        if (margin > bestMargin) {
+          bestMargin = margin;
+          bestCandidate = candidate;
         }
       }
 
-      // Add small random noise (±5) for organic playstyle
-      score += (Math.random() * 10) - 5;
+      return bestCandidate;
+    }
 
-      if (score > bestScore) {
-        bestScore = score;
+    // ==================== SCENARIO 2: MULTI-HERO TACTICAL MINIMAX ====================
+    // Score each candidate across the entire opponent pool
+    let bestCandidate = available[0];
+    let highestTacticalScore = -Infinity;
+
+    for (const candidate of available) {
+      let winCount = 0;
+      let totalMargin = 0;
+      let minMargin = Infinity;
+      let hasDecisiveAdvantage = false;
+
+      for (const oppChar of oppAvailable) {
+        const combat = BattleEngine.evaluateMatchup(candidate, oppChar);
+        const isBotWin = combat.winnerChar.id === candidate.id;
+        const margin = isBotWin ? (combat.score1 - combat.score2) : -(combat.score2 - combat.score1);
+
+        if (isBotWin) winCount++;
+        totalMargin += margin;
+        if (margin < minMargin) minMargin = margin;
+
+        if (combat.decisiveAdvantage && isBotWin) {
+          hasDecisiveAdvantage = true;
+        }
+      }
+
+      const winRate = winCount / oppAvailable.length;
+      const avgMargin = totalMargin / oppAvailable.length;
+      const candidatePower = candidate.stats?.power || 75;
+
+      // Base tactical score from win rate and worst-case security level (Minimax)
+      let score = (winRate * 50) + (avgMargin * 1.5) + (minMargin * 2.0);
+
+      // Decisive counter bonus
+      if (hasDecisiveAdvantage) {
+        score += 15;
+      }
+
+      // TRUMP CARD CONSERVATION:
+      // If candidate is a 90+ god-tier hero, don't deploy them if another available hero
+      // already has a >60% win rate against the opponent's pool! Save the titan for when needed!
+      const otherViableCandidates = available.filter(
+        c => c.id !== candidate.id && (c.stats?.power || 75) < candidatePower
+      );
+
+      const hasViableBackup = otherViableCandidates.some(b => {
+        const backupWins = oppAvailable.filter(
+          opp => BattleEngine.evaluateMatchup(b, opp).winnerChar.id === b.id
+        ).length;
+        return (backupWins / oppAvailable.length) >= 0.50;
+      });
+
+      if (candidatePower >= 90 && hasViableBackup && oppAvailable.length > 2) {
+        score -= 12; // Conserve trump card
+      }
+
+      // Slight natural variance (±2 points)
+      score += (Math.random() * 4) - 2;
+
+      if (score > highestTacticalScore) {
+        highestTacticalScore = score;
         bestCandidate = candidate;
       }
     }

@@ -67,10 +67,12 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
     }
   };
 
-  const isHost = selfPlayer.isHost;
+  // In a room with bots or where self is the only human, self is guaranteed host
+  const isOnlyHuman = !room.players.some((p) => p.id !== selfPlayer.id && !p.isBot);
+  const isHost = selfPlayer.isHost || room.hostId === selfPlayer.id || isOnlyHuman;
   const canStart =
     room.players.length >= 2 &&
-    room.players.filter((p) => !p.isHost).every((p) => p.isReady);
+    room.players.filter((p) => !p.isHost && !p.isBot).every((p) => p.isReady);
 
   return (
     <div className="max-w-5xl mx-auto w-full px-4 py-6">
@@ -360,7 +362,11 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
                 onClick={onStartGame}
                 className="w-full"
               >
-                {canStart ? 'START CHARACTER AUCTION' : 'WAITING FOR READY...'}
+                {room.players.length < 2
+                  ? 'WAITING FOR 2ND PLAYER...'
+                  : canStart
+                  ? 'START CHARACTER AUCTION'
+                  : 'WAITING FOR READY...'}
               </ComicButton>
             ) : (
               <ComicButton

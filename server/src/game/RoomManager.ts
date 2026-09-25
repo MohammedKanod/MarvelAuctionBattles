@@ -214,6 +214,18 @@ export class RoomManager {
     }
 
     player.connected = true;
+
+    // Ensure human player retains/regains host if no other human is host
+    const hasOtherHumanHost = room.players.some(p => p.id !== player.id && p.isHost && !p.isBot && p.connected);
+    if (!hasOtherHumanHost) {
+      player.isHost = true;
+      room.hostId = player.id;
+    }
+    // Guarantee bots are never hosts
+    room.players.forEach(p => {
+      if (p.isBot) p.isHost = false;
+    });
+
     this.bindSocket(socketId, player.id, code);
     DatabaseService.saveRoom(room);
 
@@ -274,6 +286,15 @@ export class RoomManager {
     const room = this.rooms.get(info.roomCode);
     if (!room) return { success: false, error: 'Room not found' };
 
+    // Auto-heal host status if caller is the only human in room with bots
+    const isOnlyHuman = !room.players.some(p => p.id !== info.playerId && !p.isBot);
+    if (isOnlyHuman && room.hostId !== info.playerId) {
+      room.hostId = info.playerId;
+      const caller = room.players.find(p => p.id === info.playerId);
+      if (caller) caller.isHost = true;
+      room.players.forEach(p => { if (p.isBot) p.isHost = false; });
+    }
+
     if (room.hostId !== info.playerId) {
       return { success: false, error: 'Only the host can start the game.' };
     }
@@ -282,7 +303,18 @@ export class RoomManager {
       return { success: false, error: 'At least 2 players are required to start.' };
     }
 
-    const unreadyPlayers = room.players.filter(p => !p.isReady);
+    // Host starting the game is ready; all bots in room are ready
+    const host = room.players.find(p => p.id === info.playerId);
+    if (host) host.isReady = true;
+    room.players.forEach(p => {
+      if (p.isBot) {
+        p.isReady = true;
+        p.isHost = false;
+      }
+    });
+
+    // Only non-host human players need to be checked for ready status
+    const unreadyPlayers = room.players.filter(p => !p.isHost && !p.isBot && !p.isReady);
     if (unreadyPlayers.length > 0) {
       return { success: false, error: `Waiting for all players to ready up (${unreadyPlayers.map(p => p.name).join(', ')}).` };
     }
@@ -1028,7 +1060,8 @@ export class RoomManager {
     }
 
     if (room.hostId === info.playerId) {
-      const nextConnected = room.players.find(p => p.id !== info.playerId && p.connected);
+      // Transfer host ONLY to another connected HUMAN player, never to a bot
+      const nextConnected = room.players.find(p => p.id !== info.playerId && p.connected && !p.isBot);
       if (nextConnected) {
         room.hostId = nextConnected.id;
         nextConnected.isHost = true;
