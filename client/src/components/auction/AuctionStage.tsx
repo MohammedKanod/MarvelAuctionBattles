@@ -137,6 +137,10 @@ export const AuctionStage: React.FC<AuctionStageProps> = ({
       <div className="flex items-center justify-between gap-3 mb-4 pt-1">
         {/* Left Badge: Active / Self Player (Red Border, Glow) */}
         <div className="flex-1 relative">
+          <div className="flex items-center justify-between px-1 mb-0.5 text-[10px] font-black uppercase tracking-wider text-red-400">
+            <span className="truncate max-w-[120px]">{currentSelf.name} (YOU)</span>
+            {isLeader && <span className="text-amber-400 font-bold flex items-center gap-0.5">👑 LEADING</span>}
+          </div>
           <div className="skew-parallelogram bg-[#0f1015] border-2 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.35)] py-2 px-3">
             <div className="unskew-content flex items-center justify-between">
               {/* Coin balance */}
@@ -171,6 +175,12 @@ export const AuctionStage: React.FC<AuctionStageProps> = ({
 
         {/* Right Badge: Opponent / Current Leader (Steel / Cyan-Blue Border) */}
         <div className="flex-1 relative">
+          <div className="flex items-center justify-between px-1 mb-0.5 text-[10px] font-black uppercase tracking-wider text-cyan-400">
+            <span className="truncate max-w-[120px] flex items-center gap-1">
+              {currentOther.isBot ? '🤖 ' : ''}{currentOther.name}
+            </span>
+            {auction.currentLeaderId === currentOther.id && <span className="text-amber-400 font-bold flex items-center gap-0.5">👑 LEADING</span>}
+          </div>
           <div className="skew-parallelogram bg-[#0f1015] border-2 border-cyan-900/80 shadow-[0_0_12px_rgba(6,182,212,0.15)] py-2 px-3">
             <div className="unskew-content flex items-center justify-between">
               {/* Coin balance */}

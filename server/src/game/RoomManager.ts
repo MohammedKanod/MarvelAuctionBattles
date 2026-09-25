@@ -5,6 +5,7 @@ import { AuctionEngine } from '../auction/AuctionEngine';
 import { BattleEngine } from '../battle/BattleEngine';
 import { TournamentEngine } from '../tournament/TournamentEngine';
 import { DatabaseService } from '../database/db';
+import { BotEngine } from '../bot/BotEngine';
 
 export interface RoomBroadcastCallbacks {
   broadcastToRoom: (roomCode: string, event: string, payload: any) => void;
@@ -17,6 +18,7 @@ export class RoomManager {
   private playerToSocket: Map<string, string> = new Map();
   private auctionEngines: Map<string, AuctionEngine> = new Map();
   private auctionCharacterPools: Map<string, Character[]> = new Map();
+  private botTimers: Map<string, NodeJS.Timeout[]> = new Map();
   private callbacks: RoomBroadcastCallbacks;
 
   constructor(callbacks: RoomBroadcastCallbacks) {
@@ -35,7 +37,8 @@ export class RoomManager {
   public createRoom(
     hostName: string,
     settings: Partial<RoomSettings>,
-    socketId: string
+    socketId: string,
+    withBot: boolean = false
   ): { room: RoomState; player: Player; sessionToken: string } {
     const roomCode = this.generateRoomCode();
     const playerId = `player-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -77,6 +80,11 @@ export class RoomManager {
       createdAt: Date.now(),
       unsoldRotationIndex: 0
     };
+
+    if (withBot) {
+      const botPlayer = BotEngine.createBotPlayer(mergedSettings);
+      room.players.push(botPlayer);
+    }
 
     this.rooms.set(roomCode, room);
     this.bindSocket(socketId, playerId, roomCode);
@@ -133,6 +141,58 @@ export class RoomManager {
 
     this.callbacks.broadcastToRoom(code, 'PLAYER_JOINED', { player: newPlayer, room });
     return { success: true, room, player: newPlayer, sessionToken };
+  }
+
+  public addBot(socketId: string): { success: boolean; error?: string; bot?: Player; room?: RoomState } {
+    const info = this.socketToPlayer.get(socketId);
+    if (!info) return { success: false, error: 'Socket not found' };
+
+    const room = this.rooms.get(info.roomCode);
+    if (!room || room.phase !== 'LOBBY') {
+      return { success: false, error: 'Cannot add bot: lobby is not active.' };
+    }
+
+    if (room.hostId !== info.playerId) {
+      return { success: false, error: 'Only the host can add a computer player.' };
+    }
+
+    if (room.players.length >= room.settings.maxPlayers) {
+      return { success: false, error: `Room is full (Maximum ${room.settings.maxPlayers} players).` };
+    }
+
+    const existingBotNames = room.players.filter(p => p.isBot).map(p => p.name);
+    const botPlayer = BotEngine.createBotPlayer(room.settings, existingBotNames);
+
+    room.players.push(botPlayer);
+    DatabaseService.saveRoom(room);
+
+    this.callbacks.broadcastToRoom(room.roomCode, 'PLAYER_JOINED', { player: botPlayer, room });
+    return { success: true, bot: botPlayer, room };
+  }
+
+  public removeBot(socketId: string, botId: string): { success: boolean; error?: string } {
+    const info = this.socketToPlayer.get(socketId);
+    if (!info) return { success: false, error: 'Socket not found' };
+
+    const room = this.rooms.get(info.roomCode);
+    if (!room || room.phase !== 'LOBBY') {
+      return { success: false, error: 'Cannot remove bot: lobby is not active.' };
+    }
+
+    if (room.hostId !== info.playerId) {
+      return { success: false, error: 'Only the host can remove a computer player.' };
+    }
+
+    const botIndex = room.players.findIndex(p => p.id === botId && p.isBot);
+    if (botIndex === -1) {
+      return { success: false, error: 'Bot not found in room.' };
+    }
+
+    room.players.splice(botIndex, 1);
+    DatabaseService.saveRoom(room);
+
+    this.callbacks.broadcastToRoom(room.roomCode, 'PLAYER_LEFT', { playerId: botId, room });
+    return { success: true };
   }
 
   public reconnect(
@@ -305,6 +365,8 @@ export class RoomManager {
       auction: room.auction,
       room
     });
+
+    this.triggerBotDecisions(room);
   }
 
   public placeBid(socketId: string, amount: number): { success: boolean; error?: string } {
@@ -341,6 +403,7 @@ export class RoomManager {
         passedPlayerIds: room.auction.passedPlayerIds || []
       };
       DatabaseService.saveRoom(room);
+      this.triggerBotDecisions(room);
     }
     return result;
   }
@@ -397,6 +460,8 @@ export class RoomManager {
       passedPlayerIds: room.auction.passedPlayerIds,
       room
     });
+
+    this.triggerBotDecisions(room);
 
     const eligiblePlayers = room.players.filter(
       p => p.characters.length < room.settings.charactersPerPlayer
@@ -465,6 +530,8 @@ export class RoomManager {
     winningBid: number,
     isFreeAssignment: boolean = false
   ) {
+    this.clearBotTimers(room.roomCode);
+
     const player = room.players.find(p => p.id === winnerId);
     if (player) {
       player.coins = Math.max(0, player.coins - winningBid);
@@ -539,6 +606,8 @@ export class RoomManager {
    * The character is simply UNSOLD and discarded back to the multiverse pool.
    */
   private handleNoBidsUnsold(room: RoomState, character: Character) {
+    this.clearBotTimers(room.roomCode);
+
     if (room.auction) {
       room.auction.status = 'UNSOLD';
       room.auction.winnerId = null;
@@ -563,6 +632,7 @@ export class RoomManager {
    * Transition from Auction to Battle Act
    */
   private transitionAuctionToBattle(room: RoomState) {
+    this.clearBotTimers(room.roomCode);
     const auctionEngine = this.auctionEngines.get(room.roomCode);
     if (auctionEngine) {
       auctionEngine.destroy();
@@ -615,6 +685,8 @@ export class RoomManager {
       battleRound: room.battleRound,
       room
     });
+
+    this.triggerBotFighterSelection(room);
   }
 
   /**
@@ -927,10 +999,12 @@ export class RoomManager {
       p.characters = [];
       p.wins = 0;
       p.eliminated = false;
-      p.isReady = p.isHost;
+      p.isReady = p.isHost || Boolean(p.isBot);
       p.selectedFighterId = undefined;
       p.fighterLocked = false;
       p.defeatedCharacterIds = [];
+      p.usedCharacterIds = [];
+      p.passesRemaining = DEFAULT_PASSES_PER_PLAYER;
     }
 
     DatabaseService.saveRoom(room);
@@ -975,5 +1049,243 @@ export class RoomManager {
 
   public getRoomByCode(code: string): RoomState | undefined {
     return this.rooms.get(code.toUpperCase());
+  }
+
+  // ==================== BOT TIMERS & AUTOMATION ====================
+
+  public clearBotTimers(roomCode: string) {
+    const timers = this.botTimers.get(roomCode);
+    if (timers) {
+      timers.forEach(t => clearTimeout(t));
+      this.botTimers.delete(roomCode);
+    }
+  }
+
+  private scheduleBotTimer(roomCode: string, fn: () => void, delayMs: number): NodeJS.Timeout {
+    const timer = setTimeout(() => {
+      const current = this.botTimers.get(roomCode) || [];
+      const idx = current.indexOf(timer);
+      if (idx !== -1) current.splice(idx, 1);
+      fn();
+    }, delayMs);
+
+    const existing = this.botTimers.get(roomCode) || [];
+    existing.push(timer);
+    this.botTimers.set(roomCode, existing);
+    return timer;
+  }
+
+  public triggerBotDecisions(room: RoomState) {
+    if (room.phase !== 'AUCTION' || !room.auction) return;
+    if (room.auction.status !== 'ACTIVE' && room.auction.status !== 'EXTENDED') return;
+
+    this.clearBotTimers(room.roomCode);
+
+    const bots = room.players.filter(p => p.isBot && p.characters.length < room.settings.charactersPerPlayer);
+    if (bots.length === 0) return;
+
+    for (const bot of bots) {
+      const decision = BotEngine.decideAuctionAction(bot, room);
+
+      if (decision.action === 'BID' && decision.amount) {
+        const bidAmount = decision.amount;
+        const targetCharacterId = room.auction.character?.id;
+        const currentRound = room.auction.currentRound;
+
+        this.scheduleBotTimer(room.roomCode, () => {
+          const currentRoom = this.rooms.get(room.roomCode);
+          if (!currentRoom || currentRoom.phase !== 'AUCTION' || !currentRoom.auction) return;
+          if (currentRoom.auction.status !== 'ACTIVE' && currentRoom.auction.status !== 'EXTENDED') return;
+          if (currentRoom.auction.currentRound !== currentRound) return;
+          if (currentRoom.auction.character?.id !== targetCharacterId) return;
+
+          this.executeBotBid(room.roomCode, bot.id, bidAmount);
+        }, decision.delayMs);
+      } else if (decision.action === 'PASS') {
+        const targetCharacterId = room.auction.character?.id;
+        const currentRound = room.auction.currentRound;
+
+        this.scheduleBotTimer(room.roomCode, () => {
+          const currentRoom = this.rooms.get(room.roomCode);
+          if (!currentRoom || currentRoom.phase !== 'AUCTION' || !currentRoom.auction) return;
+          if (currentRoom.auction.currentRound !== currentRound) return;
+          if (currentRoom.auction.character?.id !== targetCharacterId) return;
+
+          this.executeBotPass(room.roomCode, bot.id);
+        }, decision.delayMs);
+      }
+    }
+  }
+
+  private executeBotBid(roomCode: string, botId: string, amount: number) {
+    const room = this.rooms.get(roomCode);
+    if (!room || room.phase !== 'AUCTION' || !room.auction) return;
+
+    const bot = room.players.find(p => p.id === botId && p.isBot);
+    if (!bot) return;
+
+    if (bot.characters.length >= room.settings.charactersPerPlayer) return;
+    if (room.auction.passedPlayerIds?.includes(bot.id)) return;
+    if (room.auction.currentLeaderId === bot.id) return;
+
+    const auctionEngine = this.auctionEngines.get(room.roomCode);
+    if (!auctionEngine) return;
+
+    const minRequiredBid = room.auction.currentBid === 0
+      ? (room.auction.startingBid || 100)
+      : room.auction.currentBid + room.settings.bidIncrement;
+
+    const finalBid = Math.max(amount, minRequiredBid);
+    if (bot.coins < finalBid) return;
+
+    const result = auctionEngine.placeBid(bot, finalBid, room.settings.bidIncrement);
+    if (result.success) {
+      room.auction = {
+        ...auctionEngine.getState(),
+        passedPlayerIds: room.auction.passedPlayerIds || []
+      };
+      DatabaseService.saveRoom(room);
+      this.triggerBotDecisions(room);
+    }
+  }
+
+  private executeBotPass(roomCode: string, botId: string) {
+    const room = this.rooms.get(roomCode);
+    if (!room || room.phase !== 'AUCTION' || !room.auction) return;
+
+    const bot = room.players.find(p => p.id === botId && p.isBot);
+    if (!bot) return;
+
+    if (room.auction.status !== 'ACTIVE' && room.auction.status !== 'EXTENDED') return;
+    if (room.auction.currentLeaderId === bot.id) return;
+    if (room.auction.passedPlayerIds?.includes(bot.id)) return;
+
+    const minBid = room.auction.startingBid || 100;
+    if (bot.coins >= minBid) return;
+
+    const currentPasses = bot.passesRemaining !== undefined ? bot.passesRemaining : DEFAULT_PASSES_PER_PLAYER;
+    if (currentPasses <= 0) return;
+
+    if (!room.auction.passedPlayerIds) {
+      room.auction.passedPlayerIds = [];
+    }
+
+    room.auction.passedPlayerIds.push(bot.id);
+    bot.passesRemaining = currentPasses - 1;
+    DatabaseService.saveRoom(room);
+
+    this.callbacks.broadcastToRoom(room.roomCode, 'PLAYER_PASSED_AUCTION', {
+      playerId: bot.id,
+      playerName: bot.name,
+      passedPlayerIds: room.auction.passedPlayerIds,
+      room
+    });
+
+    const eligiblePlayers = room.players.filter(
+      p => p.characters.length < room.settings.charactersPerPlayer
+    );
+
+    // Case 1: ALL eligible players passed and NO ONE bid -> Character is UNSOLD!
+    const allPassed = eligiblePlayers.length > 0 && eligiblePlayers.every(p => room.auction!.passedPlayerIds!.includes(p.id));
+    if (allPassed && (room.auction.currentBid === 0 || !room.auction.currentLeaderId)) {
+      const engine = this.auctionEngines.get(room.roomCode);
+      if (engine) engine.destroy();
+
+      const character = room.auction.character;
+      room.auction.status = 'UNSOLD';
+      room.auction.winnerId = null;
+      room.auction.winnerName = null;
+      room.auction.winningBid = 0;
+      DatabaseService.saveRoom(room);
+
+      if (character) {
+        this.callbacks.broadcastToRoom(room.roomCode, 'CHARACTER_UNSOLD', { character, room });
+      }
+
+      setTimeout(() => {
+        this.launchNextAuctionRound(room);
+      }, 1400);
+      return;
+    }
+
+    // Case 2: One player has a winning bid and all other eligible competitors passed -> Fast-forward win!
+    if (room.auction.currentLeaderId && room.auction.currentBid > 0) {
+      const remainingCompetitors = eligiblePlayers.filter(p => p.id !== room.auction!.currentLeaderId);
+      const allCompetitorsPassed = remainingCompetitors.length > 0 && remainingCompetitors.every(p => room.auction!.passedPlayerIds!.includes(p.id));
+      if (allCompetitorsPassed) {
+        const engine = this.auctionEngines.get(room.roomCode);
+        if (engine) engine.destroy();
+
+        this.handleCharacterSold(
+          room,
+          room.auction.currentLeaderId,
+          room.auction.currentLeaderName || 'Winner',
+          room.auction.character!,
+          room.auction.currentBid,
+          false
+        );
+      }
+    }
+  }
+
+  public triggerBotFighterSelection(room: RoomState) {
+    if (room.phase !== 'BATTLE' || !room.battleRound || room.battleRound.subPhase !== 'SELECTION') return;
+
+    const bots = room.players.filter(p => p.isBot && !p.fighterLocked);
+    if (bots.length === 0) return;
+
+    for (const bot of bots) {
+      const remainingHeroes = bot.characters.filter(
+        c => !bot.usedCharacterIds?.includes(c.id) && !bot.defeatedCharacterIds?.includes(c.id)
+      );
+      if (remainingHeroes.length === 0) continue;
+
+      const humanOpponent = room.players.find(p => p.id !== bot.id);
+      const chosenHero = BotEngine.chooseFighter(bot, humanOpponent);
+      if (!chosenHero) continue;
+
+      const delayMs = 1200 + Math.floor(Math.random() * 800);
+      this.scheduleBotTimer(room.roomCode, () => {
+        const currentRoom = this.rooms.get(room.roomCode);
+        if (!currentRoom || currentRoom.phase !== 'BATTLE' || !currentRoom.battleRound || currentRoom.battleRound.subPhase !== 'SELECTION') return;
+        this.executeBotLockFighter(room.roomCode, bot.id, chosenHero.id);
+      }, delayMs);
+    }
+  }
+
+  private executeBotLockFighter(roomCode: string, botId: string, characterId: string) {
+    const room = this.rooms.get(roomCode);
+    if (!room || room.phase !== 'BATTLE' || !room.battleRound || room.battleRound.subPhase !== 'SELECTION') return;
+
+    const bot = room.players.find(p => p.id === botId && p.isBot);
+    if (!bot || bot.fighterLocked) return;
+
+    const char = bot.characters.find(c => c.id === characterId);
+    if (!char) return;
+
+    bot.selectedFighterId = characterId;
+    bot.fighterLocked = true;
+
+    const sel = room.battleRound.activeFighterSelections.find(s => s.playerId === bot.id);
+    if (sel) {
+      sel.isLocked = true;
+    }
+
+    DatabaseService.saveRoom(room);
+
+    this.callbacks.broadcastToRoom(room.roomCode, 'PLAYER_LOCKED_FIGHTER', {
+      playerId: bot.id,
+      room
+    });
+
+    const playersWithUnusedFighters = room.players.filter(p => {
+      const remaining = p.characters.filter(c => !p.usedCharacterIds?.includes(c.id));
+      return remaining.length > 0;
+    });
+
+    const allLocked = playersWithUnusedFighters.every(p => p.fighterLocked);
+    if (allLocked) {
+      this.triggerSecretRevealAndBouts(room);
+    }
   }
 }

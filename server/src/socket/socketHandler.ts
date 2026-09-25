@@ -7,9 +7,9 @@ export function setupSocketHandlers(
   roomManager: RoomManager
 ) {
   io.on('connection', (socket: Socket<ClientToServerEvents, ServerToClientEvents>) => {
-    socket.on('CREATE_ROOM', ({ playerName, settings }) => {
+    socket.on('CREATE_ROOM', ({ playerName, settings, withBot }) => {
       try {
-        const { room, player, sessionToken } = roomManager.createRoom(playerName, settings, socket.id);
+        const { room, player, sessionToken } = roomManager.createRoom(playerName, settings, socket.id, withBot);
         socket.join(room.roomCode);
         socket.emit('ROOM_CREATED', { room, selfPlayerId: player.id, sessionToken });
       } catch (err: any) {
@@ -97,6 +97,20 @@ export function setupSocketHandlers(
 
     socket.on('PLAY_AGAIN', () => {
       roomManager.playAgain(socket.id);
+    });
+
+    socket.on('ADD_BOT', () => {
+      const result = roomManager.addBot(socket.id);
+      if (!result.success && result.error) {
+        socket.emit('ERROR_NOTIFICATION', { message: result.error });
+      }
+    });
+
+    socket.on('REMOVE_BOT', ({ botId }) => {
+      const result = roomManager.removeBot(socket.id, botId);
+      if (!result.success && result.error) {
+        socket.emit('ERROR_NOTIFICATION', { message: result.error });
+      }
     });
 
     socket.on('disconnect', () => {

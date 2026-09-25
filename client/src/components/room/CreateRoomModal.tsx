@@ -9,22 +9,25 @@ import {
   AUCTION_TIMER_OPTIONS,
   DEFAULT_ROOM_SETTINGS
 } from '../../../../shared/constants';
-import { ChevronDown, ChevronUp, Swords, Clock, Coins, ShieldCheck } from 'lucide-react';
+import { ChevronDown, ChevronUp, Swords, Clock, Coins, ShieldCheck, Bot } from 'lucide-react';
 
 interface CreateRoomModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreate: (playerName: string, settings: RoomSettings) => void;
+  onCreate: (playerName: string, settings: RoomSettings, withBot?: boolean) => void;
+  initialWithBot?: boolean;
 }
 
 export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
   isOpen,
   onClose,
-  onCreate
+  onCreate,
+  initialWithBot = false
 }) => {
   if (!isOpen) return null;
 
   const [playerName, setPlayerName] = useState('');
+  const [withBot, setWithBot] = useState<boolean>(initialWithBot);
   const [settings, setSettings] = useState<RoomSettings>({
     ...DEFAULT_ROOM_SETTINGS,
     maxPlayers: 2,
@@ -50,7 +53,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
       return;
     }
     setError('');
-    onCreate(playerName.trim(), { ...settings, maxPlayers: 2 });
+    onCreate(playerName.trim(), { ...settings, maxPlayers: 2 }, withBot);
   };
 
   return (
@@ -98,28 +101,50 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
             />
           </div>
 
-          {/* Strict 2-Player Head-to-Head Notice */}
+          {/* Opponent Selection: Human Friend vs Computer Bot */}
           <div>
-            <label className="block text-xs font-black uppercase tracking-wider text-zinc-300 mb-1.5">
-              GAME MODE
-            </label>
-            <div className="p-3 bg-black/80 comic-border border-comic-yellow flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded bg-comic-red border-2 border-black flex items-center justify-center text-lg flex-shrink-0 shadow-comic-sm">
-                  <Swords className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <div className="comic-font text-white text-lg tracking-wide">
-                    1v1 HEAD-TO-HEAD DUEL
-                  </div>
-                  <div className="text-[11px] text-zinc-400 font-bold">
-                    Strictly 2 Players · Direct Auction Clash & Battle
-                  </div>
-                </div>
-              </div>
-              <span className="bg-comic-yellow text-black text-xs font-black px-2.5 py-1 border border-black uppercase tracking-wider shadow-comic-sm">
-                2 PLAYERS
+            <label className="block text-xs font-black uppercase tracking-wider text-zinc-300 mb-1.5 flex items-center justify-between">
+              <span>OPPONENT MODE</span>
+              <span className="text-[10px] font-bold text-cyan-400">
+                {withBot ? '🤖 VS COMPUTER BOT' : '👥 VS HUMAN FRIEND'}
               </span>
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setWithBot(false)}
+                className={`p-3 text-left comic-border transition-all cursor-pointer ${
+                  !withBot
+                    ? 'bg-comic-yellow text-black shadow-comic-sm scale-[1.01]'
+                    : 'bg-black text-zinc-400 hover:text-white border-zinc-700'
+                }`}
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <Swords className="w-4 h-4 text-comic-red" />
+                  <span className="font-black text-xs sm:text-sm uppercase text-black">HUMAN FRIEND</span>
+                </div>
+                <div className={`text-[10px] font-bold ${!withBot ? 'text-black/80' : 'text-zinc-500'}`}>
+                  Invite friend with Room Code
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setWithBot(true)}
+                className={`p-3 text-left comic-border transition-all cursor-pointer ${
+                  withBot
+                    ? 'bg-cyan-500 text-black shadow-comic-sm scale-[1.01]'
+                    : 'bg-black text-zinc-400 hover:text-white border-zinc-700'
+                }`}
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <Bot className="w-4 h-4 text-black" />
+                  <span className="font-black text-xs sm:text-sm uppercase text-black">COMPUTER (AI)</span>
+                </div>
+                <div className={`text-[10px] font-bold ${withBot ? 'text-black/90' : 'text-zinc-500'}`}>
+                  Play instantly with AI algorithm
+                </div>
+              </button>
             </div>
           </div>
 
@@ -273,7 +298,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
           {/* Submit */}
           <div className="pt-2 flex-shrink-0">
             <ComicButton type="submit" variant="primary" size="lg" className="w-full shadow-comic">
-              LAUNCH 1v1 ROOM & ENTER LOBBY
+              {withBot ? '🤖 LAUNCH & BATTLE COMPUTER' : 'LAUNCH 1v1 ROOM & ENTER LOBBY'}
             </ComicButton>
           </div>
         </form>

@@ -76,7 +76,7 @@ class GameAnalytics {
     this.trackOnce('app_loaded', 'app_loaded');
   }
 
-  public playClicked(source: 'hero_join' | 'hero_create' | 'invite_landing'): void {
+  public playClicked(source: 'hero_join' | 'hero_create' | 'hero_play_vs_computer' | 'invite_landing'): void {
     this.trackEvent('play_clicked', { source });
   }
 

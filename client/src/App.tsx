@@ -66,6 +66,7 @@ export const App: React.FC = () => {
   const [isHowToPlayOpen, setIsHowToPlayOpen] = useState(false);
   const [isRosterOpen, setIsRosterOpen] = useState(false);
   const [initialRoomCode, setInitialRoomCode] = useState('');
+  const [createInitialWithBot, setCreateInitialWithBot] = useState(false);
 
   // Toasts
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
@@ -88,7 +89,8 @@ export const App: React.FC = () => {
   };
 
   // Modal navigation with Android back button support
-  const openCreateModal = () => {
+  const openCreateModal = (withBot: boolean = false) => {
+    setCreateInitialWithBot(withBot);
     try { window.history.pushState({ modal: 'create' }, ''); } catch {}
     setIsCreateOpen(true);
   };
@@ -422,9 +424,17 @@ export const App: React.FC = () => {
   }, [selfPlayerId, addToast]);
 
   // Client Actions
-  const handleCreateRoom = (playerName: string, settings: RoomSettings) => {
+  const handleCreateRoom = (playerName: string, settings: RoomSettings, withBot: boolean = false) => {
     gameAnalytics.createRoomClicked();
-    socket.emit('CREATE_ROOM', { playerName, settings });
+    socket.emit('CREATE_ROOM', { playerName, settings, withBot });
+  };
+
+  const handleAddBot = () => {
+    socket.emit('ADD_BOT');
+  };
+
+  const handleRemoveBot = (botId: string) => {
+    socket.emit('REMOVE_BOT', { botId });
   };
 
   const handleJoinRoom = (roomCode: string, playerName: string) => {
@@ -510,7 +520,11 @@ export const App: React.FC = () => {
         <Hero
           onCreateRoom={() => {
             gameAnalytics.playClicked('hero_create');
-            openCreateModal();
+            openCreateModal(false);
+          }}
+          onPlayVsComputer={() => {
+            gameAnalytics.playClicked('hero_play_vs_computer');
+            openCreateModal(true);
           }}
           onJoinRoom={() => {
             gameAnalytics.playClicked('hero_join');
@@ -533,6 +547,8 @@ export const App: React.FC = () => {
           onOpenRoster={openRosterModal}
           onInstallApp={startBuildAndInstall}
           isInstalled={isInstalled}
+          onAddBot={handleAddBot}
+          onRemoveBot={handleRemoveBot}
         />
       ) : room.phase === 'AUCTION' && room.auction ? (
         <AuctionStage
@@ -582,6 +598,7 @@ export const App: React.FC = () => {
         isOpen={isCreateOpen}
         onClose={closeCreateModal}
         onCreate={handleCreateRoom}
+        initialWithBot={createInitialWithBot}
       />
 
       <JoinRoomModal

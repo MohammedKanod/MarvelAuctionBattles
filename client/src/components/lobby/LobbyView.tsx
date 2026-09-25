@@ -3,7 +3,7 @@ import { RoomState, Player } from '../../../../shared/types';
 import { ComicButton } from '../ui/ComicButton';
 import { gameAnalytics } from '../../analytics/gameAnalytics';
 import { SoundManager } from '../../sound/SoundManager';
-import { Copy, Check, Crown, User, ShieldAlert, Sparkles, BookOpen, Smartphone, Share2, Link2 } from 'lucide-react';
+import { Copy, Check, Crown, User, ShieldAlert, Sparkles, BookOpen, Smartphone, Share2, Link2, Bot } from 'lucide-react';
 
 interface LobbyViewProps {
   room: RoomState;
@@ -14,6 +14,8 @@ interface LobbyViewProps {
   onOpenRoster?: () => void;
   onInstallApp?: () => void;
   isInstalled?: boolean;
+  onAddBot?: () => void;
+  onRemoveBot?: (botId: string) => void;
 }
 
 export const LobbyView: React.FC<LobbyViewProps> = ({
@@ -24,7 +26,9 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
   onLeaveRoom,
   onOpenRoster,
   onInstallApp,
-  isInstalled = false
+  isInstalled = false,
+  onAddBot,
+  onRemoveBot
 }) => {
   const [copied, setCopied] = useState(false);
 
@@ -204,19 +208,41 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
 
                 <div className="flex items-center gap-3">
                   {/* Avatar Icon */}
-                  <div className="w-12 h-12 bg-black border-2 border-zinc-700 flex items-center justify-center text-2xl">
-                    {['⚡', '🛡️', '⚔️', '💥', '🧠', '🔮', '🕸️', '🐾'][player.avatarSeed % 8]}
+                  <div className={`w-12 h-12 border-2 flex items-center justify-center text-2xl ${
+                    player.isBot
+                      ? 'bg-cyan-950/80 border-cyan-400 text-cyan-300'
+                      : 'bg-black border-zinc-700'
+                  }`}>
+                    {player.isBot ? '🤖' : ['⚡', '🛡️', '⚔️', '💥', '🧠', '🔮', '🕸️', '🐾'][player.avatarSeed % 8]}
                   </div>
 
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <h4 className="font-black text-lg text-white truncate max-w-[140px]">
-                        {player.name}
-                      </h4>
-                      {player.id === selfPlayer.id && (
-                        <span className="text-[10px] font-black bg-comic-red text-white px-1.5 py-0.2">
-                          YOU
-                        </span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-1">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <h4 className="font-black text-lg text-white truncate max-w-[130px]">
+                          {player.name}
+                        </h4>
+                        {player.id === selfPlayer.id && (
+                          <span className="text-[10px] font-black bg-comic-red text-white px-1.5 py-0.2 shrink-0">
+                            YOU
+                          </span>
+                        )}
+                        {player.isBot && (
+                          <span className="text-[10px] font-black bg-cyan-400 text-black px-1.5 py-0.2 shrink-0">
+                            BOT
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Remove Bot option for host */}
+                      {isHost && player.isBot && onRemoveBot && (
+                        <button
+                          onClick={() => onRemoveBot(player.id)}
+                          className="text-[10px] font-bold text-red-400 hover:text-red-300 bg-red-950/60 border border-red-800/80 px-1.5 py-0.5 rounded cursor-pointer shrink-0 transition-colors"
+                          title="Remove computer bot"
+                        >
+                          ✕ Remove
+                        </button>
                       )}
                     </div>
                     <div className="flex items-center gap-2 mt-1">
@@ -244,12 +270,24 @@ export const LobbyView: React.FC<LobbyViewProps> = ({
               (_, idx) => (
                 <div
                   key={`empty-${idx}`}
-                  className="border-3 border-dashed border-zinc-800 p-6 flex flex-col items-center justify-center text-zinc-600"
+                  className="border-3 border-dashed border-zinc-700 bg-black/40 p-5 flex flex-col items-center justify-center text-center rounded-sm"
                 >
-                  <User className="w-8 h-8 mb-1 opacity-30" />
-                  <span className="text-xs font-bold uppercase tracking-wider">
-                    WAITING FOR PLAYER...
+                  <Bot className="w-8 h-8 text-cyan-400 mb-2 animate-bounce opacity-80" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2.5">
+                    WAITING FOR OPPONENT...
                   </span>
+                  {isHost && onAddBot && (
+                    <button
+                      onClick={() => {
+                        SoundManager.playClick();
+                        onAddBot();
+                      }}
+                      className="comic-btn bg-cyan-500 hover:bg-cyan-400 text-black border-2 border-black px-3 py-1.5 text-xs font-black uppercase shadow-comic-sm flex items-center gap-1.5 cursor-pointer transition-all"
+                    >
+                      <Bot className="w-4 h-4 text-black" />
+                      <span>ADD COMPUTER BOT</span>
+                    </button>
+                  )}
                 </div>
               )
             )}

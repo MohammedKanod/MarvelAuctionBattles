@@ -69,6 +69,7 @@ export interface Player {
   fighterLocked?: boolean;
   defeatedCharacterIds?: string[];
   usedCharacterIds?: string[]; // Characters used in battle (cannot be reused!)
+  isBot?: boolean;
 }
 
 export interface BidRecord {
@@ -241,7 +242,7 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
-  CREATE_ROOM: (data: { playerName: string; settings: RoomSettings }) => void;
+  CREATE_ROOM: (data: { playerName: string; settings: RoomSettings; withBot?: boolean }) => void;
   JOIN_ROOM: (data: { roomCode: string; playerName: string }) => void;
   RECONNECT_SESSION: (data: { sessionToken: string; roomCode: string }) => void;
   UPDATE_SETTINGS: (data: { settings: Partial<RoomSettings> }) => void;
@@ -252,4 +253,6 @@ export interface ClientToServerEvents {
   LOCK_FIGHTER: (data: { characterId: string }) => void;
   NEXT_BOUT: () => void;
   PLAY_AGAIN: () => void;
+  ADD_BOT: () => void;
+  REMOVE_BOT: (data: { botId: string }) => void;
 }

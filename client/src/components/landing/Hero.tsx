@@ -1,10 +1,11 @@
 import React from 'react';
 import { ComicButton } from '../ui/ComicButton';
-import { Volume2, VolumeX, Shield, Zap, Swords, Trophy, Hammer, BookOpen, Smartphone } from 'lucide-react';
+import { Volume2, VolumeX, Shield, Zap, Swords, Trophy, Hammer, BookOpen, Smartphone, Bot } from 'lucide-react';
 import { SoundManager } from '../../sound/SoundManager';
 
 interface HeroProps {
   onCreateRoom: () => void;
+  onPlayVsComputer: () => void;
   onJoinRoom: () => void;
   onOpenHowToPlay: () => void;
   onOpenRoster: () => void;
@@ -16,6 +17,7 @@ interface HeroProps {
 
 export const Hero: React.FC<HeroProps> = ({
   onCreateRoom,
+  onPlayVsComputer,
   onJoinRoom,
   onOpenHowToPlay,
   onOpenRoster,
@@ -114,7 +116,16 @@ export const Hero: React.FC<HeroProps> = ({
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-6 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 mb-6 w-full sm:w-auto flex-wrap">
+            <ComicButton
+              variant="primary"
+              size="lg"
+              onClick={onPlayVsComputer}
+              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:brightness-110 border-3 border-cyan-300 text-white shadow-[0_0_22px_rgba(6,182,212,0.5)] animate-pulse"
+            >
+              <Bot className="w-6 h-6 text-cyan-200" /> PLAY VS COMPUTER
+            </ComicButton>
+
             <ComicButton
               variant="primary"
               size="lg"
