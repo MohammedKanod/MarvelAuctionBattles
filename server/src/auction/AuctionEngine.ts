@@ -2,7 +2,7 @@ import { AuctionState, Character, Player, BidRecord } from '../../../shared/type
 import { AUCTION_ANTI_SNIPE_THRESHOLD_SEC, AUCTION_ANTI_SNIPE_EXTENSION_SEC } from '../../../shared/constants';
 
 export interface AuctionCallbacks {
-  onTick: (timerSeconds: number, endsAt: number) => void;
+  
   onBidPlaced: (bid: BidRecord, auction: AuctionState) => void;
   onOutbid: (outbidPlayerId: string, newBid: number, newLeaderName: string) => void;
   onSold: (winnerId: string, winnerName: string, character: Character, winningBid: number) => void;
@@ -119,11 +119,14 @@ export class AuctionEngine {
 
     // Anti-snipe mechanic: If bid is placed in final seconds, extend the timer
     const remainingSeconds = Math.max(0, Math.ceil((this.state.endsAt - Date.now()) / 1000));
-    if (remainingSeconds <= AUCTION_ANTI_SNIPE_THRESHOLD_SEC) {
+        if (remainingSeconds <= AUCTION_ANTI_SNIPE_THRESHOLD_SEC) {
       const newTimerSeconds = Math.max(remainingSeconds + AUCTION_ANTI_SNIPE_EXTENSION_SEC, 5);
       this.state.timerSeconds = newTimerSeconds;
       this.state.endsAt = Date.now() + (newTimerSeconds * 1000);
       this.state.status = 'EXTENDED';
+      // Reset the end-of-auction timeout to the new deadline
+      this.stopTimer();
+      this.startTicker();
     } else {
       this.state.timerSeconds = remainingSeconds;
     }
@@ -139,25 +142,16 @@ export class AuctionEngine {
     return { success: true };
   }
 
-  private startTicker() {
-    this.timerInterval = setInterval(() => {
-      const now = Date.now();
-      const remainingMs = Math.max(0, this.state.endsAt - now);
-      const remainingSec = Math.ceil(remainingMs / 1000);
-
-      this.state.timerSeconds = remainingSec;
-      this.callbacks.onTick(remainingSec, this.state.endsAt);
-
-      if (remainingSec <= 0) {
-        this.stopTimer();
-        this.finalizeRound();
-      }
-    }, 1000);
+    private startTicker() {
+    this.timerInterval = setTimeout(() => {
+      this.stopTimer();
+      this.finalizeRound();
+    }, this.state.endsAt - Date.now());
   }
 
-  private stopTimer() {
+    private stopTimer() {
     if (this.timerInterval) {
-      clearInterval(this.timerInterval);
+      clearTimeout(this.timerInterval);
       this.timerInterval = null;
     }
   }
