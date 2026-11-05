@@ -355,9 +355,6 @@ export class RoomManager {
     const totalRounds = room.players.length * room.settings.charactersPerPlayer;
 
     const auctionEngine = new AuctionEngine({
-      onTick: (timerSeconds, endsAt) => {
-        this.callbacks.broadcastToRoom(room.roomCode, 'AUCTION_TIMER_TICK', { timerSeconds, endsAt });
-      },
       onBidPlaced: (bid, auctionState) => {
         if (room.auction) room.auction = auctionState;
         this.callbacks.broadcastToRoom(room.roomCode, 'BID_PLACED', {
