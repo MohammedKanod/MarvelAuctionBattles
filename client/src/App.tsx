@@ -18,7 +18,7 @@ import { SoundManager } from './sound/SoundManager';
 import { UpdatePrompt } from './components/pwa/UpdatePrompt';
 import { usePwaInstall } from './pwa/usePwaInstall';
 import { InstallAppModal } from './components/pwa/InstallAppModal';
-import { gameAnalytics } from './analytics/gameAnalytics';
+import { track } from '@vercel/analytics';
 import { crazyGamesService } from './services/crazyGamesService';
 
 export const App: React.FC = () => {
@@ -57,9 +57,6 @@ export const App: React.FC = () => {
   const joiningViaInviteRef = useRef(false);
 
   // Analytics dedup refs
-  const lastAuctionRoundRef = useRef<number>(-1);
-  const lastBattleRoundRef = useRef<number>(-1);
-  const gameCompletedFiredRef = useRef(false);
 
   // Modals state
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -118,7 +115,6 @@ export const App: React.FC = () => {
 
   // Fire app_loaded analytics once on mount
   useEffect(() => {
-    gameAnalytics.appLoaded();
   }, []);
 
   // URL synchronization helper
@@ -204,7 +200,7 @@ export const App: React.FC = () => {
       setSelfPlayerId(selfPlayerId);
       SessionStorage.saveSession(sessionToken, room.roomCode, selfPlayerId);
       setIsCreateOpen(false);
-      gameAnalytics.roomCreated(room.settings?.maxPlayers || 0, room.players.length);
+      track('room_session', { roomCode: room.roomCode });
       gameCompletedFiredRef.current = false;
       addToast('success', 'ROOM CREATED', `Room ${room.roomCode} is live! Share with friends.`);
     });
@@ -221,7 +217,7 @@ export const App: React.FC = () => {
         setIsJoiningInvite(false);
         joiningViaInviteRef.current = false;
       }
-      gameAnalytics.roomJoined(room.settings?.maxPlayers || 0, room.players.length, room.roomCode);
+      
       gameCompletedFiredRef.current = false;
       addToast('success', 'JOINED LOBBY', `Connected to Room ${room.roomCode}`);
     });
@@ -263,11 +259,11 @@ export const App: React.FC = () => {
       if (roundIndex !== lastAuctionRoundRef.current) {
         lastAuctionRoundRef.current = roundIndex;
         if (roundIndex === 0) {
-          gameAnalytics.auctionStarted(roundIndex, room.players?.length || 0);
+          
         }
         const charId = auction?.character?.id || room?.auction?.character?.id || '';
         if (charId) {
-          gameAnalytics.characterRevealed(charId, roundIndex);
+          
         }
       }
     });
@@ -325,7 +321,7 @@ export const App: React.FC = () => {
     socket.on('CHARACTER_SOLD', ({ winnerId, character, winningBid, room }) => {
       setRoom(room);
       if (character?.id) {
-        gameAnalytics.characterWon(character.id, winningBid);
+        
       }
     });
 
@@ -337,7 +333,7 @@ export const App: React.FC = () => {
 
     socket.on('AUCTION_TRANSITION_STARTED', ({ room }) => {
       setRoom(room);
-      gameAnalytics.auctionCompleted();
+      
       // Midgame Ad on CrazyGames (no-ops in standard browser)
       crazyGamesService.requestMidgameAd();
     });
@@ -349,7 +345,7 @@ export const App: React.FC = () => {
       const ri = battleRound?.roundIndex ?? 0;
       if (ri !== lastBattleRoundRef.current) {
         lastBattleRoundRef.current = ri;
-        gameAnalytics.battleStarted(ri, room.players?.length || 0);
+        
       }
       addToast('info', 'CHOOSE YOUR FIGHTER', `Bout #${battleRound.roundIndex}: Secretly lock in 1 hero!`);
     });
@@ -377,7 +373,7 @@ export const App: React.FC = () => {
     socket.on('BOUT_COMPLETED', ({ bout, room }) => {
       setRoom(room);
       const ri = bout?.roundNumber ?? room?.battleRound?.roundIndex ?? 0;
-      gameAnalytics.battleCompleted(ri);
+      
     });
 
     socket.on('GAME_COMPLETED', ({ tournament, room }) => {
@@ -389,8 +385,8 @@ export const App: React.FC = () => {
       crazyGamesService.gameplayStop();
       if (!gameCompletedFiredRef.current) {
         gameCompletedFiredRef.current = true;
-        gameAnalytics.winnerRevealed(room.players?.length || 0);
-        gameAnalytics.gameCompleted();
+        
+        
       }
     });
 
@@ -444,7 +440,7 @@ export const App: React.FC = () => {
 
   // Client Actions
   const handleCreateRoom = (playerName: string, settings: RoomSettings, withBot: boolean = false) => {
-    gameAnalytics.createRoomClicked();
+    
     socket.emit('CREATE_ROOM', { playerName, settings, withBot });
   };
 
@@ -457,14 +453,14 @@ export const App: React.FC = () => {
   };
 
   const handleJoinRoom = (roomCode: string, playerName: string) => {
-    gameAnalytics.joinRoomClicked(roomCode);
+    
     socket.emit('JOIN_ROOM', { roomCode, playerName });
   };
 
   // Join via invite link
   const handleInviteJoin = (roomCode: string, playerName: string) => {
-    gameAnalytics.playClicked('invite_landing');
-    gameAnalytics.joinRoomClicked(roomCode);
+    
+    
     setIsJoiningInvite(true);
     joiningViaInviteRef.current = true;
     socket.emit('JOIN_ROOM', { roomCode, playerName });
@@ -481,7 +477,7 @@ export const App: React.FC = () => {
 
   const handleToggleReady = () => {
     const selfP = room?.players.find((p) => p.id === selfPlayerId);
-    gameAnalytics.playerReady(!selfP?.isReady);
+    
     socket.emit('TOGGLE_READY');
   };
 
@@ -491,7 +487,7 @@ export const App: React.FC = () => {
 
   const handlePlaceBid = (amount: number) => {
     const charId = room?.auction?.character?.id;
-    gameAnalytics.bidPlaced(amount, charId);
+    
     socket.emit('PLACE_BID', { amount });
   };
 
@@ -508,7 +504,7 @@ export const App: React.FC = () => {
   };
 
   const handlePlayAgain = () => {
-    gameAnalytics.rematchClicked();
+    
     gameCompletedFiredRef.current = false;
     socket.emit('PLAY_AGAIN');
   };
@@ -538,15 +534,15 @@ export const App: React.FC = () => {
       ) : !room || !selfPlayer ? (
         <Hero
           onCreateRoom={() => {
-            gameAnalytics.playClicked('hero_create');
+            
             openCreateModal(false);
           }}
           onPlayVsComputer={() => {
-            gameAnalytics.playClicked('hero_play_vs_computer');
+            
             openCreateModal(true);
           }}
           onJoinRoom={() => {
-            gameAnalytics.playClicked('hero_join');
+            
             openJoinModal();
           }}
           onOpenHowToPlay={openHowToPlayModal}
