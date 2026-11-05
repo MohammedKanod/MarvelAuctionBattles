@@ -2,7 +2,7 @@ import { AuctionState, Character, Player, BidRecord } from '../../../shared/type
 import { AUCTION_ANTI_SNIPE_THRESHOLD_SEC, AUCTION_ANTI_SNIPE_EXTENSION_SEC } from '../../../shared/constants';
 
 export interface AuctionCallbacks {
-  onTick: (timerSeconds: number, endsAt: number) => void;
+  onDeadline: (endsAt: number) => void;
   onBidPlaced: (bid: BidRecord, auction: AuctionState) => void;
   onOutbid: (outbidPlayerId: string, newBid: number, newLeaderName: string) => void;
   onSold: (winnerId: string, winnerName: string, character: Character, winningBid: number) => void;
@@ -11,7 +11,7 @@ export interface AuctionCallbacks {
 
 export class AuctionEngine {
   private state: AuctionState;
-  private timerInterval: NodeJS.Timeout | null = null;
+  private timerTimeout: NodeJS.Timeout | null = null;
   private callbacks: AuctionCallbacks;
 
   constructor(callbacks: AuctionCallbacks) {
@@ -67,7 +67,8 @@ export class AuctionEngine {
       winningBid: null
     };
 
-    this.startTicker();
+    this.callbacks.onDeadline(endsAt);
+    this.startTimer();
   }
 
   public placeBid(
@@ -124,6 +125,8 @@ export class AuctionEngine {
       this.state.timerSeconds = newTimerSeconds;
       this.state.endsAt = Date.now() + (newTimerSeconds * 1000);
       this.state.status = 'EXTENDED';
+      this.callbacks.onDeadline(this.state.endsAt);
+      this.startTimer();
     } else {
       this.state.timerSeconds = remainingSeconds;
     }
@@ -139,26 +142,17 @@ export class AuctionEngine {
     return { success: true };
   }
 
-  private startTicker() {
-    this.timerInterval = setInterval(() => {
-      const now = Date.now();
-      const remainingMs = Math.max(0, this.state.endsAt - now);
-      const remainingSec = Math.ceil(remainingMs / 1000);
-
-      this.state.timerSeconds = remainingSec;
-      this.callbacks.onTick(remainingSec, this.state.endsAt);
-
-      if (remainingSec <= 0) {
-        this.stopTimer();
-        this.finalizeRound();
-      }
-    }, 1000);
+  private startTimer() {
+    this.timerTimeout = setTimeout(() => {
+      this.timerTimeout = null;
+      this.finalizeRound();
+    }, Math.max(0, this.state.endsAt - Date.now()));
   }
 
   private stopTimer() {
-    if (this.timerInterval) {
-      clearInterval(this.timerInterval);
-      this.timerInterval = null;
+    if (this.timerTimeout) {
+      clearTimeout(this.timerTimeout);
+      this.timerTimeout = null;
     }
   }
 
